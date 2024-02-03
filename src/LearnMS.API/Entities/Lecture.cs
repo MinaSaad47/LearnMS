@@ -10,6 +10,7 @@ public class Lecture
 
     public decimal? Price { get; set; }
     public decimal? RenewalPrice { get; set; }
+    public int? ExpirationDays { get; set; }
 
     public List<LectureItem> Items = new();
 

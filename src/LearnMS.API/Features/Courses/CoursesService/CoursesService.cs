@@ -2,6 +2,7 @@ using LearnMS.API.Common;
 using LearnMS.API.Data;
 using LearnMS.API.Entities;
 using LearnMS.API.Features.Courses.Contracts;
+using LearnMS.API.Features.Profile;
 using Microsoft.EntityFrameworkCore;
 
 namespace LearnMS.API.Features.Courses;
@@ -15,7 +16,7 @@ public sealed class CoursesService : ICoursesService
         _dbContext = dbContext;
     }
 
-    public async Task Execute(CreateLectureCommand command)
+    public async Task ExecuteAsync(CreateLectureCommand command)
     {
         var course = await _dbContext.Courses.Include(x => x.Items).FirstOrDefaultAsync(x => x.Id == command.CourseId);
 
@@ -40,7 +41,7 @@ public sealed class CoursesService : ICoursesService
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task Execute(UpdateLectureCommand command)
+    public async Task ExecuteAsync(UpdateLectureCommand command)
     {
         var course = await _dbContext.Courses.Include(x => x.Items).FirstOrDefaultAsync(x => x.Id == command.CourseId);
 
@@ -94,7 +95,7 @@ public sealed class CoursesService : ICoursesService
 
     }
 
-    public async Task Execute(PublishLectureCommand command)
+    public async Task ExecuteAsync(PublishLectureCommand command)
     {
         var course = await _dbContext.Courses.Include(x => x.Items).FirstOrDefaultAsync(x => x.Id == command.CourseId);
 
@@ -130,7 +131,7 @@ public sealed class CoursesService : ICoursesService
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task Execute(UnPublishLectureCommand command)
+    public async Task ExecuteAsync(UnPublishLectureCommand command)
     {
 
         var course = await _dbContext.Courses.Include(x => x.Items).FirstOrDefaultAsync(x => x.Id == command.CourseId);
@@ -163,7 +164,7 @@ public sealed class CoursesService : ICoursesService
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task Execute(CreateLessonCommand command)
+    public async Task ExecuteAsync(CreateLessonCommand command)
     {
         var course = await _dbContext.Courses.Include(x => x.Items).FirstOrDefaultAsync(x => x.Id == command.CourseId);
 
@@ -201,7 +202,7 @@ public sealed class CoursesService : ICoursesService
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task Execute(UpdateLessonCommand command)
+    public async Task ExecuteAsync(UpdateLessonCommand command)
     {
         var course = await _dbContext.Courses.Include(x => x.Items).FirstOrDefaultAsync(x => x.Id == command.CourseId);
 
@@ -338,6 +339,108 @@ public sealed class CoursesService : ICoursesService
         course.Status = CourseStatus.Hidden;
 
         _dbContext.Courses.Update(course);
+
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task ExecuteAsync(BuyCourseCommand command)
+    {
+        var student = await _dbContext.Students.FirstOrDefaultAsync(x => x.Id == command.StudentId);
+
+        if (student is null)
+        {
+            throw new ApiException(ProfileErrors.NoStudentFound);
+        }
+
+        var studentCourse = await _dbContext.Set<StudentCourse>().FirstOrDefaultAsync(x => x.CourseId == command.CourseId && x.StudentId == command.StudentId);
+
+        if (studentCourse is not null && studentCourse.ExpirationDate > DateTime.UtcNow)
+        {
+            throw new ApiException(CoursesErrors.AlreadyPurchased);
+        }
+
+        var course = await _dbContext.Courses.FirstOrDefaultAsync(x => x.Id == command.CourseId && x.Status == CourseStatus.Published) ?? throw new ApiException(CoursesErrors.NotFound);
+
+
+        if (studentCourse is not null)
+        {
+            if (student.Credit < course.RenewalPrice) throw new ApiException(ProfileErrors.InsufficientCredits);
+
+            studentCourse.ExpirationDate = DateTime.UtcNow.AddDays(course.ExpirationDays!.Value);
+            student.Credit -= course.RenewalPrice ?? 0;
+
+            _dbContext.Update(student);
+            _dbContext.Update(studentCourse);
+            await _dbContext.SaveChangesAsync();
+            return;
+        }
+
+
+        if (student.Credit < course.Price) throw new ApiException(ProfileErrors.InsufficientCredits);
+
+        studentCourse = new StudentCourse
+        {
+            CourseId = command.CourseId,
+            StudentId = command.StudentId,
+            ExpirationDate = DateTime.UtcNow.AddDays(course.ExpirationDays!.Value)
+        };
+
+        student.Credit -= course.Price ?? 0;
+
+        _dbContext.Update(student);
+        _dbContext.Add(studentCourse);
+
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task ExecuteAsync(BuyLectureCommand command)
+    {
+        var student = await _dbContext.Students.FirstOrDefaultAsync(x => x.Id == command.StudentId);
+
+        if (student is null)
+        {
+            throw new ApiException(ProfileErrors.NoStudentFound);
+        }
+
+        var studentLecture = await _dbContext.Set<StudentLecture>().FirstOrDefaultAsync(x => x.LectureId == command.LectureId && x.StudentId == command.StudentId);
+
+        if (studentLecture is not null && studentLecture.ExpirationDate > DateTime.UtcNow)
+        {
+            throw new ApiException(LecturesErrors.AlreadyPurchased);
+        }
+
+        var courseLecture = await _dbContext.Set<CourseItem>()
+            .FirstOrDefaultAsync(x => x.CourseId == command.CourseId && x.Status == CourseItemStatus.Published && x.Id == command.LectureId) ?? throw new ApiException(LecturesErrors.NotFound);
+
+        var lecture = await _dbContext.Set<Lecture>().FirstOrDefaultAsync(x => x.Id == command.LectureId) ?? throw new ApiException(LecturesErrors.NotFound);
+
+        if (studentLecture is not null)
+        {
+            if (student.Credit < lecture.RenewalPrice) throw new ApiException(ProfileErrors.InsufficientCredits);
+
+            studentLecture.ExpirationDate = DateTime.UtcNow.AddDays(lecture.ExpirationDays!.Value);
+            student.Credit -= lecture.RenewalPrice ?? 0;
+
+            _dbContext.Update(student);
+            _dbContext.Update(studentLecture);
+            await _dbContext.SaveChangesAsync();
+            return;
+        }
+
+
+        if (student.Credit < lecture.Price) throw new ApiException(ProfileErrors.InsufficientCredits);
+
+        studentLecture = new StudentLecture
+        {
+            LectureId = command.LectureId,
+            StudentId = command.StudentId,
+            ExpirationDate = DateTime.UtcNow.AddDays(lecture.ExpirationDays!.Value)
+        };
+
+        student.Credit -= lecture.Price ?? 0;
+
+        _dbContext.Update(student);
+        _dbContext.Add(studentLecture);
 
         await _dbContext.SaveChangesAsync();
     }

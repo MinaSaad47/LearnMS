@@ -17,6 +17,25 @@ public sealed class LecturesController : ControllerBase
         _currentUserService = currentUserService;
     }
 
+    [HttpPost("{lectureId:guid}/buy")]
+    [ApiAuthorize(Role = UserRole.Student)]
+    public async Task<ApiWrapper.Success<object?>> Buy(Guid lectureId, Guid courseId)
+    {
+        var currentUser = await _currentUserService.GetUserAsync();
+
+        await _coursesService.ExecuteAsync(new BuyLectureCommand
+        {
+            CourseId = courseId,
+            LectureId = lectureId,
+            StudentId = currentUser!.Id
+        });
+
+        return new()
+        {
+            Message = "Lecture purchased successfully"
+        };
+    }
+
     [HttpGet("{lectureId:guid}")]
     public async Task<ApiWrapper.Success<GetLectureResponse>> Get(Guid lectureId, Guid courseId)
     {
@@ -97,7 +116,7 @@ public sealed class LecturesController : ControllerBase
     [HttpPost]
     public async Task<ApiWrapper.Success<object?>> Post([FromBody] CreateLectureRequest request, Guid courseId)
     {
-        await _coursesService.Execute(new CreateLectureCommand
+        await _coursesService.ExecuteAsync(new CreateLectureCommand
         {
             CourseId = courseId,
             Title = request.Title
@@ -112,7 +131,7 @@ public sealed class LecturesController : ControllerBase
     [HttpPatch("{lectureId:guid}")]
     public async Task<ApiWrapper.Success<object?>> Patch([FromBody] UpdateLectureRequest request, Guid lectureId, Guid courseId)
     {
-        await _coursesService.Execute(new UpdateLectureCommand
+        await _coursesService.ExecuteAsync(new UpdateLectureCommand
         {
             CourseId = courseId,
             Id = lectureId,
@@ -132,7 +151,7 @@ public sealed class LecturesController : ControllerBase
     [HttpPost("{lectureId:guid}/publish")]
     public async Task<ApiWrapper.Success<object?>> Publish(Guid lectureId, Guid courseId)
     {
-        await _coursesService.Execute(new PublishLectureCommand
+        await _coursesService.ExecuteAsync(new PublishLectureCommand
         {
             Id = lectureId,
             CourseId = courseId
@@ -147,7 +166,7 @@ public sealed class LecturesController : ControllerBase
     [HttpPost("{lectureId:guid}/unpublish")]
     public async Task<ApiWrapper.Success<object?>> Unpublish(Guid lectureId, Guid courseId)
     {
-        await _coursesService.Execute(new UnPublishLectureCommand
+        await _coursesService.ExecuteAsync(new UnPublishLectureCommand
         {
             Id = lectureId,
             CourseId = courseId

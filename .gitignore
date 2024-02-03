@@ -6,3 +6,5 @@ obj/
 
 src/LearnMS.React/dist/
 src/LearnMS.React/node_modules/
+src/LearnMS.API/LearnMS.db-wal
+src/LearnMS.API/LearnMS.db-shm

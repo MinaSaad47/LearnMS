@@ -62,7 +62,7 @@ public sealed class LessonsController : ControllerBase
     [HttpPost]
     public async Task<ApiWrapper.Success<object?>> Post(CreateLessonRequest request, Guid lectureId, Guid courseId)
     {
-        await _coursesService.Execute(new CreateLessonCommand
+        await _coursesService.ExecuteAsync(new CreateLessonCommand
         {
             VideoEmbed = request.VideoEmbed,
             Title = request.Title,
@@ -82,7 +82,7 @@ public sealed class LessonsController : ControllerBase
     [HttpPatch("{lessonId:guid}")]
     public async Task<ApiWrapper.Success<object?>> Patch(UpdateLessonRequest request, Guid lessonId, Guid courseId, Guid lectureId)
     {
-        await _coursesService.Execute(new UpdateLessonCommand
+        await _coursesService.ExecuteAsync(new UpdateLessonCommand
         {
             Id = lessonId,
             Title = request.Title,

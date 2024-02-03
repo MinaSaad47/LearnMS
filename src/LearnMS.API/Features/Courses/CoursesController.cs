@@ -19,6 +19,24 @@ public sealed class CoursesController : ControllerBase
         _currentUserService = currentUserService;
     }
 
+    [HttpPost("{courseId:guid}/buy")]
+    [ApiAuthorize(Role = UserRole.Student)]
+    public async Task<ApiWrapper.Success<object?>> Buy(Guid courseId)
+    {
+        var currentUser = await _currentUserService.GetUserAsync();
+
+        await _coursesService.ExecuteAsync(new BuyCourseCommand
+        {
+            CourseId = courseId,
+            StudentId = currentUser!.Id
+        });
+
+        return new()
+        {
+            Message = "Course purchased successfully"
+        };
+    }
+
     [HttpGet]
     public async Task<ApiWrapper.Success<GetCoursesResponse>> Get()
     {
