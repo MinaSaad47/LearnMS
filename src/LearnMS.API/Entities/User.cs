@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 using LearnMS.API.Entities;
 
@@ -25,7 +26,10 @@ public abstract class User
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum UserRole
 {
+    [EnumMember(Value = "Teacher")]
     Teacher,
+    [EnumMember(Value = "Assistant")]
     Assistant,
+    [EnumMember(Value = "Student")]
     Student
 }

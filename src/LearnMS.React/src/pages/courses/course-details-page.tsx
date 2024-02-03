@@ -24,28 +24,30 @@ import { useForm } from "react-hook-form";
 import { Link, useParams } from "react-router-dom";
 
 const course: CourseDetails = {
+  isExpired: false,
   id: "1",
-  name: "Course Name",
+  title: "Course Name",
   description: "Course Description",
-  coverUrl: "https://via.placeholder.com/150",
+  imageUrl: "https://via.placeholder.com/150",
   price: 100,
-  renewPrice: 200,
+  renewalPrice: 200,
   items: [
     {
       id: "1",
       order: 1,
-      type: "lecture",
-      name: "Lecture Name",
+      type: "Lecture",
+      title: "Lecture Name",
       price: 10,
-      renewPrice: 20,
+      renewalPrice: 20,
+      imageUrl: "https://via.placeholder.com/150",
     },
     {
-      type: "exam",
+      type: "Exam",
       id: "2",
       order: 2,
-      name: "Exam Name",
+      title: "Exam Name",
       price: 10,
-      renewPrice: 20,
+      renewalPrice: 20,
     },
   ],
 };
@@ -88,25 +90,25 @@ function CourseItemsList({ courseId, items }: CourseItemsProps) {
 }
 
 function CourseDetailsHeader({
-  name,
+  title,
   description,
-  coverUrl,
+  imageUrl,
   price,
-  renewPrice,
+  renewalPrice,
 }: typeof course) {
   const form = useForm({
     defaultValues: {
-      name,
+      title,
       description,
       price,
-      renewPrice,
+      renewalPrice,
       coverUrl: "",
     },
     values: {
-      name,
+      title,
       description,
       price,
-      renewPrice,
+      renewalPrice,
       coverUrl: "",
     },
   });
@@ -120,14 +122,14 @@ function CourseDetailsHeader({
         onSubmit={form.handleSubmit(() => {})}>
         <div className='w-[20%]'>
           <CoverPicker
-            defaultCover={coverUrl}
+            defaultCover={imageUrl}
             onCoverSelect={(url) => form.setValue("coverUrl", url)}
           />
         </div>
         <div className='flex flex-col items-start flex-grow gap-4 mt-2 ms-4'>
           <FormField
             control={form.control}
-            name='name'
+            name='title'
             render={({ field }) => (
               <FormItem>
                 <EditableInput {...field} type='text' />
@@ -146,7 +148,7 @@ function CourseDetailsHeader({
             />
             <FormField
               control={form.control}
-              name='renewPrice'
+              name='renewalPrice'
               render={({ field }) => (
                 <FormItem>
                   <EditableInput {...field} type='number' />
@@ -194,20 +196,20 @@ function CourseItem({
       <div className='flex items-center justify-center text-sm border rounded-full w-7 h-7 dark:border-white'>
         {item.order}
       </div>
-      {item.type === "lecture" && (
+      {item.type === "Lecture" && (
         <Badge>
           <VideotapeIcon />
           Lecture
         </Badge>
       )}
-      {item.type === "exam" && (
+      {item.type === "Exam" && (
         <Badge variant='secondary'>
           <PencilRuler />
           Exam
         </Badge>
       )}
       <p>{item.price}</p>
-      <p>{item.renewPrice}</p>
+      <p>{item.renewalPrice}</p>
       <div className='ml-auto'>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

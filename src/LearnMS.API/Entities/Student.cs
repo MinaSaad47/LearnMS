@@ -6,9 +6,9 @@ namespace LearnMS.API.Entities;
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum StudentLevel
 {
-    Primary,
-    Secondary,
-    Third
+    Level1,
+    Level2,
+    Level3
 }
 
 public class Student : User

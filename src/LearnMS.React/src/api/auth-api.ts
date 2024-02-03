@@ -14,12 +14,29 @@ export type LoginResponse = {
   token: string;
 };
 
-export const RegisterRequest = z.object({
-  email: z.string().email().min(1, { message: "Email is required" }),
-  password: z
-    .string()
-    .min(8, { message: "Password must be at least 8 characters" }),
-});
+export const RegisterRequest = z
+  .object({
+    level: z.enum(["0", "1", "2"], {
+      errorMap: () => ({ message: "Level is required" }),
+    }),
+    fullName: z.string().min(1, { message: "Name is required" }),
+    phoneNumber: z.string().min(1, { message: "Phone number is required" }),
+    parentPhoneNumber: z
+      .string()
+      .min(1, { message: "Parent phone number is required" }),
+    school: z.string().min(1, { message: "School is required" }),
+    email: z.string().email().min(1, { message: "Email is required" }),
+    password: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters" }),
+    confirmPassword: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters" }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 export type RegisterRequest = z.infer<typeof RegisterRequest>;
 export type RegisterResponse = {
   id: string;
@@ -48,7 +65,7 @@ export function useRegisterMutation() {
   return useMutation<ApiResponse<RegisterResponse>, {}, RegisterRequest>({
     mutationKey: ["register"],
     mutationFn: (data) =>
-      api.post("/api/auth/register", data).then((res) => res.data),
+      api.post("/api/auth/students/register", data).then((res) => res.data),
     onSuccess: (res) => {
       toast({
         title: "Register successful",

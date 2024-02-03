@@ -11,13 +11,13 @@ export type Profile = {
   email: string;
 } & (
   | {
-      role: "student";
+      role: "Student";
     }
   | {
-      role: "teacher";
+      role: "Teacher";
     }
   | {
-      role: "assistant";
+      role: "Assistant";
       permissions: Permission[];
     }
 );

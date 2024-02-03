@@ -1,21 +1,17 @@
 import { Exam } from "./exams";
 import { Lecture } from "./lectures";
 
-export type Course = {
-  id: string;
-  name: string;
-  description: string;
-  coverUrl: string;
-  price: number;
-  renewPrice: number;
+export type CourseDetails = Course & {
+  items: (Lecture | Exam)[];
 };
 
-export type CourseDetails = {
+export type Course = {
   id: string;
-  name: string;
+  title: string;
   description: string;
-  coverUrl: string;
+  isExpired: boolean;
+  expiresAt?: Date;
+  imageUrl: string;
   price: number;
-  renewPrice: number;
-  items: (Lecture | Exam)[];
+  renewalPrice: number;
 };

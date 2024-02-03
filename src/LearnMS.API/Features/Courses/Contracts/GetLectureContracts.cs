@@ -41,8 +41,8 @@ public record SingleLectureItem
 {
     public required Guid Id { get; set; }
     public required string Title { get; set; }
+    public required string Type { get; set; }
     public required string? Description { get; set; }
-    public required string? ImageUrl { get; set; }
 }
 
 
@@ -58,9 +58,11 @@ public sealed record GetStudentLectureQuery
 public sealed record GetStudentLectureResult : GetLectureResult
 {
     public required DateTime? ExpiresAt { get; set; }
+    public required bool? IsExpired { get; set; }
 }
 
 public sealed record GetStudentLectureResponse : GetLectureResponse
 {
     public required DateTime? ExpiresAt { get; set; }
+    public required bool? IsExpired { get; set; }
 }

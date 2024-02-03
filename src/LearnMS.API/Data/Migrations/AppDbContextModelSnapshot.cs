@@ -153,6 +153,9 @@ namespace LearnMS.API.Data.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("ExpirationDays")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("ImageUrl")
                         .HasColumnType("TEXT");
 

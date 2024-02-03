@@ -447,25 +447,26 @@ public sealed class CoursesService : ICoursesService
 
     public async Task<GetStudentCoursesResult> QueryAsync(GetStudentCoursesQuery query)
     {
-        var courses = from c in _dbContext.Courses
-                      join ci in _dbContext.Set<CourseItem>() on c.Id equals ci.CourseId
-                      join sc in _dbContext.Set<StudentCourse>() on c.Id equals sc.CourseId
-                      where sc.StudentId == query.StudentId
-                      select new SingleStudentCourse
-                      {
-                          Id = c.Id,
-                          Title = c.Title,
-                          Description = c.Description,
-                          ExpiresAt = sc.ExpirationDate,
-                          RenewalPrice = c.RenewalPrice,
-                          Price = c.Price,
-                          ImageUrl = c.ImageUrl,
-                          Status = CourseStatus.Published,
-                      };
+        var result = from courses in _dbContext.Courses
+                     join courseItem in _dbContext.Set<CourseItem>() on courses.Id equals courseItem.CourseId
+                     join studentCourse in _dbContext.Set<StudentCourse>() on new { CourseId = courses.Id, StudentId = query.StudentId } equals new { CourseId = studentCourse.CourseId, StudentId = studentCourse.StudentId } into groupedCourseItems
+                     from gci in groupedCourseItems.DefaultIfEmpty()
+                     select new SingleStudentCourse
+                     {
+                         Id = courses.Id,
+                         Title = courses.Title,
+                         Description = courses.Description,
+                         ExpiresAt = gci != null ? gci.ExpirationDate : null,
+                         IsExpired = gci != null ? gci.ExpirationDate < DateTime.UtcNow : null,
+                         RenewalPrice = courses.RenewalPrice,
+                         Price = courses.Price,
+                         ImageUrl = courses.ImageUrl,
+                         Status = CourseStatus.Published,
+                     };
 
         return new()
         {
-            Items = await courses.ToListAsync()
+            Items = await result.ToListAsync()
         };
     }
 
@@ -521,24 +522,24 @@ public sealed class CoursesService : ICoursesService
 
         var lectures = await (from ci in _dbContext.Set<CourseItem>()
                               join l in _dbContext.Set<Lecture>() on ci.Id equals l.Id
-                              where query.ItemStatus != null && ci.Status == query.ItemStatus && ci.CourseId == query.Id
+                              where (query.ItemStatus == null || ci.Status == query.ItemStatus) && ci.CourseId == query.Id
                               select new SingleCourseItem
                               {
                                   Id = l.Id,
                                   ImageUrl = l.ImageUrl,
                                   Order = ci.Order,
                                   Title = l.Title,
-                                  Type = CourseItemType.Lecture,
+                                  Type = "Lecture",
                               }).ToArrayAsync();
         var exams = await (from ci in _dbContext.Set<CourseItem>()
                            join e in _dbContext.Set<Exam>() on ci.Id equals e.Id
-                           where query.ItemStatus != null && ci.Status == query.ItemStatus && ci.CourseId == query.Id
+                           where (query.ItemStatus == null || ci.Status == query.ItemStatus) && ci.CourseId == query.Id
                            select new SingleCourseItem
                            {
                                Id = e.Id,
                                Order = ci.Order,
                                Title = e.Title,
-                               Type = CourseItemType.Exam,
+                               Type = "Exam",
                            })
                                   .ToListAsync();
 
@@ -551,13 +552,14 @@ public sealed class CoursesService : ICoursesService
     public async Task<GetStudentCourseResult> QueryAsync(GetStudentCourseQuery query)
     {
         var courses = from c in _dbContext.Courses
-                      join sc in _dbContext.Set<StudentCourse>() on c.Id equals sc.CourseId
-                      where c.Id == query.Id && sc.StudentId == query.StudentId
+                      join sc in _dbContext.Set<StudentCourse>() on new { CourseId = c.Id, StudentId = query.StudentId } equals new { CourseId = sc.CourseId, StudentId = sc.StudentId } into groupedCourseItems
+                      from gci in groupedCourseItems.DefaultIfEmpty()
                       select new GetStudentCourseResult
                       {
                           Id = c.Id,
                           Status = c.Status,
-                          ExpiresAt = sc.ExpirationDate,
+                          IsExpired = gci != null ? gci.ExpirationDate < DateTime.UtcNow : null,
+                          ExpiresAt = gci != null ? gci.ExpirationDate : null,
                           Title = c.Title,
                           Description = c.Description,
                           ImageUrl = c.ImageUrl,
@@ -574,31 +576,35 @@ public sealed class CoursesService : ICoursesService
 
         var lectures = await (from ci in _dbContext.Set<CourseItem>()
                               join l in _dbContext.Set<Lecture>() on ci.Id equals l.Id
-                              join sl in _dbContext.Set<StudentLecture>() on l.Id equals sl.LectureId
-                              where query.ItemStatus != null && ci.Status == query.ItemStatus
-                              where ci.CourseId == query.Id
+                              join sl in _dbContext.Set<StudentLecture>() on l.Id equals sl.LectureId into groupedStudentLectures
+                              from gsl in groupedStudentLectures.DefaultIfEmpty()
+                              where ci.CourseId == query.Id && (query.ItemStatus == null || ci.Status == query.ItemStatus)
                               select new SingleStudentCourseItem
                               {
                                   Id = l.Id,
+                                  Price = l.Price,
+                                  RenewalPrice = l.RenewalPrice,
                                   ImageUrl = l.ImageUrl,
-                                  ExpiresAt = sl.ExpirationDate,
+                                  ExpiresAt = gsl != null ? gsl.ExpirationDate : null,
+                                  IsExpired = gsl != null ? gsl.ExpirationDate < DateTime.UtcNow : null,
                                   Order = ci.Order,
                                   Title = l.Title,
-                                  Type = CourseItemType.Lecture,
+                                  Type = "Lecture",
                               }).ToArrayAsync();
 
         var exams = await (from ci in _dbContext.Set<CourseItem>()
                            join e in _dbContext.Set<Exam>() on ci.Id equals e.Id
-                           join se in _dbContext.Set<StudentExam>() on e.Id equals se.ExamId
-                           where query.ItemStatus != null && ci.Status == query.ItemStatus
-                           where ci.CourseId == query.Id
+                           join se in _dbContext.Set<StudentExam>() on e.Id equals se.ExamId into groupedStudentExams
+                           from gse in groupedStudentExams.DefaultIfEmpty()
+                           where ci.CourseId == query.Id && (query.ItemStatus == null || ci.Status == query.ItemStatus)
                            select new SingleStudentCourseItem
                            {
                                Id = e.Id,
-                               ExpiresAt = se.ExpirationDate,
                                Order = ci.Order,
+                               ExpiresAt = gse != null ? gse.ExpirationDate : null,
+                               IsExpired = gse != null ? gse.ExpirationDate < DateTime.UtcNow : null,
                                Title = e.Title,
-                               Type = CourseItemType.Exam,
+                               Type = "Exam",
                            })
                                   .ToArrayAsync();
 
@@ -612,13 +618,11 @@ public sealed class CoursesService : ICoursesService
     {
 
         var lectures = from course in _dbContext.Set<Course>()
-                       join studentCourse in _dbContext.Set<StudentCourse>() on course.Id equals studentCourse.CourseId
-                       join courseItem in _dbContext.Set<CourseItem>() on studentCourse.CourseId equals courseItem.CourseId
+                       join courseItem in _dbContext.Set<CourseItem>() on course.Id equals courseItem.CourseId
                        join lecture in _dbContext.Set<Lecture>() on courseItem.Id equals lecture.Id
-                       join studentLecture in _dbContext.Set<StudentLecture>() on lecture.Id equals studentLecture.LectureId
                        where
-                       (query.CourseStatus == null || course.Status == CourseStatus.Published) &&
-                       (query.LectureStatus == null || courseItem.Status == CourseItemStatus.Published) &&
+                       (query.CourseStatus == null && course.Status == query.CourseStatus || true) &&
+                       (query.LectureStatus == null && courseItem.Status == query.LectureStatus || true) &&
                        courseItem.Status == CourseItemStatus.Published &&
                        course.Id == query.CourseId &&
                        lecture.Id == query.LectureId
@@ -630,7 +634,7 @@ public sealed class CoursesService : ICoursesService
                            ImageUrl = lecture.ImageUrl,
                            Status = courseItem.Status,
                            Price = lecture.Price,
-                           RenewalPrice = lecture.RenewalPrice
+                           RenewalPrice = lecture.RenewalPrice,
                        };
 
 
@@ -638,8 +642,21 @@ public sealed class CoursesService : ICoursesService
 
         if (result is null)
         {
-            throw new ApiException(LessonsErrors.NotFound);
+            throw new ApiException(LecturesErrors.NotFound);
         }
+
+        var lessons = await (from li in _dbContext.Set<LectureItem>()
+                             join l in _dbContext.Set<Lesson>() on li.Id equals l.Id
+                             where li.LectureId == query.LectureId
+                             select new SingleLectureItem
+                             {
+                                 Id = l.Id,
+                                 Title = l.Title,
+                                 Type = "Lesson",
+                                 Description = l.Description,
+                             }).ToListAsync();
+
+        result.Items = lessons;
 
         return result;
     }
@@ -647,16 +664,11 @@ public sealed class CoursesService : ICoursesService
     public async Task<GetStudentLectureResult> QueryAsync(GetStudentLectureQuery query)
     {
         var lectures = from course in _dbContext.Set<Course>()
-                       join studentCourse in _dbContext.Set<StudentCourse>() on course.Id equals studentCourse.CourseId
-                       join courseItem in _dbContext.Set<CourseItem>() on studentCourse.CourseId equals courseItem.CourseId
+                       join courseItem in _dbContext.Set<CourseItem>() on course.Id equals courseItem.CourseId
                        join lecture in _dbContext.Set<Lecture>() on courseItem.Id equals lecture.Id
-                       join studentLecture in _dbContext.Set<StudentLecture>() on lecture.Id equals studentLecture.LectureId
+                       join studentLecture in _dbContext.Set<StudentLecture>() on lecture.Id equals studentLecture.LectureId into groupedStudentLectures
+                       from gsl in groupedStudentLectures.DefaultIfEmpty()
                        where
-                       (
-                         (studentCourse.StudentId == query.StudentId && studentCourse.ExpirationDate > DateTime.UtcNow)
-                       ||
-                         (studentLecture.LectureId == query.LectureId && studentLecture.ExpirationDate > DateTime.UtcNow)
-                       ) &&
                        course.Status == CourseStatus.Published &&
                        courseItem.Status == CourseItemStatus.Published &&
                        course.Id == query.CourseId &&
@@ -666,7 +678,8 @@ public sealed class CoursesService : ICoursesService
                            Id = lecture.Id,
                            Title = lecture.Title,
                            Description = lecture.Description,
-                           ExpiresAt = studentLecture.ExpirationDate,
+                           ExpiresAt = gsl != null ? gsl.ExpirationDate : null,
+                           IsExpired = gsl != null ? gsl.ExpirationDate < DateTime.UtcNow : null,
                            ImageUrl = lecture.ImageUrl,
                            Price = lecture.Price,
                            RenewalPrice = lecture.RenewalPrice,
@@ -678,8 +691,21 @@ public sealed class CoursesService : ICoursesService
 
         if (result is null)
         {
-            throw new ApiException(LessonsErrors.NotFound);
+            throw new ApiException(LecturesErrors.NotFound);
         }
+
+        var lessons = await (from li in _dbContext.Set<LectureItem>()
+                             join l in _dbContext.Set<Lesson>() on li.Id equals l.Id
+                             where li.LectureId == query.LectureId
+                             select new SingleLectureItem
+                             {
+                                 Id = l.Id,
+                                 Title = l.Title,
+                                 Type = "Lesson",
+                                 Description = l.Description,
+                             }).ToListAsync();
+
+        result.Items = lessons;
 
         return result;
     }

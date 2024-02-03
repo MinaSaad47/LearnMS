@@ -48,6 +48,12 @@ public sealed class AuthService : IAuthService
             ProviderType = ProviderType.Local,
         });
 
+        student.FullName = command.FullName;
+        student.Level = command.Level;
+        student.ParentPhoneNumber = command.ParentPhoneNumber;
+        student.PhoneNumber = command.PhoneNumber;
+        student.SchoolName = command.School;
+
         await _dbContext.Students.AddAsync(student);
         await _dbContext.SaveChangesAsync();
 

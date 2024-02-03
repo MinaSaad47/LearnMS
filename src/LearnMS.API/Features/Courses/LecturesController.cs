@@ -75,6 +75,7 @@ public sealed class LecturesController : ControllerBase
                 Description = result.Description,
                 Id = result.Id,
                 Title = result.Title,
+                IsExpired = result.IsExpired,
                 Status = result.Status,
                 ImageUrl = result.ImageUrl,
                 Items = result.Items,

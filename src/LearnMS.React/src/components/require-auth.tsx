@@ -26,8 +26,26 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
   }
 
   if (!isFetching && (isError || !profile?.isAuthenticated)) {
-    return <Navigate to='/login' />;
+    return <Navigate to='/sign-in-sign-up' />;
   }
+
+  if (
+    profile?.isAuthenticated &&
+    role !== profile.role &&
+    profile.role === "Student"
+  ) {
+    return <Navigate to='/' />;
+  }
+
+  if (
+    profile?.isAuthenticated &&
+    role !== profile.role &&
+    profile.role === "Teacher"
+  ) {
+    return <Navigate to='/dashboard' />;
+  }
+
+  console.log({ profile, role });
 
   return children;
 };

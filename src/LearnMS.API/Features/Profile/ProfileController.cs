@@ -1,3 +1,4 @@
+using System.Text.Json;
 using LearnMS.API.Common;
 using LearnMS.API.Entities;
 using LearnMS.API.Features.Profile.Contracts;
@@ -73,7 +74,7 @@ public sealed class ProfileController : ControllerBase
                 Name = result.Account.User is Student ? ((Student)result.Account.User).FullName : null,
                 Permissions = result.Account.User is Assistant ? ((Assistant)result.Account.User).Permissions.ToArray() : null,
                 ProfilePicture = result.Account.ProfilePicture,
-                Role = result.Account.User.Role,
+                Role = result.Account.User!.Role.ToString(),
                 Credits = result.Account.User is Student ? ((Student)result.Account.User).Credit : null
             },
         };

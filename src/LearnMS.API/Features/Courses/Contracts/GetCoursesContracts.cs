@@ -50,4 +50,5 @@ public sealed record GetStudentCoursesResponse
 public sealed record SingleStudentCourse : SingleCourse
 {
     public DateTime? ExpiresAt { get; init; }
+    public bool? IsExpired { get; init; }
 }

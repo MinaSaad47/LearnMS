@@ -19,6 +19,6 @@ public sealed record GetProfileResponse
     public string? Name { get; init; }
     public string? ProfilePicture { get; init; }
     public Permission[]? Permissions { get; init; }
-    public UserRole Role { get; init; }
+    public required string Role { get; init; }
     public decimal? Credits { get; init; }
 }

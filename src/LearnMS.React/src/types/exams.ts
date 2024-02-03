@@ -1,8 +1,10 @@
 export type Exam = {
-  type: "exam";
+  type: "Exam";
   id: string;
   order: number;
-  name: string;
+  title: string;
   price: number;
-  renewPrice?: number;
+  renewalPrice?: number;
+  isExpired?: boolean;
+  expiresAt?: Date;
 };

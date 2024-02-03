@@ -20,7 +20,13 @@ var builder = WebApplication.CreateBuilder(args);
 {
     var cfg = builder.Configuration;
 
+
     builder.Services.AddHttpContextAccessor();
+
+    builder.Services.AddSpaStaticFiles(cfg =>
+    {
+        cfg.RootPath = "wwwroot";
+    });
 
     builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
@@ -78,6 +84,9 @@ builder.Services.AddSwaggerGen(c =>
 
 
 var app = builder.Build();
+
+app.UseStaticFiles();
+
 await app.InitializeAsync();
 
 // Configure the HTTP request pipeline.

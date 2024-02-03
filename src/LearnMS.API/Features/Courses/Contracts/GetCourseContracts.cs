@@ -45,7 +45,9 @@ public record SingleCourseItem
     public required Guid Id { get; init; }
     public required string Title { get; init; }
     public required int Order { get; init; }
-    public required CourseItemType Type { get; init; }
+    public decimal? Price { get; init; }
+    public decimal? RenewalPrice { get; init; }
+    public required string Type { get; init; }
     public string? ImageUrl { get; init; }
 }
 
@@ -67,6 +69,7 @@ public sealed record GetStudentCourseResult
     public required decimal? RenewalPrice { get; init; }
     public required CourseStatus Status { get; init; }
     public required DateTime? ExpiresAt { get; init; }
+    public required bool? IsExpired { get; init; }
     public IEnumerable<SingleStudentCourseItem> Items { get; set; } = [];
 }
 
@@ -78,4 +81,5 @@ public sealed record GetStudentCourseResponse : GetCourseResponse
 public sealed record SingleStudentCourseItem : SingleCourseItem
 {
     public required DateTime? ExpiresAt { get; init; }
+    public required bool? IsExpired { get; init; }
 }
