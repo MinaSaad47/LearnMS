@@ -1,0 +1,8 @@
+src/LearnMS.API/bin/
+src/LearnMS.API/LearnMS.db
+src/LearnMS.API/appsettings.Development.json
+obj/
+
+
+src/LearnMS.React/dist/
+src/LearnMS.React/node_modules/
