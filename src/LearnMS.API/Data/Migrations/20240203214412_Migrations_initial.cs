@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LearnMS.API.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class Migrations_1 : Migration
+    public partial class Migrations_initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,12 +15,12 @@ namespace LearnMS.API.Data.Migrations
                 name: "Accounts",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ProviderType = table.Column<string>(type: "TEXT", nullable: false),
-                    Email = table.Column<string>(type: "TEXT", nullable: false),
-                    PasswordHash = table.Column<string>(type: "TEXT", nullable: true),
-                    ProviderId = table.Column<string>(type: "TEXT", nullable: true),
-                    ProfilePicture = table.Column<string>(type: "TEXT", nullable: true)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProviderType = table.Column<string>(type: "text", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    PasswordHash = table.Column<string>(type: "text", nullable: true),
+                    ProviderId = table.Column<string>(type: "text", nullable: true),
+                    ProfilePicture = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -31,8 +31,8 @@ namespace LearnMS.API.Data.Migrations
                 name: "Assistants",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Permissions = table.Column<string>(type: "TEXT", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Permissions = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -43,14 +43,14 @@ namespace LearnMS.API.Data.Migrations
                 name: "Courses",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Title = table.Column<string>(type: "TEXT", nullable: false),
-                    Description = table.Column<string>(type: "TEXT", nullable: true),
-                    ImageUrl = table.Column<string>(type: "TEXT", nullable: true),
-                    Price = table.Column<decimal>(type: "TEXT", nullable: true),
-                    RenewalPrice = table.Column<decimal>(type: "TEXT", nullable: true),
-                    ExpirationDays = table.Column<int>(type: "INTEGER", nullable: true),
-                    Status = table.Column<string>(type: "TEXT", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    ImageUrl = table.Column<string>(type: "text", nullable: true),
+                    Price = table.Column<decimal>(type: "numeric", nullable: true),
+                    RenewalPrice = table.Column<decimal>(type: "numeric", nullable: true),
+                    ExpirationDays = table.Column<int>(type: "integer", nullable: true),
+                    Status = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -61,13 +61,13 @@ namespace LearnMS.API.Data.Migrations
                 name: "Students",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    FullName = table.Column<string>(type: "TEXT", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "TEXT", nullable: true),
-                    ParentPhoneNumber = table.Column<string>(type: "TEXT", nullable: true),
-                    SchoolName = table.Column<string>(type: "TEXT", nullable: true),
-                    Level = table.Column<int>(type: "INTEGER", nullable: false),
-                    Credit = table.Column<decimal>(type: "TEXT", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    FullName = table.Column<string>(type: "text", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
+                    ParentPhoneNumber = table.Column<string>(type: "text", nullable: true),
+                    SchoolName = table.Column<string>(type: "text", nullable: true),
+                    Level = table.Column<int>(type: "integer", nullable: false),
+                    Credit = table.Column<decimal>(type: "numeric", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -78,7 +78,7 @@ namespace LearnMS.API.Data.Migrations
                 name: "Teachers",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -89,9 +89,10 @@ namespace LearnMS.API.Data.Migrations
                 name: "CourseItem",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Order = table.Column<int>(type: "INTEGER", nullable: false),
-                    CourseId = table.Column<Guid>(type: "TEXT", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Order = table.Column<int>(type: "integer", nullable: false),
+                    CourseId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Status = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -108,10 +109,10 @@ namespace LearnMS.API.Data.Migrations
                 name: "CreditCodes",
                 columns: table => new
                 {
-                    Code = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false),
-                    Value = table.Column<decimal>(type: "TEXT", nullable: false),
-                    AssistantId = table.Column<Guid>(type: "TEXT", nullable: true),
-                    StudentId = table.Column<Guid>(type: "TEXT", nullable: true)
+                    Code = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    Value = table.Column<decimal>(type: "numeric", nullable: false),
+                    AssistantId = table.Column<Guid>(type: "uuid", nullable: true),
+                    StudentId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -132,9 +133,9 @@ namespace LearnMS.API.Data.Migrations
                 name: "StudentCourse",
                 columns: table => new
                 {
-                    StudentId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    CourseId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ExpirationDate = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    StudentId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CourseId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ExpirationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -154,16 +155,36 @@ namespace LearnMS.API.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Exam",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    Price = table.Column<decimal>(type: "numeric", nullable: true),
+                    RenewalPrice = table.Column<decimal>(type: "numeric", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Exam", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Exam_CourseItem_Id",
+                        column: x => x.Id,
+                        principalTable: "CourseItem",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Lectures",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Title = table.Column<string>(type: "TEXT", nullable: true),
-                    Description = table.Column<string>(type: "TEXT", nullable: true),
-                    ImageUrl = table.Column<string>(type: "TEXT", nullable: true),
-                    Price = table.Column<decimal>(type: "TEXT", nullable: true),
-                    RenewalPrice = table.Column<decimal>(type: "TEXT", nullable: true),
-                    Status = table.Column<string>(type: "TEXT", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    ImageUrl = table.Column<string>(type: "text", nullable: true),
+                    Price = table.Column<decimal>(type: "numeric", nullable: true),
+                    RenewalPrice = table.Column<decimal>(type: "numeric", nullable: true),
+                    ExpirationDays = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -177,12 +198,37 @@ namespace LearnMS.API.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "StudentExam",
+                columns: table => new
+                {
+                    StudentId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ExamId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ExpirationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StudentExam", x => new { x.StudentId, x.ExamId });
+                    table.ForeignKey(
+                        name: "FK_StudentExam_Exam_ExamId",
+                        column: x => x.ExamId,
+                        principalTable: "Exam",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_StudentExam_Students_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Students",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "LectureItem",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Order = table.Column<int>(type: "INTEGER", nullable: false),
-                    LectureId = table.Column<Guid>(type: "TEXT", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Order = table.Column<int>(type: "integer", nullable: false),
+                    LectureId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -199,9 +245,9 @@ namespace LearnMS.API.Data.Migrations
                 name: "StudentLecture",
                 columns: table => new
                 {
-                    StudentId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    LectureId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ExpirationDate = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    StudentId = table.Column<Guid>(type: "uuid", nullable: false),
+                    LectureId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ExpirationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -224,9 +270,10 @@ namespace LearnMS.API.Data.Migrations
                 name: "Lessons",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Title = table.Column<string>(type: "TEXT", nullable: false),
-                    Description = table.Column<string>(type: "TEXT", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    VideoEmbed = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -277,6 +324,18 @@ namespace LearnMS.API.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_StudentExam_ExamId",
+                table: "StudentExam",
+                column: "ExamId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StudentExam_StudentId",
+                table: "StudentExam",
+                column: "StudentId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_StudentLecture_LectureId",
                 table: "StudentLecture",
                 column: "LectureId",
@@ -305,6 +364,9 @@ namespace LearnMS.API.Data.Migrations
                 name: "StudentCourse");
 
             migrationBuilder.DropTable(
+                name: "StudentExam");
+
+            migrationBuilder.DropTable(
                 name: "StudentLecture");
 
             migrationBuilder.DropTable(
@@ -315,6 +377,9 @@ namespace LearnMS.API.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "LectureItem");
+
+            migrationBuilder.DropTable(
+                name: "Exam");
 
             migrationBuilder.DropTable(
                 name: "Students");

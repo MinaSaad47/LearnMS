@@ -3,6 +3,8 @@ src/LearnMS.API/LearnMS.db
 src/LearnMS.API/appsettings.Development.json
 obj/
 
+**/.env
+
 
 src/LearnMS.React/dist/
 src/LearnMS.React/node_modules/

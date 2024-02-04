@@ -30,7 +30,7 @@ var builder = WebApplication.CreateBuilder(args);
 
     builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
-    builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlite("Data Source=LearnMS.db"));
+    builder.Services.AddDbContext<AppDbContext>(opt => opt.UseNpgsql(cfg.GetConnectionString("DefaultConnection")));
 
     builder.Services.Configure<JwtBearerConfig>(cfg.GetSection(JwtBearerConfig.Section));
     builder.Services.Configure<AdministrationConfig>(cfg.GetSection(AdministrationConfig.Section));
@@ -85,7 +85,11 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-app.UseStaticFiles();
+app.UseSpaStaticFiles();
+app.UseSpa(o =>
+{
+
+});
 
 await app.InitializeAsync();
 
