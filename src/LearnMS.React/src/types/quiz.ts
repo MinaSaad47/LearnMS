@@ -1,5 +1,6 @@
 export type Quiz = {
   id: string;
-  type: "quiz";
+  type: "Quiz";
+  title: string;
   order: number;
 };

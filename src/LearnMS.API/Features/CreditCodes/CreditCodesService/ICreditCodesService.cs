@@ -5,7 +5,7 @@ namespace LearnMS.API.Features.CreditCodes;
 public interface ICreditCodesService
 {
     Task ExecuteAsync(GenerateCreditCodesCommand request);
-    Task ExecuteAsync(RedeemCreditCodeCommand request);
+    Task<RedeemCreditCodeResult> ExecuteAsync(RedeemCreditCodeCommand request);
 
     Task<GetCreditCodesResult> QueryAsync(GetCreditCodesQuery request);
 

@@ -31,7 +31,7 @@ const SideBar = () => {
       <div className='space-y-2 '>
         <h2 className='text-2xl font-bold'>Materials</h2>
         <div className='space-y-1'>
-          <Link to='/courses'>
+          <Link to='/dashboard/courses'>
             <Button
               variant='secondary'
               className='inline-flex justify-start w-full'>
@@ -39,7 +39,7 @@ const SideBar = () => {
               Courses
             </Button>
           </Link>
-          <Link to='/credit-codes'>
+          <Link to='/dashboard/credit-codes'>
             <Button
               variant='ghost'
               className='inline-flex justify-start w-full'>
@@ -47,7 +47,7 @@ const SideBar = () => {
               Credit Codes
             </Button>
           </Link>
-          <Link to='/files'>
+          <Link to='/dashboard/files'>
             <Button
               variant='ghost'
               className='inline-flex justify-start w-full'>

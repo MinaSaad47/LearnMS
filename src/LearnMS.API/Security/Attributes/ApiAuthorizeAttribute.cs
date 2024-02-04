@@ -42,7 +42,5 @@ public class ApiAuthorizeAttribute : ActionFilterAttribute, IAsyncAuthorizationF
         {
             return;
         }
-
-        throw new ApiException(AuthErrors.Forbidden);
     }
 }

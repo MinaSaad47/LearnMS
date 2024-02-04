@@ -1,5 +1,5 @@
 import { useProfileQuery } from "@/api/profile-api";
-import { Loader2 } from "lucide-react";
+import LoadingPage from "@/pages/shared/loading-page";
 import { Navigate } from "react-router-dom";
 
 interface RequireAuthProps {
@@ -18,11 +18,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
   console.log(profile);
 
   if (isLoading) {
-    return (
-      <div className='flex items-center justify-center w-screen h-screen'>
-        <Loader2 className='w-10 h-10 animate-spin' />
-      </div>
-    );
+    return <LoadingPage />;
   }
 
   if (!isFetching && (isError || !profile?.isAuthenticated)) {

@@ -94,6 +94,7 @@ public sealed class CoursesController : ControllerBase
             {
                 Id = result.Id,
                 Description = result.Description,
+
                 ImageUrl = result.ImageUrl,
                 Price = result.Price,
                 RenewalPrice = result.RenewalPrice,
@@ -117,7 +118,8 @@ public sealed class CoursesController : ControllerBase
                 Title = result.Title,
                 Status = result.Status,
                 Items = result.Items,
-                ExpiresAt = result.ExpiresAt
+                ExpiresAt = result.ExpiresAt,
+                IsExpired = result.IsExpired,
             };
         }
         else

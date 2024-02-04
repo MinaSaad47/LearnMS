@@ -42,12 +42,12 @@ public sealed class CreditCodesController : ControllerBase
 
     }
 
-    [HttpPut(Name = "redeem")]
+    [HttpPut("redeem")]
     [ApiAuthorize(Role = UserRole.Student)]
-    public async Task<ApiWrapper.Success<object?>> Redeem([FromQuery] string code)
+    public async Task<ApiWrapper.Success<RedeemCreditCodeResponse>> Redeem([FromQuery] string code)
     {
         var student = await _currentUserService.GetUserAsync();
-        await _creditCodesService.ExecuteAsync(new RedeemCreditCodeCommand
+        var result = await _creditCodesService.ExecuteAsync(new RedeemCreditCodeCommand
         {
             Code = code,
             StudentId = student!.Id,
@@ -55,7 +55,11 @@ public sealed class CreditCodesController : ControllerBase
 
         return new()
         {
-            Message = "successfully redeemed credit code"
+            Message = "successfully redeemed credit code",
+            Data = new()
+            {
+                Value = result.Value
+            }
         };
     }
 }

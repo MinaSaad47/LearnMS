@@ -31,9 +31,9 @@ public class Lecture
     {
         get
         {
-            if (!string.IsNullOrWhiteSpace(Title)) return false;
-            if (!string.IsNullOrWhiteSpace(Description)) return false;
-            if (!string.IsNullOrWhiteSpace(ImageUrl)) return false;
+            if (string.IsNullOrWhiteSpace(Title)) return false;
+            if (string.IsNullOrWhiteSpace(Description)) return false;
+            if (string.IsNullOrWhiteSpace(ImageUrl)) return false;
             if (Price is null) return false;
             if (RenewalPrice is null) return false;
             return true;

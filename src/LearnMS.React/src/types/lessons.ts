@@ -1,6 +1,13 @@
 export type Lesson = {
-  type: "lesson";
+  type: "Lesson";
   id: string;
   order: number;
-  name: string;
+  title: string;
+};
+
+export type LessonDetails = {
+  id: string;
+  title: string;
+  description: string;
+  videoEmbed: string;
 };

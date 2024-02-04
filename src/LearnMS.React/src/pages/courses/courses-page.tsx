@@ -16,7 +16,7 @@ const courses: Course[] = Array.from({ length: 20 }).map((_, index) => ({
 const CoursesPage = () => {
   return (
     <div className='flex flex-col w-full'>
-      <Link className='self-end m-2' to={"/courses/add"}>
+      <Link className='self-end m-2' to={"/dashboard/courses/add"}>
         <Button>
           <PlusCircle className='w-4 h-4 mr-2' />
           Add Course

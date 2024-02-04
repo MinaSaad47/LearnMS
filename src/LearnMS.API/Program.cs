@@ -8,6 +8,7 @@ using LearnMS.API.Middlewares;
 using LearnMS.API.Security;
 using LearnMS.API.Security.JwtBearer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using tusdotnet;
@@ -85,11 +86,6 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-app.UseSpaStaticFiles();
-app.UseSpa(o =>
-{
-
-});
 
 await app.InitializeAsync();
 
@@ -125,9 +121,24 @@ app.MapTus("/api/files", async context =>
 }).AllowAnonymous();
 
 app.UseAuthentication();
+
+
 app.UseAuthorization();
 
+
 app.MapControllers();
+
+app.MapWhen(ctx => !ctx.Request.Path.StartsWithSegments("/api"), x =>
+{
+    x.UseSpa(spa =>
+    {
+        if (app.Environment.IsDevelopment())
+        {
+            spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
+        }
+    });
+    x.UseSpaStaticFiles();
+});
 
 
 app.Run();

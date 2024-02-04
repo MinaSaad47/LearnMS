@@ -1,6 +1,7 @@
 using LearnMS.API.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using SmartEnum.EFCore;
 
 namespace LearnMS.API.Data;
@@ -20,6 +21,7 @@ public class AppDbContext : DbContext
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
         configurationBuilder.ConfigureSmartEnum();
+        configurationBuilder.Conventions.Remove<ForeignKeyIndexConvention>();
         base.ConfigureConventions(configurationBuilder);
     }
 

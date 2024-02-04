@@ -39,7 +39,7 @@ public class CreditCodesService : ICreditCodesService
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task ExecuteAsync(RedeemCreditCodeCommand request)
+    public async Task<RedeemCreditCodeResult> ExecuteAsync(RedeemCreditCodeCommand request)
     {
 
         var creditCode = await _dbContext.CreditCodes.FirstOrDefaultAsync(x => x.Code == request.Code);
@@ -65,6 +65,11 @@ public class CreditCodesService : ICreditCodesService
         student.Credit += creditCode.Value;
 
         await _dbContext.SaveChangesAsync();
+
+        return new()
+        {
+            Value = creditCode.Value
+        };
     }
 
     public async Task<GetCreditCodesResult> QueryAsync(GetCreditCodesQuery request)

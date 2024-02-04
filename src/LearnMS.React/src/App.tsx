@@ -8,6 +8,8 @@ import FilesPage from "@/pages/files/files-page";
 import { StudentCoursePage } from "@/pages/student/courses/student-course-page";
 import { StudentCoursesPage } from "@/pages/student/courses/student-courses-page";
 import StudentLecturePage from "@/pages/student/lectures/student-lecture-page";
+import StudentLessonPage from "@/pages/student/lessons/student-lesson-page";
+import StudentPayments from "@/pages/student/payment/student-payments";
 import { Route, Routes } from "react-router-dom";
 import StudentLayout from "./components/student-layout";
 import AddCoursePage from "./pages/courses/add-course-page";
@@ -32,46 +34,44 @@ function App() {
             <StudentLayout />
           </RequireAuth>
         }>
-        <Route path='/courses' element={<StudentCoursesPage />} />
-        <Route path='/courses/:courseId' element={<StudentCoursePage />} />
+        <Route path='courses' element={<StudentCoursesPage />} />
+        <Route path='courses/:courseId' element={<StudentCoursePage />} />
         <Route
-          path='/courses/:courseId/lectures/:lectureId'
+          path='courses/:courseId/lectures/:lectureId'
           element={<StudentLecturePage />}
         />
+        <Route
+          path='courses/:courseId/lectures/:lectureId/lessons/:lessonId'
+          element={<StudentLessonPage />}
+        />
+        <Route path='payments' element={<StudentPayments />} />
       </Route>
 
       <Route
+        path='/dashboard'
         element={
           <RequireAuth role='Teacher'>
             <DashboardLayout />
           </RequireAuth>
         }>
-        <Route path='/dashboard' element={<StudentLayout />} />
-
-        <Route path='/dashboard/courses' element={<CoursesPage />} />
-        <Route path='/dashboard/courses/add' element={<AddCoursePage />} />
+        <Route path='courses' element={<CoursesPage />} />
+        <Route path='courses/add' element={<AddCoursePage />} />
+        <Route path='courses/:courseId' element={<CourseDetailsPage />} />
         <Route
-          path='/dashboard/courses/:courseId'
-          element={<CourseDetailsPage />}
-        />
-        <Route
-          path='/dashboard/courses/:courseId/lectures/:lectureId'
+          path='courses/:courseId/lectures/:lectureId'
           element={<LectureDetailsPage />}
         />
         <Route
-          path='/dashboard/courses/:courseId/lectures/:lecturesId/lessons/:lessonId'
+          path='courses/:courseId/lectures/:lecturesId/lessons/:lessonId'
           element={<LessonPage />}
         />
         <Route
-          path='/dashboard/courses/:courseId/lectures/:lecturesId/quizzes/:quizId'
+          path='courses/:courseId/lectures/:lecturesId/quizzes/:quizId'
           element={<QuizPage />}
         />
-        <Route
-          path='/dashboard/courses/:courseId/exams/:examId'
-          element={<ExamPage />}
-        />
-        <Route path='/dashboard/credit-codes' element={<CreditCodesPage />} />
-        <Route path='/dashboard/files' element={<FilesPage />} />
+        <Route path='courses/:courseId/exams/:examId' element={<ExamPage />} />
+        <Route path='credit-codes' element={<CreditCodesPage />} />
+        <Route path='files' element={<FilesPage />} />
       </Route>
     </Routes>
   );

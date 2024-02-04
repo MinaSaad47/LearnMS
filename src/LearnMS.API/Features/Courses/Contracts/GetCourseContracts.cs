@@ -76,6 +76,7 @@ public sealed record GetStudentCourseResult
 public sealed record GetStudentCourseResponse : GetCourseResponse
 {
     public required DateTime? ExpiresAt { get; init; }
+    public required bool? IsExpired { get; init; }
 }
 
 public sealed record SingleStudentCourseItem : SingleCourseItem

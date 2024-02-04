@@ -19,14 +19,14 @@ public sealed class LessonsController : ControllerBase
     }
 
     [HttpGet("{lessonId:guid}")]
-    [ApiAuthorize]
+    [ApiAuthorize()]
     public async Task<ApiWrapper.Success<GetLessonResponse>> Get(Guid courseId, Guid lectureId, Guid lessonId)
     {
         var currentUser = await _currentUserService.GetUserAsync();
 
         GetLessonResponse response;
 
-        if (currentUser!.Role == UserRole.Student)
+        if (currentUser!.Role != UserRole.Student)
         {
             var result = await _coursesService.QueryAsync(new GetLessonQuery { CourseId = courseId, LessonId = lessonId, LectureId = lectureId });
 

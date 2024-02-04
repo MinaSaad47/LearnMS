@@ -135,6 +135,7 @@ public sealed class LecturesController : ControllerBase
         await _coursesService.ExecuteAsync(new UpdateLectureCommand
         {
             CourseId = courseId,
+            ImageUrl = request.ImageUrl,
             Id = lectureId,
             Title = request.Title,
             Description = request.Description,

@@ -712,40 +712,48 @@ public sealed class CoursesService : ICoursesService
 
     public async Task<GetStudentLessonResult> QueryAsync(GetStudentLessonQuery query)
     {
-        var lessons = from course in _dbContext.Set<Course>()
-                      join studentCourse in _dbContext.Set<StudentCourse>() on course.Id equals studentCourse.CourseId
-                      join courseItem in _dbContext.Set<CourseItem>() on studentCourse.CourseId equals courseItem.CourseId
-                      join studentLecture in _dbContext.Set<StudentLecture>() on courseItem.Id equals studentLecture.LectureId
-                      join lectureItem in _dbContext.Set<LectureItem>() on studentLecture.LectureId equals lectureItem.LectureId
-                      join lesson in _dbContext.Set<Lesson>() on lectureItem.Id equals lesson.Id
-                      where
-                      lesson.Id == query.LessonId &&
-                      (
-                        (studentCourse.StudentId == query.StudentId && studentCourse.ExpirationDate > DateTime.UtcNow)
-                      ||
-                        (studentLecture.LectureId == query.LectureId && studentLecture.ExpirationDate > DateTime.UtcNow)
-                      ) &&
-                      courseItem.Status == CourseItemStatus.Published &&
-                      course.Status == CourseStatus.Published &&
-                      course.Id == query.CourseId &&
-                      lectureItem.Id == query.LectureId
-                      select new GetStudentLessonResult
-                      {
-                          Id = lesson.Id,
-                          Title = lesson.Title,
-                          Description = lesson.Description,
-                          VideoEmbed = lesson.VideoEmbed
-                      };
+        var courseResult = from course in _dbContext.Set<Course>()
+                           join studentCourse in _dbContext.Set<StudentCourse>() on course.Id equals studentCourse.CourseId
+                           where
+                           studentCourse.StudentId == query.StudentId &&
+                           course.Id == query.CourseId &&
+                           studentCourse.ExpirationDate > DateTime.UtcNow
+                           select new
+                           {
+                               courseId = course.Id
+                           };
+
+        var lectureResult = from lecture in _dbContext.Set<Lecture>()
+                            join studentLecture in _dbContext.Set<StudentLecture>() on lecture.Id equals studentLecture.LectureId
+                            where
+                            studentLecture.StudentId == query.StudentId &&
+                            studentLecture.ExpirationDate > DateTime.UtcNow
+                            select new
+                            {
+                                lectureId = lecture.Id
+                            };
 
 
-        var result = await lessons.FirstOrDefaultAsync();
 
-        if (result is null)
+        if (courseResult.Count() == 0 && lectureResult.Count() == 0)
         {
             throw new ApiException(LessonsErrors.NotFound);
         }
 
-        return result;
+        var result = from courseItem in _dbContext.Set<CourseItem>()
+                     join lectureItem in _dbContext.Set<LectureItem>() on courseItem.Id equals lectureItem.LectureId
+                     join lesson in _dbContext.Set<Lesson>() on lectureItem.Id equals lesson.Id
+                     where lesson.Id == query.LessonId
+                     select new GetStudentLessonResult
+                     {
+                         Id = lesson.Id,
+                         Title = lesson.Title,
+                         Description = lesson.Description,
+                         VideoEmbed = lesson.VideoEmbed
+                     };
+
+
+        return await result.FirstOrDefaultAsync() ?? throw new ApiException(LessonsErrors.NotFound);
     }
 
     public async Task<GetLessonResult> QueryAsync(GetLessonQuery query)
