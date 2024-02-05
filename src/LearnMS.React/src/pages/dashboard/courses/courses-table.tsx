@@ -15,12 +15,12 @@ import { Link } from "react-router-dom";
 
 const columns: ColumnDef<Course>[] = [
   {
-    accessorKey: "coverUrl",
+    accessorKey: "imageUrl",
     header: "Cover",
     cell: ({ row }) => {
       return (
         <img
-          src={row.getValue<string>("coverUrl")}
+          src={row.getValue<string>("imageUrl")}
           className='w-10 h-10 rounded'
         />
       );
@@ -31,8 +31,8 @@ const columns: ColumnDef<Course>[] = [
     header: "ID",
   },
   {
-    accessorKey: "name",
-    header: "Name",
+    accessorKey: "title",
+    header: "Title",
   },
   {
     accessorKey: "description",
@@ -44,8 +44,8 @@ const columns: ColumnDef<Course>[] = [
     header: "Price",
   },
   {
-    accessorKey: "renewPrice",
-    header: "Renew Price",
+    accessorKey: "renewalPrice",
+    header: "Renewal Price",
   },
   {
     id: "actions",
@@ -67,7 +67,7 @@ const columns: ColumnDef<Course>[] = [
               Copy Course ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <Link to={`/courses/${course.id}`}>
+            <Link to={`/dashboard/courses/${course.id}`}>
               <DropdownMenuItem>View Course</DropdownMenuItem>
             </Link>
           </DropdownMenuContent>

@@ -1,10 +1,15 @@
 import { DashboardLayout } from "@/components/dashboard-layout";
 import RequireAuth from "@/components/require-auth";
-import LoginPage from "@/pages/auth/login-page";
-import RegisterPage from "@/pages/auth/register-page";
 import SignInSignUpPage from "@/pages/auth/sign-in-sign-up-page";
-import CreditCodesPage from "@/pages/credit-codes/credit-code-page";
-import FilesPage from "@/pages/files/files-page";
+import AddCoursePage from "@/pages/dashboard/courses/add-course-page";
+import CourseDetailsPage from "@/pages/dashboard/courses/course-details-page";
+import CoursesPage from "@/pages/dashboard/courses/courses-page";
+import CreditCodesPage from "@/pages/dashboard/credit-codes/credit-code-page";
+import ExamPage from "@/pages/dashboard/exams/exam-page";
+import FilesPage from "@/pages/dashboard/files/files-page";
+import LectureDetailsPage from "@/pages/dashboard/lectures/lecture-details-page";
+import LessonDetailsPage from "@/pages/dashboard/lessons/lesson-details-page";
+import QuizPage from "@/pages/dashboard/quizzes/quiz-page";
 import { StudentCoursePage } from "@/pages/student/courses/student-course-page";
 import { StudentCoursesPage } from "@/pages/student/courses/student-courses-page";
 import StudentLecturePage from "@/pages/student/lectures/student-lecture-page";
@@ -12,20 +17,11 @@ import StudentLessonPage from "@/pages/student/lessons/student-lesson-page";
 import StudentPayments from "@/pages/student/payment/student-payments";
 import { Route, Routes } from "react-router-dom";
 import StudentLayout from "./components/student-layout";
-import AddCoursePage from "./pages/courses/add-course-page";
-import CourseDetailsPage from "./pages/courses/course-details-page";
-import CoursesPage from "./pages/courses/courses-page";
-import ExamPage from "./pages/exams/exam-page";
-import LectureDetailsPage from "./pages/lectures/lecture-details-page";
-import LessonPage from "./pages/lessons/lesson-page";
-import QuizPage from "./pages/quizzes/quiz-page";
 
 function App() {
   return (
     <Routes>
       <Route path='/sign-in-sign-up' element={<SignInSignUpPage />} />
-      <Route path='/login' element={<LoginPage />} />
-      <Route path='/register' element={<RegisterPage />} />
 
       <Route
         path='/'
@@ -63,7 +59,7 @@ function App() {
         />
         <Route
           path='courses/:courseId/lectures/:lecturesId/lessons/:lessonId'
-          element={<LessonPage />}
+          element={<LessonDetailsPage />}
         />
         <Route
           path='courses/:courseId/lectures/:lecturesId/quizzes/:quizId'

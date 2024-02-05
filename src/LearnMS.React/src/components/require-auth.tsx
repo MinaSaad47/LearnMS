@@ -15,8 +15,6 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
 }) => {
   const { profile, isError, isLoading, isFetching } = useProfileQuery();
 
-  console.log(profile);
-
   if (isLoading) {
     return <LoadingPage />;
   }
@@ -40,8 +38,6 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
   ) {
     return <Navigate to='/dashboard' />;
   }
-
-  console.log({ profile, role });
 
   return children;
 };

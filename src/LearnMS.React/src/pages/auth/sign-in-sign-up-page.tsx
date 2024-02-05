@@ -7,6 +7,7 @@ import {
 import { useProfileQuery } from "@/api/profile-api";
 import { toast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
+import LoadingPage from "@/pages/shared/loading-page";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -16,7 +17,7 @@ import "./sign-in-sign-up-page.scss";
 const SignInSignUpPage = () => {
   const [isSignUp, setIsSignUp] = useState(false);
 
-  const { profile } = useProfileQuery();
+  const { profile, isFetching: profileFetching } = useProfileQuery();
 
   const registerMutation = useRegisterMutation();
   const registerFrom = useForm<RegisterRequest>({
@@ -66,6 +67,10 @@ const SignInSignUpPage = () => {
       },
     });
   };
+
+  if (loginMutation.isPending || profileFetching) {
+    return <LoadingPage />;
+  }
 
   if (profile?.isAuthenticated) {
     console.log(`navigate to ${profile.role} page`);

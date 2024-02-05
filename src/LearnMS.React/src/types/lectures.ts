@@ -8,16 +8,18 @@ export type Lecture = {
   imageUrl: string;
   title: string;
   price: number;
-  renewalPrice?: number;
+  renewalPrice: number;
   isExpired?: boolean;
+  expirationDays: number;
   expiresAt?: Date;
 };
 
 export type LectureDetails = {
   id: string;
   title: string;
+  expirationDays: number;
   price: number;
-  renewPrice: number;
+  renewalPrice: number;
   isExpired?: boolean;
   expiresAt?: Date;
   imageUrl: string;

@@ -10,14 +10,12 @@ import {
   User,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { ModeToggle } from "./mode-toggle";
 
-const SideBar = () => {
+const DashboardSideBar = () => {
   const logoutMutation = useLogoutMutation();
 
   return (
     <div className='border-r border-rounded min-h-full flex flex-col gap-4 p-2 max-w-[16rem]'>
-      <ModeToggle />
       <div className='space-y-2'>
         <h2 className='text-2xl font-bold'>Dashboard</h2>
         <div className='space-y-1'>
@@ -91,4 +89,4 @@ const SideBar = () => {
   );
 };
 
-export default SideBar;
+export default DashboardSideBar;

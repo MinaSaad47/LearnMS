@@ -14,4 +14,6 @@ export type Course = {
   imageUrl: string;
   price: number;
   renewalPrice: number;
+  renewalDays: number;
+  expirationDays: number;
 };

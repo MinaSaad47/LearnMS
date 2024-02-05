@@ -1,6 +1,58 @@
 import { ApiResponse, api } from "@/api";
 import { Course, CourseDetails } from "@/types/courses";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { z } from "zod";
+
+export const AddCourseRequest = z.object({
+  title: z.string().min(1, { message: "Title is required" }),
+});
+
+export type AddCourseRequest = z.infer<typeof AddCourseRequest>;
+
+type AddCourseResponse = {
+  id: string;
+};
+
+export const useAddCourseMutation = () => {
+  const qc = useQueryClient();
+  return useMutation<ApiResponse<AddCourseResponse>, {}, AddCourseRequest>({
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["courses"] });
+    },
+    mutationFn: (data) =>
+      api.post("/api/courses", data).then((res) => res.data),
+  });
+};
+
+export const UpdateCourseRequest = z.object({
+  title: z.string().min(1, { message: "Title is required" }),
+  description: z.string(),
+  price: z.coerce.number().min(0, { message: "Price must be greater than 0" }),
+  renewalPrice: z.coerce
+    .number()
+    .min(0, { message: "Renewal Price is greater than 0" }),
+  expirationDays: z.coerce
+    .number()
+    .min(0, { message: "Expiration days must be greater than 0" }),
+});
+
+export type UpdateCourseRequest = z.infer<typeof UpdateCourseRequest>;
+
+export const useUpdateCourseMutation = () => {
+  const qc = useQueryClient();
+  return useMutation<
+    ApiResponse<{}>,
+    {},
+    { id: string; data: UpdateCourseRequest }
+  >({
+    onSuccess: (_, { id }) => {
+      qc.invalidateQueries({ queryKey: ["course", { id }] });
+      qc.invalidateQueries({ queryKey: ["courses"] });
+    },
+    mutationFn: ({ id, data }) =>
+      api.patch(`/api/courses/${id}`, data).then((res) => res.data),
+  });
+};
 
 export const useCourseQuery = (id: string) => {
   return useQuery<ApiResponse<CourseDetails>>({
@@ -29,5 +81,19 @@ export const useBuyCourseMutation = () => {
     },
     mutationFn: ({ courseId }) =>
       api.post(`/api/courses/${courseId}/buy`).then((res) => res.data),
+  });
+};
+
+export const usePublishingCourseMutation = () => {
+  const qc = useQueryClient();
+  return useMutation<ApiResponse<{}>, {}, { id: string; publish: boolean }>({
+    onSuccess: (_, { id }) => {
+      qc.invalidateQueries({ queryKey: ["course", { id }] });
+      qc.invalidateQueries({ queryKey: ["courses"] });
+    },
+    mutationFn: ({ id, publish }) =>
+      api
+        .post(`/api/courses/${id}/${publish ? "publish" : "unpublish"}`)
+        .then((res) => res.data),
   });
 };
