@@ -24,9 +24,9 @@ var builder = WebApplication.CreateBuilder(args);
 
     builder.Services.AddHttpContextAccessor();
 
-    builder.Services.AddSpaStaticFiles(cfg =>
+    builder.Services.AddSpaStaticFiles(x =>
     {
-        cfg.RootPath = "wwwroot";
+        x.RootPath = "ClientApp";
     });
 
     builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -130,14 +130,18 @@ app.MapControllers();
 
 app.MapWhen(ctx => !ctx.Request.Path.StartsWithSegments("/api"), x =>
 {
+
+    x.UseSpaStaticFiles();
+    x.UseStaticFiles();
+
     x.UseSpa(spa =>
     {
+        spa.Options.SourcePath = "ClientApp";
         if (app.Environment.IsDevelopment())
         {
-            spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
+            //spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
         }
     });
-    x.UseSpaStaticFiles();
 });
 
 
