@@ -5,6 +5,7 @@ import {
   OnChangeFn,
   PaginationState,
   RowSelectionState,
+  SortingState,
   flexRender,
   getCoreRowModel,
   useReactTable,
@@ -19,13 +20,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { CreditCode } from "@/types/credit-code";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   rowSelection: RowSelectionState;
   setRowSelection: OnChangeFn<RowSelectionState>;
-  setPagination: OnChangeFn<PaginationState>;
+  sorting: SortingState;
+  setSorting: OnChangeFn<SortingState>;
   pagination: {
     pageIndex: number;
     pageSize: number;
@@ -33,6 +36,7 @@ interface DataTableProps<TData, TValue> {
     hasNextPage: boolean;
     hasPreviousPage: boolean;
   };
+  setPagination: OnChangeFn<PaginationState>;
 }
 
 export function CreditCodesDataTable<TData, TValue>({
@@ -41,24 +45,29 @@ export function CreditCodesDataTable<TData, TValue>({
   rowSelection,
   setRowSelection,
   data,
+  setSorting,
+  sorting,
   pagination,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
+    getRowId: (row) => (row as CreditCode).code,
     columns,
     onPaginationChange: setPagination,
     onRowSelectionChange: setRowSelection,
+    onSortingChange: setSorting,
     state: {
       pagination,
       rowSelection,
+      sorting,
     },
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
   });
 
   return (
-    <div className='flex flex-col items-center justify-between p-6'>
-      <Table className='border rounded'>
+    <div className='flex flex-col items-center justify-between gap-2 p-6'>
+      <Table className='border border-blue-500 rounded'>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>

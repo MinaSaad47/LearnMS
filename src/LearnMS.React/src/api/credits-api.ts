@@ -33,17 +33,19 @@ export const useGetCreditCodesQuery = ({
   page,
   pageSize,
   search,
+  sortOrder,
 }: {
   page: number;
   pageSize: number;
+  sortOrder?: "asc" | "desc";
   search: string | undefined;
 }) => {
   const query = useQuery<ApiResponse<PageList<CreditCode>>>({
-    queryKey: ["credit-codes", { page, pageSize, search }],
+    queryKey: ["credit-codes", { page, pageSize, search, sortOrder }],
     queryFn: () =>
       api
         .get(
-          `/api/credit-codes?page=${page}&pageSize=${pageSize}&search=${search}`
+          `/api/credit-codes?page=${page}&pageSize=${pageSize}&search=${search}&sortOrder=${sortOrder}`
         )
         .then((res) => res.data),
   });
@@ -75,5 +77,25 @@ export const useGenerateCreditCodeMutation = () => {
     },
     mutationFn: (data) =>
       api.post(`/api/credit-codes`, data).then((res) => res.data),
+  });
+};
+
+export type SellCreditCodesResponse = {
+  creditCodes: CreditCode[];
+};
+
+export const useSellCreditCodesMutation = () => {
+  const qc = useQueryClient();
+  return useMutation<
+    ApiResponse<SellCreditCodesResponse>,
+    {},
+    { codes: string[] }
+  >({
+    mutationKey: ["sell-credit-code"],
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["credit-codes"] });
+    },
+    mutationFn: (data) =>
+      api.post(`/api/credit-codes/sell`, data).then((res) => res.data),
   });
 };

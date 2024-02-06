@@ -13,7 +13,7 @@ public record GetLessonResult
     public required Guid Id { get; init; }
     public required string Title { get; init; }
     public required string Description { get; init; }
-    public required string VideoEmbed { get; init; }
+    public required string VideoSrc { get; init; }
 }
 
 public record GetLessonResponse
@@ -21,7 +21,7 @@ public record GetLessonResponse
     public required Guid Id { get; init; }
     public required string Title { get; init; }
     public required string Description { get; init; }
-    public required string VideoEmbed { get; init; }
+    public required string VideoSrc { get; init; }
 }
 
 

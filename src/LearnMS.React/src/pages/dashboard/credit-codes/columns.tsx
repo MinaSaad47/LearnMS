@@ -1,6 +1,8 @@
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CreditCode } from "@/types/credit-code";
 import { ColumnDef } from "@tanstack/react-table";
+import { ArrowUpDown } from "lucide-react";
 
 export const columns: ColumnDef<CreditCode>[] = [
   {
@@ -27,7 +29,16 @@ export const columns: ColumnDef<CreditCode>[] = [
   },
   {
     accessorKey: "status",
-    header: "Status",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+          Status
+          <ArrowUpDown className='w-4 h-4 ml-2' />
+        </Button>
+      );
+    },
   },
   {
     accessorKey: "code",

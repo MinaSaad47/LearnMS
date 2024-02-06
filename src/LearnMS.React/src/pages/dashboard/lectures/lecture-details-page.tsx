@@ -1,6 +1,7 @@
 import {
   UpdateLectureRequest,
   useLectureQuery,
+  usePublishingLectureMutation,
   useUpdateLectureMutation,
 } from "@/api/lectures-api";
 import { AddLessonRequest, useAddLessonMutation } from "@/api/lessons-api";
@@ -45,6 +46,8 @@ const LectureDetailsPage = () => {
     isError,
   } = useLectureQuery({ courseId: courseId!, lectureId: lectureId! });
 
+  const publishingLectureMutation = usePublishingLectureMutation();
+
   if (isLoading) {
     return (
       <div className='flex items-center justify-center w-full h-full'>
@@ -52,6 +55,26 @@ const LectureDetailsPage = () => {
       </div>
     );
   }
+
+  const onPublish = () => {
+    publishingLectureMutation.mutate(
+      {
+        lectureId: lectureId!,
+        publish: !lecture!.data.isPublished!,
+        courseId: courseId!,
+      },
+      {
+        onSuccess() {
+          toast({
+            title: "Publishing",
+            description: lecture?.data.isPublished
+              ? "Successfully unpublished the course"
+              : "Successfully published the course",
+          });
+        },
+      }
+    );
+  };
 
   if (isError) {
     return;
@@ -62,9 +85,12 @@ const LectureDetailsPage = () => {
       <div className='flex justify-between w-full'>
         <h1 className='text-3xl'>Lecture Setup</h1>
         <div className='flex gap-2 item-center'>
-          <Button variant='default'>Save</Button>
-          <Button variant='outline'>publish</Button>
-          <Button variant='destructive'>Delete</Button>
+          <Button
+            disabled={publishingLectureMutation.isPending}
+            onClick={onPublish}
+            className='text-blue-500 bg-white border border-blue-500 rounded hover:bg-blue-500 hover:text-white'>
+            {lecture?.data.isPublished ? "UnPublish" : "Publish"}
+          </Button>
         </div>
       </div>
 
@@ -85,7 +111,7 @@ function LectureDetailsForm({
   courseId,
   price,
 }: LectureDetails & { courseId: string }) {
-  const updateCourseMutation = useUpdateLectureMutation();
+  const updateLectureMutation = useUpdateLectureMutation();
 
   const form = useForm<UpdateLectureRequest>({
     resolver: zodResolver(UpdateLectureRequest),
@@ -94,7 +120,7 @@ function LectureDetailsForm({
   });
 
   const onSubmit = (data: UpdateLectureRequest) => {
-    updateCourseMutation.mutate(
+    updateLectureMutation.mutate(
       { lectureId: id, courseId, data },
       {
         onSuccess: (data) => {
@@ -115,7 +141,7 @@ function LectureDetailsForm({
           className='flex flex-col gap-2 p-2'>
           <fieldset
             className='flex items-center gap-2 p-2 text-xl'
-            disabled={updateCourseMutation.isPending}>
+            disabled={updateLectureMutation.isPending}>
             <Settings2 className='text-blue-400 bg-blue-200 rounded-[50%] w-10 h-10 p-1' />
             Lecture Details
             {form.formState.isDirty && (
@@ -266,7 +292,7 @@ function LectureContentForm({
       {!isAddingQuiz && !isAddingLesson && (
         <div className='flex flex-col gap-2'>
           {items.map((item) => (
-            <CourseItem
+            <LectureItem
               key={item.order}
               item={item}
               courseId={courseId}
@@ -279,7 +305,7 @@ function LectureContentForm({
   );
 }
 
-function CourseItem({
+function LectureItem({
   item,
   courseId,
   lectureId,
@@ -300,7 +326,7 @@ function CourseItem({
         <Badge className='h-5'>{item.type}</Badge>
         <Link
           className='me-2'
-          to={`/courses/${courseId}/lectures/${lectureId}/${item.type.toLowerCase()}s/${
+          to={`/dashboard/courses/${courseId}/lectures/${lectureId}/${item.type.toLowerCase()}s/${
             item.id
           }`}>
           <Edit2 className='w-4 h-4' />
@@ -326,7 +352,7 @@ function AddLessonForm({
     defaultValues: {
       title: "",
       description: "",
-      videoEmbed: "",
+      VideoSrc: "",
     },
   });
 
@@ -381,10 +407,10 @@ function AddLessonForm({
           />
           <FormField
             control={form.control}
-            name='videoEmbed'
+            name='VideoSrc'
             render={({ field }) => (
               <FormItem>
-                <FormLabel className='text-blue-500'>Video Embed</FormLabel>
+                <FormLabel className='text-blue-500'>Video Src</FormLabel>
                 <FormControl>
                   <Input type='text' className='text-blue-500' {...field} />
                 </FormControl>

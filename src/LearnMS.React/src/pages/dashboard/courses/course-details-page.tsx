@@ -1,4 +1,8 @@
-import { useCourseQuery, useUpdateCourseMutation } from "@/api/courses-api";
+import {
+  useCourseQuery,
+  usePublishingCourseMutation,
+  useUpdateCourseMutation,
+} from "@/api/courses-api";
 import { AddLectureRequest, useAddLectureMutation } from "@/api/lectures-api";
 import Loading from "@/components/loading/loading";
 import { Badge } from "@/components/ui/badge";
@@ -36,6 +40,8 @@ const CourseDetailsPage = () => {
 
   const { data: course, isLoading, isError } = useCourseQuery(courseId!);
 
+  const publishingCourseMutation = usePublishingCourseMutation();
+
   if (isLoading) {
     return (
       <div className='flex items-center justify-center w-full h-full'>
@@ -48,14 +54,32 @@ const CourseDetailsPage = () => {
     return;
   }
 
+  const onPublishing = () => {
+    publishingCourseMutation.mutate(
+      { id: course!.data.id!, publish: !course!.data.isPublished! },
+      {
+        onSuccess() {
+          toast({
+            title: "Publishing",
+            description: course?.data.isPublished
+              ? "Successfully unpublished the course"
+              : "Successfully published the course",
+          });
+        },
+      }
+    );
+  };
+
   return (
     <div className='w-full h-full p-4'>
       <div className='flex justify-between w-full'>
         <h1 className='text-3xl'>Course Setup</h1>
         <div className='flex gap-2 item-center'>
-          <Button variant='default'>Save</Button>
-          <Button variant='outline'>publish</Button>
-          <Button variant='destructive'>Delete</Button>
+          <Button
+            onClick={onPublishing}
+            className='text-blue-500 bg-white border border-blue-500 rounded hover:bg-blue-500 hover:text-white'>
+            {course?.data.isPublished ? "UnPublish" : "Publish"}
+          </Button>
         </div>
       </div>
 

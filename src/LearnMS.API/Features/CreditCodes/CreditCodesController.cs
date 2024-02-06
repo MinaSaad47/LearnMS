@@ -70,4 +70,22 @@ public sealed class CreditCodesController : ControllerBase
             }
         };
     }
+
+    [HttpPost("sell")]
+    public async Task<ApiWrapper.Success<SellCreditCodesResponse>> Sell([FromBody] SellCreditCodesRequest request)
+    {
+        var result = await _creditCodesService.ExecuteAsync(new SellCreditCodesCommand
+        {
+            Codes = request.Codes
+        });
+
+        return new()
+        {
+            Message = $"Sold {result.CreditCodes.Count} Credit Code Successfully",
+            Data = new()
+            {
+                CreditCodes = result.CreditCodes
+            }
+        };
+    }
 }

@@ -33,10 +33,8 @@ const StudentLecturePage = () => {
         <LectureItem
           key={item.id}
           isLocked={
-            (course?.data.isExpired === true ||
-              course?.data.isExpired === null) &&
-            (lecture?.data.isExpired === true ||
-              lecture?.data.isExpired === null)
+            course?.data.enrollment !== "Active" &&
+            lecture?.data.enrollment !== "Active"
           }
           item={item}
           courseId={courseId!}

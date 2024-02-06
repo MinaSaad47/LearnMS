@@ -1,6 +1,6 @@
 import { useLessonsQuery } from "@/api/lessons-api";
 import Loading from "@/components/loading/loading";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { useParams } from "react-router-dom";
 
 const StudentLessonPage = () => {
@@ -14,20 +14,27 @@ const StudentLessonPage = () => {
     courseId: courseId!,
   });
 
-  useEffect(() => {
-    if (lesson?.data.videoEmbed) {
-      veRef.current.innerHTML = lesson?.data.videoEmbed;
-    }
-  }, [lesson?.data.videoEmbed]);
-
   if (isLoading) {
-    return <Loading />;
+    return (
+      <div className='w-full h-full'>
+        <Loading />
+      </div>
+    );
   }
 
   return (
-    <div className='flex flex-col items-center justify-center w-full h-full gap-2 p-4'>
-      <h2>{lesson?.data.title}</h2>
-      <div ref={veRef}></div>
+    <div className='flex flex-col items-center w-full h-full gap-10 p-4'>
+      <h1 className='text-3xl'>{lesson?.data.title}</h1>
+      <div className='w-[80%] rounded-xl aspect-video overflow-clip'>
+        <iframe
+          src={lesson?.data.videoSrc!}
+          allowFullScreen
+          className='object-cover w-full h-full'
+          allow='encrypted-media'></iframe>
+      </div>
+      <div className='w-[80%] p-4 text-blue-600 bg-blue-100 '>
+        <p>{lesson?.data.description}</p>
+      </div>
     </div>
   );
 };

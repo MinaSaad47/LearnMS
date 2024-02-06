@@ -4,7 +4,7 @@ public sealed record CreateLessonRequest
 {
     public required string Title { get; set; }
     public required string Description { get; set; }
-    public required string VideoEmbed { get; set; }
+    public required string VideoSrc { get; set; }
 }
 
 
@@ -14,7 +14,7 @@ public sealed record CreateLessonCommand
     public required Guid LectureId { get; set; }
     public required string Title { get; set; }
     public required string Description { get; set; }
-    public required string VideoEmbed { get; set; }
+    public required string VideoSrc { get; set; }
 }
 
 

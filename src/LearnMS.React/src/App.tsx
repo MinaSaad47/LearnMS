@@ -58,7 +58,7 @@ function App() {
           element={<LectureDetailsPage />}
         />
         <Route
-          path='courses/:courseId/lectures/:lecturesId/lessons/:lessonId'
+          path='courses/:courseId/lectures/:lectureId/lessons/:lessonId'
           element={<LessonDetailsPage />}
         />
         <Route

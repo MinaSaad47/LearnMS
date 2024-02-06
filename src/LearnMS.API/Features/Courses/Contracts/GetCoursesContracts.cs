@@ -6,7 +6,7 @@ namespace LearnMS.API.Features.Courses.Contracts;
 
 public sealed record GetCoursesQuery
 {
-    public CourseStatus? Status { get; set; }
+    public bool? IsPublished;
 }
 
 public sealed record GetCoursesResult
@@ -27,7 +27,7 @@ public record SingleCourse
     public required string? ImageUrl { get; init; }
     public required decimal? Price { get; init; }
     public required decimal? RenewalPrice { get; init; }
-    public required CourseStatus Status { get; init; }
+    public required bool IsPublished { get; init; }
 }
 
 // for student
@@ -47,8 +47,14 @@ public sealed record GetStudentCoursesResponse
     public required IEnumerable<SingleStudentCourse> Items { get; init; }
 }
 
-public sealed record SingleStudentCourse : SingleCourse
+public sealed record SingleStudentCourse
 {
     public DateTime? ExpiresAt { get; init; }
-    public bool? IsExpired { get; init; }
+    public required Guid Id { get; init; }
+    public required string Title { get; init; }
+    public required string? Description { get; init; }
+    public required string? ImageUrl { get; init; }
+    public required decimal? Price { get; init; }
+    public required decimal? RenewalPrice { get; init; }
+    public required string? Enrollment { get; set; }
 }

@@ -7,22 +7,15 @@ export type Lecture = {
   id: string;
   imageUrl: string;
   title: string;
+  description: string;
   price: number;
   renewalPrice: number;
-  isExpired?: boolean;
+  enrollment: "Expired" | "Active" | "NotEnrolled" | undefined;
+  isPublished?: boolean;
   expirationDays: number;
   expiresAt?: Date;
 };
 
-export type LectureDetails = {
-  id: string;
-  title: string;
-  expirationDays: number;
-  price: number;
-  renewalPrice: number;
-  isExpired?: boolean;
-  expiresAt?: Date;
-  imageUrl: string;
-  description: string;
+export type LectureDetails = Lecture & {
   items: (Quiz | Lesson)[];
 };

@@ -13,7 +13,7 @@ export const useLessonsQuery = ({
   lessonId: string;
 }) => {
   return useQuery<ApiResponse<LessonDetails>>({
-    queryKey: ["lesson", lessonId],
+    queryKey: ["lesson", { id: lessonId }],
     queryFn: () => {
       return api
         .get(
@@ -26,7 +26,7 @@ export const useLessonsQuery = ({
 
 export const UpdateLessonRequest = z.object({
   title: z.string().min(1, { message: "Title is required" }),
-  videoEmbed: z.string().min(1, { message: "Video is required" }),
+  videoSrc: z.string().min(1, { message: "Video is required" }),
   description: z.string(),
 });
 
@@ -62,7 +62,7 @@ export const useUpdateLessonMutation = () => {
 
 export const AddLessonRequest = z.object({
   title: z.string().min(1, { message: "Title is required" }),
-  videoEmbed: z.string().min(1, { message: "Video is required" }),
+  VideoSrc: z.string().min(1, { message: "Video is required" }),
   description: z.string().min(1, { message: "Description is required" }),
 });
 
@@ -81,13 +81,15 @@ export const useAddLessonMutation = () => {
   >({
     onSuccess: (_, { courseId, lectureId }) => {
       qc.invalidateQueries({ queryKey: ["course", { id: courseId }] });
-      qc.invalidateQueries({ queryKey: ["lecture", { id: lectureId }] });
+      qc.invalidateQueries({
+        queryKey: ["lecture", { id: lectureId, courseId }],
+      });
       qc.invalidateQueries({ queryKey: ["courses"] });
     },
     mutationFn: ({ courseId, lectureId, data }) => {
       const formData = new FormData();
       formData.append("title", data.title);
-      formData.append("videoEmbed", data.videoEmbed);
+      formData.append("VideoSrc", data.VideoSrc);
       formData.append("description", data.description);
       return api
         .post(

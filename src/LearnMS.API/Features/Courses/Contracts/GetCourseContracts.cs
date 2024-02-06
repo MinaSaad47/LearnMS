@@ -7,7 +7,7 @@ namespace LearnMS.API.Features.Courses.Contracts;
 public record GetCourseQuery
 {
     public required Guid Id { get; init; }
-    public CourseItemStatus? ItemStatus;
+    public bool? IsCourseItemPublished { get; init; }
 }
 
 public record GetCourseResponse
@@ -18,7 +18,7 @@ public record GetCourseResponse
     public required string? ImageUrl { get; init; }
     public required decimal? Price { get; init; }
     public required decimal? RenewalPrice { get; init; }
-    public required CourseStatus Status { get; init; }
+    public required bool IsPublished { get; init; }
     public required int? ExpirationDays { get; init; }
     public required IEnumerable<SingleCourseItem> Items { get; init; } = [];
 }
@@ -32,7 +32,7 @@ public record GetCourseResult
     public required decimal? Price { get; init; }
     public required decimal? RenewalPrice { get; init; }
     public required int? ExpirationDays { get; init; }
-    public required CourseStatus Status { get; init; }
+    public required bool IsPublished { get; init; }
     public IEnumerable<SingleCourseItem> Items { get; set; } = [];
 }
 
@@ -68,22 +68,29 @@ public sealed record GetStudentCourseResult
     public required string? Description { get; init; }
     public required string? ImageUrl { get; init; }
     public required decimal? Price { get; init; }
+    public required string Enrollment { get; set; }
     public required decimal? RenewalPrice { get; init; }
-    public required CourseStatus Status { get; init; }
     public required DateTime? ExpiresAt { get; init; }
     public required int? ExpirationDays { get; init; }
-    public required bool? IsExpired { get; init; }
     public IEnumerable<SingleStudentCourseItem> Items { get; set; } = [];
 }
 
-public sealed record GetStudentCourseResponse : GetCourseResponse
+public sealed record GetStudentCourseResponse
 {
     public required DateTime? ExpiresAt { get; init; }
-    public required bool? IsExpired { get; init; }
+    public required IEnumerable<SingleStudentCourseItem> Items { get; init; }
+    public required Guid Id { get; init; }
+    public required string Title { get; init; }
+    public required string? Description { get; init; }
+    public required string? ImageUrl { get; init; }
+    public required string Enrollment { get; set; }
+    public required decimal? Price { get; init; }
+    public required decimal? RenewalPrice { get; init; }
+    public required int? ExpirationDays { get; init; }
 }
 
 public sealed record SingleStudentCourseItem : SingleCourseItem
 {
+    public required string Enrollment { get; set; }
     public required DateTime? ExpiresAt { get; init; }
-    public required bool? IsExpired { get; init; }
 }

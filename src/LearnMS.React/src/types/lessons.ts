@@ -9,5 +9,5 @@ export type LessonDetails = {
   id: string;
   title: string;
   description: string;
-  videoEmbed: string;
+  videoSrc: string;
 };

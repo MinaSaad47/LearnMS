@@ -62,6 +62,7 @@ public class CreditCodesService : ICreditCodesService
         }
 
         creditCode.StudentId = request.StudentId;
+        creditCode.Status = CreditCodeStatus.Redeemed;
         student.Credit += creditCode.Value;
 
         await _dbContext.SaveChangesAsync();
@@ -72,16 +73,62 @@ public class CreditCodesService : ICreditCodesService
         };
     }
 
+    public async Task<SellCreditCodesResult> ExecuteAsync(SellCreditCodesCommand request)
+    {
+        List<CreditCode> soldCodes = new();
+
+        foreach (var toBeSold in request.Codes)
+        {
+            try
+            {
+                var code = await _dbContext.CreditCodes.Where(x => x.Code == toBeSold && x.Status == CreditCodeStatus.Fresh).FirstOrDefaultAsync();
+                if (code is null) continue;
+                code.Status = CreditCodeStatus.Sold;
+                _dbContext.Update(code);
+                await _dbContext.SaveChangesAsync();
+                soldCodes.Add(code);
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        return new()
+        {
+            CreditCodes = soldCodes
+        };
+    }
+
     public async Task<PageList<SingleCreditCodeItem>> QueryAsync(GetCreditCodesQuery query)
     {
+
+        CreditCodeStatus? status = null;
+
+
+        var search = query.Search?.ToLower() ?? "";
+
+        if (search == "redeemed")
+        {
+            status = CreditCodeStatus.Redeemed;
+        }
+        else if (search == "sold")
+        {
+            status = CreditCodeStatus.Sold;
+        }
+        else if (search == "fresh")
+        {
+            status = CreditCodeStatus.Fresh;
+        }
+
 
         var creditCodesQuery = from code in _dbContext.CreditCodes
                                join redeemerAccount in _dbContext.Accounts on code.StudentId equals redeemerAccount.Id into redeemers
                                from redeemer in redeemers.DefaultIfEmpty()
                                join generatorAccount in _dbContext.Accounts on code.AssistantId equals generatorAccount.Id into generators
                                from generator in generators.DefaultIfEmpty()
-                               orderby query.SortOrder != "desc" ? code.Status : 0
+                               orderby query.SortOrder == "asc" ? code.Status : 0
                                orderby query.SortOrder != "desc" ? 0 : code.Status descending
+                               where status != null ? code.Status == status : true
                                select new SingleCreditCodeItem
                                {
                                    Code = code.Code,
@@ -101,7 +148,7 @@ public class CreditCodesService : ICreditCodesService
                                into result
                                select result;
 
-        if (!string.IsNullOrEmpty(query.Search))
+        if (!string.IsNullOrEmpty(query.Search) && status is null)
         {
             creditCodesQuery = creditCodesQuery.Where(x => x.Code.Contains(query.Search));
         }

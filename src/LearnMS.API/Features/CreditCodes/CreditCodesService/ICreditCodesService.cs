@@ -9,4 +9,6 @@ public interface ICreditCodesService
 
     Task<PageList<SingleCreditCodeItem>> QueryAsync(GetCreditCodesQuery request);
 
+    Task<SellCreditCodesResult> ExecuteAsync(SellCreditCodesCommand request);
+
 }

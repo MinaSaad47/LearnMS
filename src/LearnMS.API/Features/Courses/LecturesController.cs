@@ -37,11 +37,13 @@ public sealed class LecturesController : ControllerBase
     }
 
     [HttpGet("{lectureId:guid}")]
-    public async Task<ApiWrapper.Success<GetLectureResponse>> Get(Guid lectureId, Guid courseId)
+    [ProducesResponseType(typeof(ApiWrapper.Success<GetLectureResponse>), 200)]
+    [ProducesResponseType(typeof(ApiWrapper.Success<GetStudentLectureResponse>), 200)]
+    public async Task<ApiWrapper.Success<object>> Get(Guid lectureId, Guid courseId)
     {
         var currentUser = await _currentUserService.GetUserAsync();
 
-        GetLectureResponse response;
+        object response;
 
         if (currentUser is null)
         {
@@ -49,16 +51,17 @@ public sealed class LecturesController : ControllerBase
             {
                 LectureId = lectureId,
                 CourseId = courseId,
-                CourseStatus = Entities.CourseStatus.Published,
-                LectureStatus = Entities.CourseItemStatus.Published
+                IsCoursePublished = true,
+                IsPublished = true,
             });
 
             response = new GetLectureResponse
             {
                 Description = result.Description,
+                ExpirationDays = result.ExpirationDays,
                 Id = result.Id,
                 Title = result.Title,
-                Status = result.Status,
+                IsPublished = result.IsPublished,
                 ImageUrl = result.ImageUrl,
                 Items = result.Items,
                 Price = result.Price,
@@ -75,8 +78,7 @@ public sealed class LecturesController : ControllerBase
                 Description = result.Description,
                 Id = result.Id,
                 Title = result.Title,
-                IsExpired = result.IsExpired,
-                Status = result.Status,
+                Enrollment = result.Enrollment,
                 ImageUrl = result.ImageUrl,
                 Items = result.Items,
                 Price = result.Price,
@@ -95,9 +97,10 @@ public sealed class LecturesController : ControllerBase
             response = new GetLectureResponse
             {
                 Description = result.Description,
+                ExpirationDays = result.ExpirationDays,
                 Id = result.Id,
                 Title = result.Title,
-                Status = result.Status,
+                IsPublished = result.IsPublished,
                 ImageUrl = result.ImageUrl,
                 Items = result.Items,
                 Price = result.Price,

@@ -1,11 +1,5 @@
 namespace LearnMS.API.Entities;
 
-public enum CourseItemStatus
-{
-    Published,
-    Draft,
-    Hidden,
-}
 
 public sealed class CourseItem
 {
@@ -14,5 +8,5 @@ public sealed class CourseItem
     public int Order { get; set; }
 
     public Guid CourseId { get; set; }
-    public CourseItemStatus Status { get; set; } = CourseItemStatus.Draft;
+    public bool IsPublished { get; set; } = false;
 }

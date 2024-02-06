@@ -35,7 +35,7 @@ public sealed class LessonsController : ControllerBase
                 Description = result.Description,
                 Id = result.Id,
                 Title = result.Title,
-                VideoEmbed = result.VideoEmbed
+                VideoSrc = result.VideoSrc
             };
         }
         else
@@ -48,7 +48,7 @@ public sealed class LessonsController : ControllerBase
                 Description = result.Description,
                 Id = result.Id,
                 Title = result.Title,
-                VideoEmbed = result.VideoEmbed
+                VideoSrc = result.VideoSrc
             };
         }
 
@@ -64,7 +64,7 @@ public sealed class LessonsController : ControllerBase
     {
         await _coursesService.ExecuteAsync(new CreateLessonCommand
         {
-            VideoEmbed = request.VideoEmbed,
+            VideoSrc = request.VideoSrc,
             Title = request.Title,
             CourseId = courseId,
             Description = request.Description,

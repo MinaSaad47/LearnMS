@@ -38,29 +38,35 @@ public sealed class CoursesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ApiWrapper.Success<GetCoursesResponse>> Get()
+    [ProducesResponseType(typeof(ApiWrapper.Success<GetCoursesResponse>), 200)]
+    [ProducesResponseType(typeof(ApiWrapper.Success<GetStudentCoursesResponse>), 200)]
+    public async Task<ApiWrapper.Success<object>> Get()
     {
         var currentUser = await _currentUserService.GetUserAsync();
 
-        GetCoursesResponse response;
+        object response;
+
+        int count = 0;
 
         if (currentUser is null)
         {
-            var result = await _coursesService.QueryAsync(new GetCoursesQuery { Status = CourseStatus.Published });
+            var result = await _coursesService.QueryAsync(new GetCoursesQuery { IsPublished = true });
             response = new GetCoursesResponse
             {
                 Items = result.Items
             };
+            count = result.Items.Count();
         }
         else if (currentUser.Role == UserRole.Student)
         {
 
             var result = await _coursesService.QueryAsync(new GetStudentCoursesQuery { StudentId = currentUser.Id });
 
-            response = new GetCoursesResponse
+            response = new GetStudentCoursesResponse
             {
                 Items = result.Items
             };
+            count = result.Items.Count();
         }
         else
         {
@@ -70,26 +76,29 @@ public sealed class CoursesController : ControllerBase
             {
                 Items = result.Items
             };
+            count = result.Items.Count();
         }
 
 
         return new()
         {
             Data = response,
-            Message = response.Items.Count() == 0 ? "No courses found" : "Courses retrieved successfully"
+            Message = count == 0 ? "No courses found" : "Courses retrieved successfully"
         };
     }
 
     [HttpGet("{courseId:guid}")]
-    public async Task<ApiWrapper.Success<GetCourseResponse>> Get(Guid courseId)
+    [ProducesResponseType(typeof(ApiWrapper.Success<GetCourseResponse>), 200)]
+    [ProducesResponseType(typeof(ApiWrapper.Success<GetStudentCourseResponse>), 200)]
+    public async Task<ApiWrapper.Success<object>> Get(Guid courseId)
     {
         var currentUser = await _currentUserService.GetUserAsync();
 
-        GetCourseResponse response;
+        object response;
 
         if (currentUser is null)
         {
-            var result = await _coursesService.QueryAsync(new GetCourseQuery { Id = courseId, ItemStatus = CourseItemStatus.Published });
+            var result = await _coursesService.QueryAsync(new GetCourseQuery { Id = courseId, IsCourseItemPublished = true });
             response = new GetCourseResponse
             {
                 Id = result.Id,
@@ -100,14 +109,14 @@ public sealed class CoursesController : ControllerBase
                 Price = result.Price,
                 RenewalPrice = result.RenewalPrice,
                 Title = result.Title,
-                Status = result.Status,
+                IsPublished = result.IsPublished,
                 Items = result.Items
             };
         }
         else if (currentUser.Role == UserRole.Student)
         {
 
-            var result = await _coursesService.QueryAsync(new GetStudentCourseQuery { Id = courseId, ItemStatus = CourseItemStatus.Published, StudentId = currentUser.Id });
+            var result = await _coursesService.QueryAsync(new GetStudentCourseQuery { Id = courseId, IsCourseItemPublished = true, StudentId = currentUser.Id });
 
             response = new GetStudentCourseResponse
             {
@@ -118,10 +127,9 @@ public sealed class CoursesController : ControllerBase
                 Price = result.Price,
                 RenewalPrice = result.RenewalPrice,
                 Title = result.Title,
-                Status = result.Status,
                 Items = result.Items,
                 ExpiresAt = result.ExpiresAt,
-                IsExpired = result.IsExpired,
+                Enrollment = result.Enrollment
             };
         }
         else
@@ -136,7 +144,7 @@ public sealed class CoursesController : ControllerBase
                 Price = result.Price,
                 RenewalPrice = result.RenewalPrice,
                 Title = result.Title,
-                Status = result.Status,
+                IsPublished = result.IsPublished,
                 ExpirationDays = result.ExpirationDays,
                 Items = result.Items
             };
@@ -173,7 +181,7 @@ public sealed class CoursesController : ControllerBase
     [HttpPatch("{courseId:guid}")]
     public async Task<ApiWrapper.Success<object?>> Patch([FromBody] UpdateCourseRequest request, Guid courseId)
     {
-        await _coursesService.ExecuteAsync(new UpdateCourseCommand { Id = courseId, Title = request.Title, Description = request.Description, Price = request.Price, RenewalPrice = request.RenewalPrice });
+        await _coursesService.ExecuteAsync(new UpdateCourseCommand { Id = courseId, Title = request.Title, Description = request.Description, Price = request.Price, RenewalPrice = request.RenewalPrice, ExpirationDays = request.ExpirationDays });
 
         Response.StatusCode = StatusCodes.Status200OK;
 

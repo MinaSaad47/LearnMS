@@ -9,11 +9,11 @@ export type Course = {
   id: string;
   title: string;
   description: string;
-  isExpired: boolean;
+  enrollment: "Expired" | "Active" | "NotEnrolled" | undefined;
   expiresAt?: Date;
   imageUrl: string;
+  isPublished?: boolean;
   price: number;
   renewalPrice: number;
-  renewalDays: number;
   expirationDays: number;
 };

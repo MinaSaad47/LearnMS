@@ -89,6 +89,12 @@ public sealed class CoursesService : ICoursesService
         }
 
 
+        if (command.ExpirationDays is not null)
+        {
+            lecture.ExpirationDays = command.ExpirationDays;
+        }
+
+
         _dbContext.Update(lecture);
 
         await _dbContext.SaveChangesAsync();
@@ -123,7 +129,7 @@ public sealed class CoursesService : ICoursesService
             throw new ApiException(LecturesErrors.NotPublishable);
         }
 
-        item.Status = CourseItemStatus.Published;
+        item.IsPublished = true;
 
         _dbContext.Update(course);
 
@@ -155,7 +161,7 @@ public sealed class CoursesService : ICoursesService
             throw new ApiException(LecturesErrors.NotFound);
         }
 
-        item.Status = CourseItemStatus.Hidden;
+        item.IsPublished = false;
 
         _dbContext.Update(course);
 
@@ -189,7 +195,7 @@ public sealed class CoursesService : ICoursesService
         {
             Title = command.Title,
             Description = command.Description,
-            VideoEmbed = command.VideoEmbed
+            VideoSrc = command.VideoSrc
 
         };
 
@@ -245,9 +251,9 @@ public sealed class CoursesService : ICoursesService
             lesson.Description = command.Description;
         }
 
-        if (!string.IsNullOrWhiteSpace(command.VideoEmbed))
+        if (!string.IsNullOrWhiteSpace(command.VideoSrc))
         {
-            lesson.VideoEmbed = command.VideoEmbed;
+            lesson.VideoSrc = command.VideoSrc;
         }
 
         _dbContext.Lessons.Update(lesson);
@@ -327,7 +333,7 @@ public sealed class CoursesService : ICoursesService
             throw new ApiException(CoursesErrors.NotPublishable);
         }
 
-        course.Status = CourseStatus.Published;
+        course.IsPublished = true;
 
         _dbContext.Courses.Update(course);
 
@@ -343,7 +349,7 @@ public sealed class CoursesService : ICoursesService
             throw new ApiException(CoursesErrors.NotFound);
         }
 
-        course.Status = CourseStatus.Hidden;
+        course.IsPublished = false;
 
         _dbContext.Courses.Update(course);
 
@@ -366,7 +372,7 @@ public sealed class CoursesService : ICoursesService
             throw new ApiException(CoursesErrors.AlreadyPurchased);
         }
 
-        var course = await _dbContext.Courses.FirstOrDefaultAsync(x => x.Id == command.CourseId && x.Status == CourseStatus.Published) ?? throw new ApiException(CoursesErrors.NotFound);
+        var course = await _dbContext.Courses.FirstOrDefaultAsync(x => x.Id == command.CourseId && x.IsPublished) ?? throw new ApiException(CoursesErrors.NotFound);
 
 
         if (studentCourse is not null)
@@ -385,17 +391,15 @@ public sealed class CoursesService : ICoursesService
 
         if (student.Credit < course.Price) throw new ApiException(ProfileErrors.InsufficientCredits);
 
-        studentCourse = new StudentCourse
+        student.Credit -= course.Price ?? 0;
+
+        _dbContext.Update(student);
+        _dbContext.Add(new StudentCourse
         {
             CourseId = command.CourseId,
             StudentId = command.StudentId,
             ExpirationDate = DateTime.UtcNow.AddDays(course.ExpirationDays!.Value)
-        };
-
-        student.Credit -= course.Price ?? 0;
-
-        _dbContext.Update(student);
-        _dbContext.Add(studentCourse);
+        });
 
         await _dbContext.SaveChangesAsync();
     }
@@ -417,7 +421,7 @@ public sealed class CoursesService : ICoursesService
         }
 
         var courseLecture = await _dbContext.Set<CourseItem>()
-            .FirstOrDefaultAsync(x => x.CourseId == command.CourseId && x.Status == CourseItemStatus.Published && x.Id == command.LectureId) ?? throw new ApiException(LecturesErrors.NotFound);
+            .FirstOrDefaultAsync(x => x.CourseId == command.CourseId && x.IsPublished && x.Id == command.LectureId) ?? throw new ApiException(LecturesErrors.NotFound);
 
         var lecture = await _dbContext.Set<Lecture>().FirstOrDefaultAsync(x => x.Id == command.LectureId) ?? throw new ApiException(LecturesErrors.NotFound);
 
@@ -455,20 +459,19 @@ public sealed class CoursesService : ICoursesService
     public async Task<GetStudentCoursesResult> QueryAsync(GetStudentCoursesQuery query)
     {
         var result = from courses in _dbContext.Courses
-                     join courseItem in _dbContext.Set<CourseItem>() on courses.Id equals courseItem.CourseId
-                     join studentCourse in _dbContext.Set<StudentCourse>() on new { CourseId = courses.Id, StudentId = query.StudentId } equals new { CourseId = studentCourse.CourseId, StudentId = studentCourse.StudentId } into groupedCourseItems
-                     from gci in groupedCourseItems.DefaultIfEmpty()
+                     join studentCourse in _dbContext.Set<StudentCourse>() on new { CourseId = courses.Id, query.StudentId } equals new { studentCourse.CourseId, studentCourse.StudentId } into groupedStudentCourse
+                     from gsc in groupedStudentCourse.DefaultIfEmpty()
+                     where courses.IsPublished
                      select new SingleStudentCourse
                      {
                          Id = courses.Id,
                          Title = courses.Title,
                          Description = courses.Description,
-                         ExpiresAt = gci != null ? gci.ExpirationDate : null,
-                         IsExpired = gci != null ? gci.ExpirationDate < DateTime.UtcNow : null,
+                         ExpiresAt = gsc != null ? gsc.ExpirationDate : null,
+                         Enrollment = gsc != null ? (gsc.ExpirationDate > DateTime.UtcNow ? "Active" : "Expired") : "NotEnrolled",
                          RenewalPrice = courses.RenewalPrice,
                          Price = courses.Price,
                          ImageUrl = courses.ImageUrl,
-                         Status = CourseStatus.Published,
                      };
 
         return new()
@@ -486,14 +489,14 @@ public sealed class CoursesService : ICoursesService
                           Title = c.Title,
                           Description = c.Description,
                           ImageUrl = c.ImageUrl,
-                          Status = c.Status,
+                          IsPublished = c.IsPublished,
                           Price = c.Price,
                           RenewalPrice = c.RenewalPrice
                       };
 
-        if (query.Status is not null)
+        if (query.IsPublished is not null)
         {
-            courses = courses.Where(x => x.Status == query.Status);
+            courses = courses.Where(x => x.IsPublished);
         }
 
         return new()
@@ -511,7 +514,7 @@ public sealed class CoursesService : ICoursesService
                       {
                           ExpirationDays = c.ExpirationDays,
                           Id = c.Id,
-                          Status = c.Status,
+                          IsPublished = c.IsPublished,
                           Title = c.Title,
                           Description = c.Description,
                           ImageUrl = c.ImageUrl,
@@ -530,7 +533,7 @@ public sealed class CoursesService : ICoursesService
 
         var lectures = await (from ci in _dbContext.Set<CourseItem>()
                               join l in _dbContext.Set<Lecture>() on ci.Id equals l.Id
-                              where (query.ItemStatus == null || ci.Status == query.ItemStatus) && ci.CourseId == query.Id
+                              where (query.IsCourseItemPublished == null || ci.IsPublished == query.IsCourseItemPublished) && ci.CourseId == query.Id
                               select new SingleCourseItem
                               {
                                   Id = l.Id,
@@ -541,7 +544,7 @@ public sealed class CoursesService : ICoursesService
                               }).ToArrayAsync();
         var exams = await (from ci in _dbContext.Set<CourseItem>()
                            join e in _dbContext.Set<Exam>() on ci.Id equals e.Id
-                           where (query.ItemStatus == null || ci.Status == query.ItemStatus) && ci.CourseId == query.Id
+                           where (query.IsCourseItemPublished == null || ci.IsPublished == query.IsCourseItemPublished) && ci.CourseId == query.Id
                            select new SingleCourseItem
                            {
                                Id = e.Id,
@@ -562,13 +565,13 @@ public sealed class CoursesService : ICoursesService
         var courses = from c in _dbContext.Courses
                       join sc in _dbContext.Set<StudentCourse>() on new { CourseId = c.Id, StudentId = query.StudentId } equals new { CourseId = sc.CourseId, StudentId = sc.StudentId } into groupedCourseItems
                       from gci in groupedCourseItems.DefaultIfEmpty()
+                      where c.IsPublished && c.Id == query.Id
                       select new GetStudentCourseResult
                       {
                           ExpirationDays = c.ExpirationDays,
                           Id = c.Id,
-                          Status = c.Status,
-                          IsExpired = gci != null ? gci.ExpirationDate < DateTime.UtcNow : null,
                           ExpiresAt = gci != null ? gci.ExpirationDate : null,
+                          Enrollment = gci != null ? (gci.ExpirationDate > DateTime.UtcNow ? "Active" : "Expired") : "NotEnrolled",
                           Title = c.Title,
                           Description = c.Description,
                           ImageUrl = c.ImageUrl,
@@ -587,7 +590,7 @@ public sealed class CoursesService : ICoursesService
                               join l in _dbContext.Set<Lecture>() on ci.Id equals l.Id
                               join sl in _dbContext.Set<StudentLecture>() on l.Id equals sl.LectureId into groupedStudentLectures
                               from gsl in groupedStudentLectures.DefaultIfEmpty()
-                              where ci.CourseId == query.Id && (query.ItemStatus == null || ci.Status == query.ItemStatus)
+                              where ci.CourseId == query.Id && (query.IsCourseItemPublished == null || ci.IsPublished == query.IsCourseItemPublished)
                               select new SingleStudentCourseItem
                               {
                                   Id = l.Id,
@@ -595,7 +598,7 @@ public sealed class CoursesService : ICoursesService
                                   RenewalPrice = l.RenewalPrice,
                                   ImageUrl = l.ImageUrl,
                                   ExpiresAt = gsl != null ? gsl.ExpirationDate : null,
-                                  IsExpired = gsl != null ? gsl.ExpirationDate < DateTime.UtcNow : null,
+                                  Enrollment = gsl != null ? (gsl.ExpirationDate > DateTime.UtcNow ? "Active" : "Expired") : "NotEnrolled",
                                   Order = ci.Order,
                                   Title = l.Title,
                                   Type = "Lecture",
@@ -605,13 +608,13 @@ public sealed class CoursesService : ICoursesService
                            join e in _dbContext.Set<Exam>() on ci.Id equals e.Id
                            join se in _dbContext.Set<StudentExam>() on e.Id equals se.ExamId into groupedStudentExams
                            from gse in groupedStudentExams.DefaultIfEmpty()
-                           where ci.CourseId == query.Id && (query.ItemStatus == null || ci.Status == query.ItemStatus)
+                           where ci.CourseId == query.Id && (query.IsCourseItemPublished == null || ci.IsPublished == query.IsCourseItemPublished)
                            select new SingleStudentCourseItem
                            {
                                Id = e.Id,
                                Order = ci.Order,
                                ExpiresAt = gse != null ? gse.ExpirationDate : null,
-                               IsExpired = gse != null ? gse.ExpirationDate < DateTime.UtcNow : null,
+                               Enrollment = gse != null ? (gse.ExpirationDate > DateTime.UtcNow ? "Active" : "Expired") : "NotEnrolled",
                                Title = e.Title,
                                Type = "Exam",
                            })
@@ -630,17 +633,18 @@ public sealed class CoursesService : ICoursesService
                        join courseItem in _dbContext.Set<CourseItem>() on course.Id equals courseItem.CourseId
                        join lecture in _dbContext.Set<Lecture>() on courseItem.Id equals lecture.Id
                        where
-                       (query.CourseStatus != null ? course.Status == query.CourseStatus : true) &&
-                       (query.LectureStatus != null ? courseItem.Status == query.LectureStatus : true) &&
+                       (query.IsCoursePublished != null ? course.IsPublished == query.IsCoursePublished : true) &&
+                       (query.IsPublished != null ? courseItem.IsPublished == query.IsPublished : true) &&
                        course.Id == query.CourseId &&
                        lecture.Id == query.LectureId
                        select new GetLectureResult
                        {
                            Id = lecture.Id,
+                           ExpirationDays = lecture.ExpirationDays,
                            Title = lecture.Title,
                            Description = lecture.Description,
                            ImageUrl = lecture.ImageUrl,
-                           Status = courseItem.Status,
+                           IsPublished = courseItem.IsPublished,
                            Price = lecture.Price,
                            RenewalPrice = lecture.RenewalPrice,
                        };
@@ -677,8 +681,8 @@ public sealed class CoursesService : ICoursesService
                        join studentLecture in _dbContext.Set<StudentLecture>() on lecture.Id equals studentLecture.LectureId into groupedStudentLectures
                        from gsl in groupedStudentLectures.DefaultIfEmpty()
                        where
-                       course.Status == CourseStatus.Published &&
-                       courseItem.Status == CourseItemStatus.Published &&
+                       course.IsPublished &&
+                       courseItem.IsPublished &&
                        course.Id == query.CourseId &&
                        lecture.Id == query.LectureId
                        select new GetStudentLectureResult
@@ -687,11 +691,10 @@ public sealed class CoursesService : ICoursesService
                            Title = lecture.Title,
                            Description = lecture.Description,
                            ExpiresAt = gsl != null ? gsl.ExpirationDate : null,
-                           IsExpired = gsl != null ? gsl.ExpirationDate < DateTime.UtcNow : null,
+                           Enrollment = gsl != null ? (gsl.ExpirationDate > DateTime.UtcNow ? "Active" : "Expired") : "NotEnrolled",
                            ImageUrl = lecture.ImageUrl,
                            Price = lecture.Price,
                            RenewalPrice = lecture.RenewalPrice,
-                           Status = courseItem.Status
                        };
 
 
@@ -757,7 +760,7 @@ public sealed class CoursesService : ICoursesService
                          Id = lesson.Id,
                          Title = lesson.Title,
                          Description = lesson.Description,
-                         VideoEmbed = lesson.VideoEmbed
+                         VideoSrc = lesson.VideoSrc
                      };
 
 
@@ -771,15 +774,15 @@ public sealed class CoursesService : ICoursesService
                       join lectureItem in _dbContext.Set<LectureItem>() on courseItem.Id equals lectureItem.LectureId
                       join lesson in _dbContext.Set<Lesson>() on lectureItem.Id equals lesson.Id
                       where
-                      lesson.Id == query.LessonId &&
                       course.Id == query.CourseId &&
-                      lectureItem.Id == query.LectureId
+                      courseItem.Id == query.LectureId &&
+                      lectureItem.Id == query.LessonId
                       select new GetLessonResult
                       {
                           Id = lesson.Id,
                           Title = lesson.Title,
                           Description = lesson.Description,
-                          VideoEmbed = lesson.VideoEmbed
+                          VideoSrc = lesson.VideoSrc
                       };
 
 

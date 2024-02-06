@@ -1,12 +1,5 @@
 namespace LearnMS.API.Entities;
 
-public enum CourseStatus
-{
-    Draft,
-    Published,
-    Hidden
-}
-
 public sealed class Course
 {
     public Guid Id { get; init; }
@@ -19,7 +12,7 @@ public sealed class Course
     public List<CourseItem> Items = new();
     public int? ExpirationDays { get; set; }
 
-    public CourseStatus Status { get; set; } = CourseStatus.Draft;
+    public bool IsPublished { get; set; } = false;
 
     public void AddLecture(Lecture lecture, out Lecture addedLecture)
     {
@@ -41,9 +34,10 @@ public sealed class Course
 
             if (string.IsNullOrWhiteSpace(Title)) return false;
             if (string.IsNullOrWhiteSpace(Description)) return false;
-            if (string.IsNullOrWhiteSpace(ImageUrl)) return false;
+            // if (string.IsNullOrWhiteSpace(ImageUrl)) return false;
             if (Price == null) return false;
             if (RenewalPrice == null) return false;
+            if (ExpirationDays == null) return false;
             return true;
         }
     }

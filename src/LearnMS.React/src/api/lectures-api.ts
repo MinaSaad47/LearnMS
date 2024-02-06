@@ -11,7 +11,7 @@ export const useLectureQuery = ({
   courseId: string;
 }) => {
   return useQuery<ApiResponse<LectureDetails>>({
-    queryKey: ["lecture", lectureId],
+    queryKey: ["lecture", { id: lectureId, courseId }],
     queryFn: () =>
       api
         .get(`/api/courses/${courseId}/lectures/${lectureId}`)
@@ -37,11 +37,8 @@ export const useAddLectureMutation = () => {
         .post(`/api/courses/${courseId}/lectures`, data)
         .then((res) => res.data),
     onSuccess: (_, { courseId }) => {
-      console.log(courseId);
-      onSuccess: () => {
-        qc.invalidateQueries({ queryKey: ["course", { id: courseId }] });
-        qc.invalidateQueries({ queryKey: ["courses"] });
-      };
+      qc.invalidateQueries({ queryKey: ["course", { id: courseId }] });
+      qc.invalidateQueries({ queryKey: ["courses"] });
     },
   });
 };
@@ -75,5 +72,31 @@ export const useUpdateLectureMutation = () => {
       api
         .patch(`/api/courses/${courseId}/lectures/${lectureId}`, data)
         .then((res) => res.data),
+  });
+};
+
+export const usePublishingLectureMutation = () => {
+  const qc = useQueryClient();
+
+  return useMutation<
+    ApiResponse<{}>,
+    {},
+    { courseId: string; lectureId: string; publish: boolean }
+  >({
+    mutationFn: ({ courseId, lectureId, publish }) =>
+      api
+        .post(
+          `/api/courses/${courseId}/lectures/${lectureId}/${
+            publish ? "publish" : "unpublish"
+          }`
+        )
+        .then((res) => res.data),
+    onSuccess: (_, { lectureId, courseId }) => {
+      qc.invalidateQueries({
+        queryKey: ["lecture", { id: lectureId, courseId }],
+      });
+      qc.invalidateQueries({ queryKey: ["course", { id: courseId }] });
+      qc.invalidateQueries({ queryKey: ["courses"] });
+    },
   });
 };
