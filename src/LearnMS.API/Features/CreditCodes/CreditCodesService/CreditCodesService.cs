@@ -72,9 +72,42 @@ public class CreditCodesService : ICreditCodesService
         };
     }
 
-    public async Task<GetCreditCodesResult> QueryAsync(GetCreditCodesQuery request)
+    public async Task<PageList<SingleCreditCodeItem>> QueryAsync(GetCreditCodesQuery query)
     {
-        var items = await _dbContext.CreditCodes.ToListAsync();
-        return new(items);
+
+        var creditCodesQuery = from code in _dbContext.CreditCodes
+                               join redeemerAccount in _dbContext.Accounts on code.StudentId equals redeemerAccount.Id into redeemers
+                               from redeemer in redeemers.DefaultIfEmpty()
+                               join generatorAccount in _dbContext.Accounts on code.AssistantId equals generatorAccount.Id into generators
+                               from generator in generators.DefaultIfEmpty()
+                               orderby query.SortOrder != "desc" ? code.Status : 0
+                               orderby query.SortOrder != "desc" ? 0 : code.Status descending
+                               select new SingleCreditCodeItem
+                               {
+                                   Code = code.Code,
+                                   Value = code.Value,
+                                   Status = code.Status.ToString(),
+                                   Redeemer = redeemer != null ? new CreditCodeRedeemer
+                                   {
+                                       Id = redeemer.Id,
+                                       Email = redeemer.Email
+                                   } : null,
+                                   Generator = generator != null ? new CreditCodeGenerator
+                                   {
+                                       Id = generator.Id,
+                                       Email = generator.Email
+                                   } : null
+                               }
+                               into result
+                               select result;
+
+        if (!string.IsNullOrEmpty(query.Search))
+        {
+            creditCodesQuery = creditCodesQuery.Where(x => x.Code.Contains(query.Search));
+        }
+
+
+        return await PageList<SingleCreditCodeItem>.CreateAsync(creditCodesQuery, query.Page ?? 1, query.PageSize ?? 10);
     }
+
 }

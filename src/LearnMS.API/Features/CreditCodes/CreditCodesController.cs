@@ -1,4 +1,5 @@
 using LearnMS.API.Common;
+using LearnMS.API.Entities;
 using LearnMS.API.Features.CreditCodes.Contracts;
 using LearnMS.API.Security;
 using Microsoft.AspNetCore.Mvc;
@@ -19,11 +20,18 @@ public sealed class CreditCodesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ApiWrapper.Success<GetCreditCodesResult>> Get()
+    public async Task<ApiWrapper.Success<PageList<SingleCreditCodeItem>>> Get(int? page, int? pageSize, string? search, string? sortOrder)
     {
+        var result = await _creditCodesService.QueryAsync(new GetCreditCodesQuery
+        {
+            Page = page,
+            PageSize = pageSize,
+            Search = search,
+            SortOrder = sortOrder
+        });
         return new()
         {
-            Data = await _creditCodesService.QueryAsync(new GetCreditCodesQuery()),
+            Data = result,
             Message = "successfully retrieved credit codes"
         };
     }

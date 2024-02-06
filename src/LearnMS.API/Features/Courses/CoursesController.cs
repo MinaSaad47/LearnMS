@@ -93,6 +93,7 @@ public sealed class CoursesController : ControllerBase
             response = new GetCourseResponse
             {
                 Id = result.Id,
+                ExpirationDays = result.ExpirationDays,
                 Description = result.Description,
 
                 ImageUrl = result.ImageUrl,
@@ -111,6 +112,7 @@ public sealed class CoursesController : ControllerBase
             response = new GetStudentCourseResponse
             {
                 Id = result.Id,
+                ExpirationDays = result.ExpirationDays,
                 Description = result.Description,
                 ImageUrl = result.ImageUrl,
                 Price = result.Price,
@@ -135,6 +137,7 @@ public sealed class CoursesController : ControllerBase
                 RenewalPrice = result.RenewalPrice,
                 Title = result.Title,
                 Status = result.Status,
+                ExpirationDays = result.ExpirationDays,
                 Items = result.Items
             };
 
@@ -150,22 +153,27 @@ public sealed class CoursesController : ControllerBase
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ApiAuthorize(Permissions = [Permission.ManageCourses])]
-    public async Task<ApiWrapper.Success<object?>> Post([FromBody] CreateCourseCommand request)
+    public async Task<ApiWrapper.Success<CreateCourseResponse>> Post([FromBody] CreateCourseCommand request)
     {
-        await _coursesService.ExecuteAsync(request);
+        var result = await _coursesService.ExecuteAsync(request);
 
         Response.StatusCode = StatusCodes.Status201Created;
 
         return new()
         {
             Message = "Course created successfully"
+                ,
+            Data = new()
+            {
+                Id = result.Id
+            }
         };
     }
 
     [HttpPatch("{courseId:guid}")]
     public async Task<ApiWrapper.Success<object?>> Patch([FromBody] UpdateCourseRequest request, Guid courseId)
     {
-        await _coursesService.ExecuteAsync(new UpdateCourseCommand { Id = courseId, Title = request.Name, Description = request.Description, Price = request.Price, RenewalPrice = request.RenewalPrice });
+        await _coursesService.ExecuteAsync(new UpdateCourseCommand { Id = courseId, Title = request.Title, Description = request.Description, Price = request.Price, RenewalPrice = request.RenewalPrice });
 
         Response.StatusCode = StatusCodes.Status200OK;
 

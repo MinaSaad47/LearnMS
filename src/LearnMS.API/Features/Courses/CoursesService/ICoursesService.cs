@@ -5,7 +5,7 @@ namespace LearnMS.API.Features.Courses;
 public interface ICoursesService
 {
     // commands
-    public Task ExecuteAsync(CreateCourseCommand command);
+    public Task<CreateCourseResult> ExecuteAsync(CreateCourseCommand command);
     public Task ExecuteAsync(UpdateCourseCommand command);
     public Task ExecuteAsync(PublishCourseCommand command);
     public Task ExecuteAsync(UnPublishCourseCommand command);

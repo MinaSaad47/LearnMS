@@ -139,7 +139,7 @@ app.MapWhen(ctx => !ctx.Request.Path.StartsWithSegments("/api"), x =>
         spa.Options.SourcePath = "ClientApp";
         if (app.Environment.IsDevelopment())
         {
-            //spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
+            spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
         }
     });
 });

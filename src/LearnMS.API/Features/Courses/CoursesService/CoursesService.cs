@@ -256,15 +256,21 @@ public sealed class CoursesService : ICoursesService
     }
 
 
-    public async Task ExecuteAsync(CreateCourseCommand command)
+    public async Task<CreateCourseResult> ExecuteAsync(CreateCourseCommand command)
     {
         var course = new Course
         {
+            Id = Guid.NewGuid(),
             Title = command.Title,
         };
 
         await _dbContext.Courses.AddAsync(course);
         await _dbContext.SaveChangesAsync();
+
+        return new()
+        {
+            Id = course.Id
+        };
     }
 
     public async Task ExecuteAsync(UpdateCourseCommand command)
@@ -304,6 +310,7 @@ public sealed class CoursesService : ICoursesService
 
         _dbContext.Courses.Update(course);
         await _dbContext.SaveChangesAsync();
+
     }
 
     public async Task ExecuteAsync(PublishCourseCommand command)
@@ -502,6 +509,7 @@ public sealed class CoursesService : ICoursesService
                       where c.Id == query.Id
                       select new GetCourseResult
                       {
+                          ExpirationDays = c.ExpirationDays,
                           Id = c.Id,
                           Status = c.Status,
                           Title = c.Title,
@@ -556,6 +564,7 @@ public sealed class CoursesService : ICoursesService
                       from gci in groupedCourseItems.DefaultIfEmpty()
                       select new GetStudentCourseResult
                       {
+                          ExpirationDays = c.ExpirationDays,
                           Id = c.Id,
                           Status = c.Status,
                           IsExpired = gci != null ? gci.ExpirationDate < DateTime.UtcNow : null,
@@ -621,9 +630,8 @@ public sealed class CoursesService : ICoursesService
                        join courseItem in _dbContext.Set<CourseItem>() on course.Id equals courseItem.CourseId
                        join lecture in _dbContext.Set<Lecture>() on courseItem.Id equals lecture.Id
                        where
-                       (query.CourseStatus == null && course.Status == query.CourseStatus || true) &&
-                       (query.LectureStatus == null && courseItem.Status == query.LectureStatus || true) &&
-                       courseItem.Status == CourseItemStatus.Published &&
+                       (query.CourseStatus != null ? course.Status == query.CourseStatus : true) &&
+                       (query.LectureStatus != null ? courseItem.Status == query.LectureStatus : true) &&
                        course.Id == query.CourseId &&
                        lecture.Id == query.LectureId
                        select new GetLectureResult
