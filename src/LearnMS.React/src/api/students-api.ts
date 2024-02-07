@@ -60,3 +60,26 @@ export const useCreateStudentMutation = () => {
       api.post("/api/students", data).then((res) => res.data),
   });
 };
+
+export const AddStudentCreditRequest = z.object({
+  amount: z.coerce
+    .number()
+    .min(1, { message: "Amount must be greater than 0" }),
+});
+
+export type AddStudentCreditRequest = z.infer<typeof AddStudentCreditRequest>;
+
+export const addStudentCreditMutation = () => {
+  const qc = useQueryClient();
+  return useMutation<
+    ApiResponse<{}>,
+    {},
+    { id: string; data: AddStudentCreditRequest }
+  >({
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["students"] });
+    },
+    mutationFn: ({ id, data }) =>
+      api.post(`/api/students/${id}/credit`, data).then((res) => res.data),
+  });
+};

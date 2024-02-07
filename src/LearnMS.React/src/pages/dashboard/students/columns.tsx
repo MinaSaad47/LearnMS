@@ -8,6 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useModalStore } from "@/store/use-modal-store";
 import { Student } from "@/types/students";
 import { ColumnDef } from "@tanstack/react-table";
 import {
@@ -16,6 +17,13 @@ import {
   MailCheck,
   MoreHorizontal,
 } from "lucide-react";
+
+const levelMap = {
+  Level0: "3rd Prep School",
+  Level1: "1st Secondary School",
+  Level2: "2nd Secondary School",
+  Level3: "3rd Secondary School",
+};
 
 export const studentsColumns: ColumnDef<Student>[] = [
   {
@@ -36,7 +44,11 @@ export const studentsColumns: ColumnDef<Student>[] = [
     },
     size: 90,
   },
-
+  {
+    accessorKey: "credit",
+    header: "Credit",
+    size: 50,
+  },
   {
     accessorKey: "fullName",
     header: "Full Name",
@@ -48,6 +60,24 @@ export const studentsColumns: ColumnDef<Student>[] = [
   {
     accessorKey: "level",
     header: "Level",
+    cell: ({ row }) => {
+      const student = row.original;
+
+      return levelMap[student.level];
+    },
+  },
+  {
+    accessorKey: "isVerified",
+    header: "Verified",
+    cell: ({ row }) => {
+      const student = row.original;
+      return student.isVerified ? (
+        <MailCheck className='text-blue-500' />
+      ) : (
+        <MailCheck className='text-gray-400' />
+      );
+    },
+    size: 50,
   },
   {
     id: "actions",
@@ -55,6 +85,7 @@ export const studentsColumns: ColumnDef<Student>[] = [
     size: 1,
     cell: ({ row }) => {
       const student = row.original;
+      const { openModal } = useModalStore();
 
       return (
         <DropdownMenu>
@@ -73,13 +104,17 @@ export const studentsColumns: ColumnDef<Student>[] = [
               Copy Student ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className='flex items-center gap-2 hover:cursor-pointer hover:bg-blue-600 hover:text-white'>
+            <DropdownMenuItem
+              onClick={() => openModal("add-credit-modal", { student })}
+              className='flex items-center gap-2 hover:cursor-pointer hover:bg-blue-600 hover:text-white'>
               <CreditCard />
               Add Credit
             </DropdownMenuItem>
+            {/*
             <DropdownMenuItem className='flex items-center gap-2 hover:cursor-pointer hover:bg-blue-600 hover:text-white'>
               <MailCheck /> Verify Email
             </DropdownMenuItem>
+            */}
             <DropdownMenuItem className='flex items-center gap-2 hover:cursor-pointer hover:bg-blue-600 hover:text-white'>
               <MoreHorizontal />
               View Details

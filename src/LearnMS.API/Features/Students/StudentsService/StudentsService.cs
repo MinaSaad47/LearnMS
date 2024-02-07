@@ -13,7 +13,7 @@ public sealed class StudentsService(AppDbContext db, IPasswordHasher passwordHas
     public async Task ExecuteAsync(CreateStudentCommand command)
     {
         var account = await db.Accounts
-            .FirstOrDefaultAsync(x => x.Email == command.Email);
+            .FirstOrDefaultAsync(x => x.Email.ToLower() == command.Email.ToLower());
 
         if (account != null)
         {
@@ -24,7 +24,7 @@ public sealed class StudentsService(AppDbContext db, IPasswordHasher passwordHas
 
         var student = Student.Register(new Account
         {
-            Email = command.Email,
+            Email = command.Email.ToLower(),
             VerifiedAt = DateTime.UtcNow,
             PasswordHash = passwordHash,
             ProviderType = ProviderType.Local,
@@ -32,6 +32,21 @@ public sealed class StudentsService(AppDbContext db, IPasswordHasher passwordHas
 
 
         await db.Students.AddAsync(student);
+        await db.SaveChangesAsync();
+    }
+
+    public async Task ExecuteAsync(AddStudentCreditCommand command)
+    {
+        var student = await db.Students.FirstOrDefaultAsync(x => x.Id == command.Id);
+
+        if (student is null)
+        {
+            throw new ApiException(StudentsErrors.NotFound);
+        }
+
+        student.Credit += command.Amount;
+
+        db.Update(student);
         await db.SaveChangesAsync();
     }
 

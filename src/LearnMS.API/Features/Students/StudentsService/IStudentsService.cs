@@ -7,6 +7,7 @@ namespace LearnMS.API.Features.Students;
 public interface IStudentsService
 {
     public Task ExecuteAsync(CreateStudentCommand command);
+    public Task ExecuteAsync(AddStudentCreditCommand command);
 
     public Task<PageList<SingleStudent>> QueryAsync(GetStudentsQuery query);
 }

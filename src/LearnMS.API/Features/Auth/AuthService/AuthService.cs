@@ -38,7 +38,7 @@ public sealed class AuthService : IAuthService
     public async Task<RegisterResult> ExecuteAsync(RegisterStudentCommand command)
     {
         var account = await _dbContext.Accounts
-            .FirstOrDefaultAsync(x => x.Email == command.Email);
+            .FirstOrDefaultAsync(x => x.Email.ToLower() == command.Email.ToLower());
 
         if (account != null)
         {
@@ -54,7 +54,7 @@ public sealed class AuthService : IAuthService
 
         var student = Student.Register(new Account
         {
-            Email = command.Email,
+            Email = command.Email.ToLower(),
             PasswordHash = passwordHash,
             VerificationToken = token,
             ProviderType = ProviderType.Local,
@@ -84,7 +84,7 @@ public sealed class AuthService : IAuthService
 
     public async Task<LoginResult> ExecuteAsync(LoginCommand command)
     {
-        var account = await _dbContext.Accounts.Include(x => x.User).FirstOrDefaultAsync(x => x.Email == command.Email);
+        var account = await _dbContext.Accounts.Include(x => x.User).FirstOrDefaultAsync(x => x.Email.ToLower() == command.Email.ToLower());
 
         if (account is null || account.PasswordHash is null)
         {

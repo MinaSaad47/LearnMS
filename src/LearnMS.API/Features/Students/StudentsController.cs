@@ -49,4 +49,20 @@ public sealed class StudentsController(IStudentsService studentsService) : Contr
             Message = "Create student successfully",
         };
     }
+
+    [HttpPost("{studentId:guid}/credit")]
+    [ApiAuthorize(Role = UserRole.Assistant, Permissions = [Permission.ManageStudents])]
+    public async Task<ApiWrapper.Success<object?>> AddCredit([FromBody] AddStudentCreditRequest request, Guid studentId)
+    {
+        await studentsService.ExecuteAsync(new AddStudentCreditCommand
+        {
+            Amount = request.Amount,
+            Id = studentId,
+        });
+
+        return new()
+        {
+            Message = "Added credit successfully"
+        };
+    }
 }
