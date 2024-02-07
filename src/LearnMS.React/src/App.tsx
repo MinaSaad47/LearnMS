@@ -1,6 +1,7 @@
 import { DashboardLayout } from "@/components/dashboard-layout";
 import RequireAuth from "@/components/require-auth";
 import SignInSignUpPage from "@/pages/auth/sign-in-sign-up-page";
+import AssistantsPage from "@/pages/dashboard/assistants/assistants-page";
 import AddCoursePage from "@/pages/dashboard/courses/add-course-page";
 import CourseDetailsPage from "@/pages/dashboard/courses/course-details-page";
 import CoursesPage from "@/pages/dashboard/courses/courses-page";
@@ -12,6 +13,7 @@ import LessonDetailsPage from "@/pages/dashboard/lessons/lesson-details-page";
 import QuizPage from "@/pages/dashboard/quizzes/quiz-page";
 import { StudentCoursePage } from "@/pages/student/courses/student-course-page";
 import { StudentCoursesPage } from "@/pages/student/courses/student-courses-page";
+import StudentHomePage from "@/pages/student/home/student-home.page";
 import StudentLecturePage from "@/pages/student/lectures/student-lecture-page";
 import StudentLessonPage from "@/pages/student/lessons/student-lesson-page";
 import StudentPayments from "@/pages/student/payment/student-payments";
@@ -30,6 +32,8 @@ function App() {
             <StudentLayout />
           </RequireAuth>
         }>
+        <Route path='/' element={<StudentHomePage />} />
+
         <Route path='courses' element={<StudentCoursesPage />} />
         <Route path='courses/:courseId' element={<StudentCoursePage />} />
         <Route
@@ -68,6 +72,7 @@ function App() {
         <Route path='courses/:courseId/exams/:examId' element={<ExamPage />} />
         <Route path='credit-codes' element={<CreditCodesPage />} />
         <Route path='files' element={<FilesPage />} />
+        <Route path='assistants' element={<AssistantsPage />} />
       </Route>
     </Routes>
   );

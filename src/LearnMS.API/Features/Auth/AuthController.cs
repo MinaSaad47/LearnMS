@@ -29,7 +29,7 @@ public sealed class AuthController : ControllerBase
         return new()
         {
             Data = result,
-            Message = "Student registered successfully"
+            Message = "Student registered successfully, please verify your email"
         };
     }
 
@@ -79,4 +79,18 @@ public sealed class AuthController : ControllerBase
         };
     }
 
+
+    [HttpGet("verify-email")]
+    public async Task<ApiWrapper.Success<object?>> VerifyEmail([FromQuery] string token)
+    {
+        await _authService.ExecuteAsync(new VerifyEmailCommand
+        {
+            Token = token
+        });
+
+        return new()
+        {
+            Message = "Email verified successfully"
+        };
+    }
 }

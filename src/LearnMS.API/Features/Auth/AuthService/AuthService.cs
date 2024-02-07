@@ -3,9 +3,11 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using LearnMS.API.Common;
+using LearnMS.API.Common.EmailService;
 using LearnMS.API.Data;
 using LearnMS.API.Entities;
 using LearnMS.API.Features.Auth.Contracts;
+using LearnMS.API.Features.CreditCodes;
 using LearnMS.API.Security.JwtBearer;
 using LearnMS.API.Security.PasswordHasher;
 using Microsoft.EntityFrameworkCore;
@@ -18,14 +20,18 @@ public sealed class AuthService : IAuthService
 {
     private readonly AppDbContext _dbContext;
     private readonly IPasswordHasher _passwordHasher;
+    private readonly ICodeGenerator _codeGenerator;
+    private readonly IEmailService _emailService;
     private readonly JwtBearerConfig _jwtConfig;
 
 
-    public AuthService(AppDbContext dbContext, IPasswordHasher passwordHasher, IOptions<JwtBearerConfig> jwtOptions)
+    public AuthService(AppDbContext dbContext, IPasswordHasher passwordHasher, IOptions<JwtBearerConfig> jwtOptions, ICodeGenerator codeGenerator, IEmailService emailService)
     {
         _dbContext = dbContext;
         _passwordHasher = passwordHasher;
         _jwtConfig = jwtOptions.Value;
+        _codeGenerator = codeGenerator;
+        _emailService = emailService;
     }
 
 
@@ -41,20 +47,31 @@ public sealed class AuthService : IAuthService
 
         var passwordHash = _passwordHasher.Hash(command.Password);
 
+        var token = await _codeGenerator.GenerateAsync(20, async (token) =>
+        {
+            return await _dbContext.Accounts.CountAsync(a => a.VerificationToken == token || a.PasswordResetToken == token) == 0;
+        });
+
         var student = Student.Register(new Account
         {
             Email = command.Email,
             PasswordHash = passwordHash,
+            VerificationToken = token,
             ProviderType = ProviderType.Local,
-        });
+        }, command.FullName, command.PhoneNumber, command.ParentPhoneNumber, command.School, command.Level);
 
-        student.FullName = command.FullName;
-        student.Level = command.Level;
-        student.ParentPhoneNumber = command.ParentPhoneNumber;
-        student.PhoneNumber = command.PhoneNumber;
-        student.SchoolName = command.School;
 
         await _dbContext.Students.AddAsync(student);
+
+        SendEmailRequest SendEmailRequest = new()
+        {
+            To = command.Email,
+            Subject = "Email Verification",
+            Body = $"<a href='{_jwtConfig.BaseUrl}/api/auth/verify-email?token={token}'>Click here to verify your email</a>"
+        };
+
+        await _emailService.SendAsync(SendEmailRequest);
+
         await _dbContext.SaveChangesAsync();
 
         return new RegisterResult(student.Id);
@@ -79,6 +96,11 @@ public sealed class AuthService : IAuthService
             throw new ApiException(AuthErrors.InvalidCredentials);
         }
 
+        if (account.VerifiedAt is null)
+        {
+            throw new ApiException(AuthErrors.NotVerifiedEmail);
+        }
+
         var token = GetToken(GetClaims(account.User));
 
         return new LoginResult(account.Id, token);
@@ -87,6 +109,20 @@ public sealed class AuthService : IAuthService
     public Task<LoginResult> ExecuteAsync(LoginExternalCommand command)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task ExecuteAsync(VerifyEmailCommand command)
+    {
+        var account = _dbContext.Accounts.Where(x => x.VerificationToken == command.Token).FirstOrDefault();
+
+        if (account is null)
+        {
+            throw new ApiException(AuthErrors.InvalidToken);
+        }
+
+        account.VerifiedAt = DateTime.UtcNow;
+
+        await _dbContext.SaveChangesAsync();
     }
 
     private List<Claim> GetClaims(User user)

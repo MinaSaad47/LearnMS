@@ -313,6 +313,11 @@ public sealed class CoursesService : ICoursesService
             course.ExpirationDays = command.ExpirationDays;
         }
 
+        if (!string.IsNullOrWhiteSpace(command.ImageUrl))
+        {
+            course.ImageUrl = command.ImageUrl;
+        }
+
 
         _dbContext.Courses.Update(course);
         await _dbContext.SaveChangesAsync();

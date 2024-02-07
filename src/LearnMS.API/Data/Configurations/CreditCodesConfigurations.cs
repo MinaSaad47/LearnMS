@@ -16,7 +16,7 @@ public sealed class CreditCodesConfigurations : IEntityTypeConfiguration<CreditC
 
         builder.Property(x => x.Status).HasConversion(x => x.ToString(), x => (CreditCodeStatus)Enum.Parse(typeof(CreditCodeStatus), x));
 
-        builder.HasOne<Student>().WithMany().HasForeignKey(x => x.StudentId);
-        builder.HasOne<Assistant>().WithMany().HasForeignKey(x => x.AssistantId);
+        builder.HasOne<Student>().WithMany().HasForeignKey(x => x.StudentId).OnDelete(DeleteBehavior.SetNull);
+        builder.HasOne<Assistant>().WithMany().HasForeignKey(x => x.AssistantId).OnDelete(DeleteBehavior.SetNull);
     }
 }

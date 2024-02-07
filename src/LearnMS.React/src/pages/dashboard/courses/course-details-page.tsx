@@ -97,14 +97,29 @@ function CourseDetailsForm({
   title,
   expirationDays,
   renewalPrice,
+  imageUrl,
   price,
 }: CourseDetails) {
   const updateCourseMutation = useUpdateCourseMutation();
 
   const form = useForm<UpdateCourseRequest>({
     resolver: zodResolver(UpdateCourseRequest),
-    defaultValues: { description, title, expirationDays, renewalPrice, price },
-    values: { description, title, expirationDays, renewalPrice, price },
+    defaultValues: {
+      description,
+      title,
+      expirationDays,
+      renewalPrice,
+      price,
+      imageUrl,
+    },
+    values: {
+      description,
+      title,
+      expirationDays,
+      renewalPrice,
+      price,
+      imageUrl,
+    },
   });
 
   const onSubmit = (data: UpdateCourseRequest) => {
@@ -205,6 +220,19 @@ function CourseDetailsForm({
                 <FormLabel className='text-blue-500'>Expiration Days</FormLabel>
                 <FormControl>
                   <Input type='number' className='text-blue-500' {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='imageUrl'
+            render={({ field }) => (
+              <FormItem className='p-3 bg-blue-200 border-2 border-blue-400 rounded'>
+                <FormLabel className='text-blue-500'>Image Url</FormLabel>
+                <FormControl>
+                  <Input className='text-blue-500' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

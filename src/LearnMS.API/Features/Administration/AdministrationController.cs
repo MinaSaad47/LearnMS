@@ -1,6 +1,8 @@
 using LearnMS.API.Common;
+using LearnMS.API.Entities;
 using LearnMS.API.Features.Administration.Contracts;
 using LearnMS.API.Features.Assistants.Contracts;
+using LearnMS.API.Security;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 
@@ -60,6 +62,36 @@ public sealed class AdministrationController : ControllerBase
         return new()
         {
             Message = "Assistant updated"
+        };
+    }
+
+    [HttpGet("assistants")]
+    [ApiAuthorize(Role = UserRole.Teacher)]
+    public async Task<ApiWrapper.Success<GetAssistantsResponse>> GetAssistants()
+    {
+        var result = await _assistantsService.QueryAsync(new GetAssistantsQuery());
+
+        return new()
+        {
+            Data = new()
+            {
+                Items = result.Items
+            },
+            Message = result.Items.Count() > 0 ? "Successfully retrieved assistants" : "No assistants found"
+        };
+    }
+
+    [HttpGet("permissions")]
+    [ApiAuthorize(Role = UserRole.Teacher)]
+    public async Task<ApiWrapper.Success<GetPermissionsResponse>> GetPermissions()
+    {
+        await Task.CompletedTask;
+        return new()
+        {
+            Data = new()
+            {
+                Items = (Enum.GetValues(typeof(Permission)) as IEnumerable<Permission>)!.ToList()
+            },
         };
     }
 }

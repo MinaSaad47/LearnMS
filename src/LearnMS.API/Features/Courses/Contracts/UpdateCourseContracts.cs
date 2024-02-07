@@ -9,6 +9,7 @@ public record UpdateCourseRequest
     public decimal? Price { get; init; }
     public decimal? RenewalPrice { get; init; }
     public int? ExpirationDays { get; init; }
+    public string? ImageUrl { get; init; }
 }
 
 public record UpdateCourseCommand
@@ -18,5 +19,6 @@ public record UpdateCourseCommand
     public string? Description { get; init; }
     public decimal? Price { get; init; }
     public decimal? RenewalPrice { get; init; }
+    public string? ImageUrl { get; init; }
     public int? ExpirationDays { get; init; }
 }

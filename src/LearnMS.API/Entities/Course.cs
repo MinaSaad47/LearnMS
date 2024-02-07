@@ -34,7 +34,7 @@ public sealed class Course
 
             if (string.IsNullOrWhiteSpace(Title)) return false;
             if (string.IsNullOrWhiteSpace(Description)) return false;
-            // if (string.IsNullOrWhiteSpace(ImageUrl)) return false;
+            if (string.IsNullOrWhiteSpace(ImageUrl)) return false;
             if (Price == null) return false;
             if (RenewalPrice == null) return false;
             if (ExpirationDays == null) return false;

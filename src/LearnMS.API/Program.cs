@@ -1,5 +1,7 @@
 using System.Security.Claims;
+using System.Text.Json.Serialization;
 using LearnMS.API.Common;
+using LearnMS.API.Common.EmailService;
 using LearnMS.API.Data;
 using LearnMS.API.Features;
 using LearnMS.API.Features.Administration;
@@ -13,8 +15,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using tusdotnet;
 using tusdotnet.Interfaces;
-using tusdotnet.Models;
-using tusdotnet.Models.Configuration;
 using tusdotnet.Stores;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,6 +35,9 @@ var builder = WebApplication.CreateBuilder(args);
 
     builder.Services.Configure<JwtBearerConfig>(cfg.GetSection(JwtBearerConfig.Section));
     builder.Services.Configure<AdministrationConfig>(cfg.GetSection(AdministrationConfig.Section));
+    builder.Services.Configure<EmailConfig>(cfg.GetSection(EmailConfig.Section));
+
+    builder.Services.AddScoped<IEmailService, EmailService>();
 
     builder.Services.AddFeaturesServices();
     builder.Services.AddSecurityServices();
@@ -52,6 +55,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers().AddNewtonsoftJson();
+// builder.Services.AddControllers().AddJsonOptions(opts =>
+// {
+//     opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+// });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGenNewtonsoftSupport();

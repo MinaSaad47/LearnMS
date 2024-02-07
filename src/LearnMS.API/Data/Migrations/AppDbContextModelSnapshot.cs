@@ -37,11 +37,23 @@ namespace LearnMS.API.Data.Migrations
                     b.Property<string>("PasswordHash")
                         .HasColumnType("text");
 
+                    b.Property<string>("PasswordResetToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("PasswordResetTokenExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("ProfilePicture")
                         .HasColumnType("text");
 
                     b.Property<string>("ProviderId")
                         .HasColumnType("text");
+
+                    b.Property<string>("VerificationToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("VerifiedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id", "ProviderType");
 
@@ -293,18 +305,22 @@ namespace LearnMS.API.Data.Migrations
                         .HasColumnType("numeric");
 
                     b.Property<string>("FullName")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("Level")
                         .HasColumnType("integer");
 
                     b.Property<string>("ParentPhoneNumber")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("SchoolName")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.ToTable("Students");
@@ -341,11 +357,13 @@ namespace LearnMS.API.Data.Migrations
                 {
                     b.HasOne("LearnMS.API.Entities.Assistant", null)
                         .WithMany()
-                        .HasForeignKey("AssistantId");
+                        .HasForeignKey("AssistantId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("LearnMS.API.Entities.Student", null)
                         .WithMany()
-                        .HasForeignKey("StudentId");
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.SetNull);
                 });
 
             modelBuilder.Entity("LearnMS.API.Entities.Exam", b =>

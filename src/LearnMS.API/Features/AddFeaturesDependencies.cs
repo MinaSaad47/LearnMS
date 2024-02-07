@@ -5,6 +5,7 @@ using LearnMS.API.Features.Courses.Lectures;
 using LearnMS.API.Features.Courses.Lectures.Lessons;
 using LearnMS.API.Features.CreditCodes;
 using LearnMS.API.Features.Profile;
+using LearnMS.API.Features.Students;
 using LearnMS.API.Security.PasswordHasher;
 
 namespace LearnMS.API.Features;
@@ -25,7 +26,7 @@ public static class AddFeaturesDependencies
         // services.AddScoped<ILecturesService>();
         // services.AddScoped<ILessonsService>();
         services.AddScoped<ICoursesService, CoursesService>();
-
+        services.AddScoped<IStudentsService, StudentsService>();
         services.AddScoped<IAdministrationService, AdministrationService>();
 
         return services;

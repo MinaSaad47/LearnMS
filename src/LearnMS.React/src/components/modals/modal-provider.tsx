@@ -1,12 +1,12 @@
+import AddAssistantModal from "@/pages/dashboard/assistants/add-assistant-modal";
+import UpdateAssistantModal from "@/pages/dashboard/assistants/update-assistant-modal";
 import React from "react";
 import { useModalStore } from "../../store/use-modal-store";
-import AddExamModal from "./add-exam-modal";
-import AddLectureModal from "./add-lecture-modal";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const modals: Record<string, React.FC<any>> = {
-  "add-lecture": AddLectureModal,
-  "add-exam": AddExamModal,
+  "add-assistant-modal": AddAssistantModal,
+  "update-assistant-modal": UpdateAssistantModal,
 };
 
 const ModalProvider = () => {

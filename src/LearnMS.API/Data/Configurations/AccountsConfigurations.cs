@@ -21,6 +21,6 @@ public sealed class ProfilesConfigurations : IEntityTypeConfiguration<Account>
 
         builder.HasIndex(x => new { x.ProviderId, x.ProviderType });
 
-        builder.HasOne(x => x.User).WithMany(x => x.Accounts).HasForeignKey(x => x.Id);
+        builder.HasOne(x => x.User).WithMany(x => x.Accounts).HasForeignKey(x => x.Id).OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -181,7 +181,16 @@ public sealed class CoursesController : ControllerBase
     [HttpPatch("{courseId:guid}")]
     public async Task<ApiWrapper.Success<object?>> Patch([FromBody] UpdateCourseRequest request, Guid courseId)
     {
-        await _coursesService.ExecuteAsync(new UpdateCourseCommand { Id = courseId, Title = request.Title, Description = request.Description, Price = request.Price, RenewalPrice = request.RenewalPrice, ExpirationDays = request.ExpirationDays });
+        await _coursesService.ExecuteAsync(new UpdateCourseCommand
+        {
+            ImageUrl = request.ImageUrl,
+            Id = courseId,
+            Title = request.Title,
+            Description = request.Description,
+            Price = request.Price,
+            RenewalPrice = request.RenewalPrice,
+            ExpirationDays = request.ExpirationDays
+        });
 
         Response.StatusCode = StatusCodes.Status200OK;
 

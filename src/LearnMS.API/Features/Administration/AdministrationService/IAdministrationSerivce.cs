@@ -53,6 +53,7 @@ public sealed class AdministrationService : IAdministrationService
             Email = command.Email,
             PasswordHash = _passwordHasher.Hash(command.Password),
             ProviderType = ProviderType.Local,
+            VerifiedAt = DateTime.UtcNow
         };
 
         var teacher = Teacher.Register(account);
@@ -76,6 +77,7 @@ public sealed class AdministrationService : IAdministrationService
         var assistant = Assistant.Register(new Account
         {
             Email = command.Email,
+            VerifiedAt = DateTime.UtcNow,
             PasswordHash = passwordHash,
             ProviderType = ProviderType.Local,
         });
@@ -84,6 +86,23 @@ public sealed class AdministrationService : IAdministrationService
 
         await _dbContext.Assistants.AddAsync(assistant);
         await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task<GetAssistantsResponse> QueryAsync(GetAssistantsQuery query)
+    {
+        var result = from assistants in _dbContext.Set<Assistant>()
+                     join accounts in _dbContext.Set<Account>() on assistants.Id equals accounts.Id
+                     select new SingleAssistant
+                     {
+                         Id = accounts.Id,
+                         Email = accounts.Email,
+                         Permissions = assistants.Permissions.ToList()
+                     };
+
+        return new GetAssistantsResponse
+        {
+            Items = await result.ToListAsync()
+        };
     }
 }
 
@@ -94,5 +113,7 @@ public interface IAdministrationService
     public Task ExecuteAsync(CreateAssistantCommand command);
     public Task ExecuteAsync(CreateTeacherCommand command);
 
+
+    public Task<GetAssistantsResponse> QueryAsync(GetAssistantsQuery query);
 }
 

@@ -17,5 +17,10 @@ public class Account
     public string? ProviderId { get; set; }
     public string? ProfilePicture { get; set; }
 
+    public string? VerificationToken { get; set; }
+    public DateTime? VerifiedAt { get; set; }
+    public string? PasswordResetToken { get; set; }
+    public DateTime? PasswordResetTokenExpiresAt { get; set; }
+
     public User User = null!;
 }

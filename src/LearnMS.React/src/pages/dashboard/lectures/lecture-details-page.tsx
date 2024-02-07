@@ -107,6 +107,7 @@ function LectureDetailsForm({
   description,
   title,
   expirationDays,
+  imageUrl,
   renewalPrice,
   courseId,
   price,
@@ -115,8 +116,22 @@ function LectureDetailsForm({
 
   const form = useForm<UpdateLectureRequest>({
     resolver: zodResolver(UpdateLectureRequest),
-    defaultValues: { description, title, expirationDays, renewalPrice, price },
-    values: { description, title, expirationDays, renewalPrice, price },
+    defaultValues: {
+      imageUrl,
+      description,
+      title,
+      expirationDays,
+      renewalPrice,
+      price,
+    },
+    values: {
+      description,
+      imageUrl,
+      title,
+      expirationDays,
+      renewalPrice,
+      price,
+    },
   });
 
   const onSubmit = (data: UpdateLectureRequest) => {
@@ -217,6 +232,19 @@ function LectureDetailsForm({
                 <FormLabel className='text-blue-500'>Expiration Days</FormLabel>
                 <FormControl>
                   <Input type='number' className='text-blue-500' {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='imageUrl'
+            render={({ field }) => (
+              <FormItem className='p-3 bg-blue-200 border-2 border-blue-400 rounded'>
+                <FormLabel className='text-blue-500'>Image Url</FormLabel>
+                <FormControl>
+                  <Input className='text-blue-500' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

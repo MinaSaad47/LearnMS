@@ -31,22 +31,22 @@ public sealed class ProfileService : IProfileService
 
         var student = (Student)profile.User;
 
-        if (string.IsNullOrWhiteSpace(command.FullName))
+        if (!string.IsNullOrWhiteSpace(command.FullName))
         {
             student.FullName = command.FullName;
         }
 
-        if (string.IsNullOrWhiteSpace(command.PhoneNumber))
+        if (!string.IsNullOrWhiteSpace(command.PhoneNumber))
         {
             student.PhoneNumber = command.PhoneNumber;
         }
 
-        if (string.IsNullOrWhiteSpace(command.ParentPhoneNumber))
+        if (!string.IsNullOrWhiteSpace(command.ParentPhoneNumber))
         {
             student.PhoneNumber = command.ParentPhoneNumber;
         }
 
-        if (string.IsNullOrWhiteSpace(command.ProfilePicture))
+        if (!string.IsNullOrWhiteSpace(command.ProfilePicture))
         {
             profile.ProfilePicture = command.ProfilePicture;
         }

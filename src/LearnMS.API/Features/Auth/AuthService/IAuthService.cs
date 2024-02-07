@@ -8,6 +8,8 @@ public interface IAuthService
     Task<RegisterResult> ExecuteAsync(RegisterStudentCommand command);
     Task<RegisterResult> ExecuteAsync(RegisterStudentExternalCommand command);
 
+    Task ExecuteAsync(VerifyEmailCommand command);
+
     // Login
     Task<LoginResult> ExecuteAsync(LoginCommand command);
     Task<LoginResult> ExecuteAsync(LoginExternalCommand command);

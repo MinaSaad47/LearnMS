@@ -35,7 +35,7 @@ const NavBar = () => {
         </Button>
       </div>
       <Button
-        variant='destructive'
+        variant='default'
         size='icon'
         onClick={() => logoutMutation.mutate()}
         className='transition-all duration-500 hover:scale-105'>
