@@ -64,7 +64,7 @@ function CourseCard({ course }: { course: Course }) {
 
           <p className='text-left'>
             {course.enrollment === "Expired" &&
-              `Expires on ${new Date(course.expiresAt).toDateString()}`}
+              `Expires on ${new Date(course.expiresAt!).toDateString()}`}
           </p>
         </CardFooter>
       </Link>

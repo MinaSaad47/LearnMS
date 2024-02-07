@@ -1,29 +1,32 @@
-import {
-  GenerateCreditCodeRequest,
-  useGenerateCreditCodeMutation,
-  useGetCreditCodesQuery,
-  useSellCreditCodesMutation,
-} from "@/api/credits-api";
+import
+  {
+    GenerateCreditCodeRequest,
+    useGenerateCreditCodeMutation,
+    useGetCreditCodesQuery,
+    useSellCreditCodesMutation,
+  } from "@/api/credits-api";
 import Loading from "@/components/loading/loading";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import
+  {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+  } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { columns } from "@/pages/dashboard/credit-codes/columns";
+import { creditCodesColumns } from "@/pages/dashboard/credit-codes/columns";
 import { CreditCodesDataTable } from "@/pages/dashboard/credit-codes/data-table";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  PaginationState,
-  RowSelectionState,
-  SortingState,
-} from "@tanstack/react-table";
+import
+  {
+    PaginationState,
+    RowSelectionState,
+    SortingState,
+  } from "@tanstack/react-table";
 import { FileWarningIcon, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -73,8 +76,12 @@ const CreditCodesPage = () => {
   const [sorting, setStorting] = useState<SortingState>([]);
 
   useEffect(() => {
-    setSearchParams({ page: `${pageIndex + 1}`, pageSize: `${pageSize}` });
-  }, [pageIndex, pageSize]);
+    setSearchParams({
+      page: `${pageIndex + 1}`,
+      pageSize: `${pageSize}`,
+      ...(search ? { search } : {}),
+    });
+  }, [pageIndex, pageSize, search]);
 
   var sortOrder: any;
   if (sorting.filter((s) => s.id === "status")[0]?.desc === true) {
@@ -186,7 +193,7 @@ const CreditCodesPage = () => {
             pageSize,
             pageCount: query.data!.data.totalCount,
           }}
-          columns={columns}
+          columns={creditCodesColumns}
           rowSelection={rowSelection}
           setRowSelection={setRowSelection}
           data={query.data!.data.items}

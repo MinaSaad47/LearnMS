@@ -66,7 +66,7 @@ const DashboardSideBar = () => {
       <div className='space-y-2'>
         <h2 className='text-2xl font-bold'>Users</h2>
         <div className='space-y-1'>
-          <Link to='/students'>
+          <Link to='/dashboard/students'>
             <Button
               variant={is("students") ? "default" : "secondary"}
               className='inline-flex justify-start w-full'>

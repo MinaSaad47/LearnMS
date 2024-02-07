@@ -2,8 +2,6 @@ import {
   ColumnDef,
   OnChangeFn,
   PaginationState,
-  RowSelectionState,
-  SortingState,
   flexRender,
   getCoreRowModel,
   useReactTable,
@@ -23,10 +21,6 @@ import { CreditCode } from "@/types/credit-code";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  rowSelection: RowSelectionState;
-  setRowSelection: OnChangeFn<RowSelectionState>;
-  sorting: SortingState;
-  setSorting: OnChangeFn<SortingState>;
   pagination: {
     pageIndex: number;
     pageSize: number;
@@ -37,14 +31,10 @@ interface DataTableProps<TData, TValue> {
   setPagination: OnChangeFn<PaginationState>;
 }
 
-export function CreditCodesDataTable<TData, TValue>({
+export function StudentsDataTable<TData, TValue>({
   columns,
   setPagination,
-  rowSelection,
-  setRowSelection,
   data,
-  setSorting,
-  sorting,
   pagination,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
@@ -52,26 +42,24 @@ export function CreditCodesDataTable<TData, TValue>({
     getRowId: (row) => (row as CreditCode).code,
     columns,
     onPaginationChange: setPagination,
-    onRowSelectionChange: setRowSelection,
-    onSortingChange: setSorting,
     state: {
       pagination,
-      rowSelection,
-      sorting,
     },
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
   });
 
   return (
-    <div className='flex flex-col items-center justify-between gap-2 p-6'>
+    <div className='flex flex-col items-center justify-between w-full gap-2 p-6'>
       <Table className='border border-blue-500 rounded'>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead key={header.id}>
+                  <TableHead
+                    key={header.id}
+                    style={{ width: header.getSize() }}>
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -91,7 +79,9 @@ export function CreditCodesDataTable<TData, TValue>({
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}>
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell
+                    key={cell.id}
+                    style={{ width: cell.column.getSize() }}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

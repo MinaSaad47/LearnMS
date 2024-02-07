@@ -4,7 +4,7 @@ import { CreditCode } from "@/types/credit-code";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 
-export const columns: ColumnDef<CreditCode>[] = [
+export const creditCodesColumns: ColumnDef<CreditCode>[] = [
   {
     id: "select",
     header: ({ table }) => (

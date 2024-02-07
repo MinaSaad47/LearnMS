@@ -10,7 +10,7 @@ export type Course = {
   title: string;
   description: string;
   enrollment: "Expired" | "Active" | "NotEnrolled" | undefined;
-  expiresAt?: Date;
+  expiresAt?: string;
   imageUrl: string;
   isPublished?: boolean;
   price: number;

@@ -31,7 +31,7 @@ public sealed class StudentsController(IStudentsService studentsService) : Contr
 
     [HttpPost]
     [ApiAuthorize(Role = UserRole.Assistant, Permissions = [Permission.ManageStudents])]
-    public async Task<ApiWrapper.Success<object?>> Post(CreateStudentRequest request)
+    public async Task<ApiWrapper.Success<object?>> Post([FromBody] CreateStudentRequest request)
     {
         await studentsService.ExecuteAsync(new CreateStudentCommand
         {

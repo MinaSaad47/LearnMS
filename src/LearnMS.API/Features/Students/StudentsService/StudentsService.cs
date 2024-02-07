@@ -48,6 +48,7 @@ public sealed class StudentsService(AppDbContext db, IPasswordHasher passwordHas
                          Credit = students.Credit,
                          FullName = students.FullName,
                          Level = students.Level,
+                         IsVerified = accounts.VerifiedAt != null,
                          ParentPhoneNumber = students.ParentPhoneNumber,
                          PhoneNumber = students.PhoneNumber,
                          ProfilePicture = accounts.ProfilePicture,

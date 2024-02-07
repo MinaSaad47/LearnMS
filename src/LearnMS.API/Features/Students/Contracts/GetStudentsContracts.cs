@@ -18,6 +18,7 @@ public sealed record SingleStudent
     public required string FullName { get; init; }
     public required string PhoneNumber { get; init; }
     public required string ParentPhoneNumber { get; init; }
+    public required bool IsVerified {get; init;}
     public required string SchoolName { get; init; }
     public required decimal Credit { get; init; }
     public required StudentLevel Level { get; init; }
