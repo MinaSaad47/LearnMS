@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Serilog;
+using Serilog.Configuration;
 using tusdotnet;
 using tusdotnet.Interfaces;
 using tusdotnet.Stores;
@@ -90,9 +92,15 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+builder.Host.UseSerilog((context, configuration) =>
+{
+    configuration.ReadFrom.Configuration(context.Configuration);
+});
+
 
 var app = builder.Build();
 
+app.UseSerilogRequestLogging();
 
 await app.InitializeAsync();
 
