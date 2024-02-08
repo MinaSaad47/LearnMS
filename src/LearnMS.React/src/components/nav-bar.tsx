@@ -27,62 +27,62 @@ const NavBar = () => {
         <Link to='/'>
           <Button
             variant='outline'
-            className='transition-all duration-500 border-0 hover:text-white hover:bg-blue-400'>
+            className='transition-all duration-500 border-0 hover:text-white hover:bg-color2'>
             Home
           </Button>
         </Link>
         <Link to='/courses'>
           <Button
             variant='outline'
-            className='transition-all duration-500 border-0 hover:text-white hover:bg-blue-400'>
+            className='transition-all duration-500 border-0 hover:text-white hover:bg-color2'>
             Courses
           </Button>
         </Link>
         <Link to='/payments'>
           <Button
             variant='outline'
-            className='transition-all duration-500 border-0 hover:text-white hover:bg-blue-400'>
+            className='transition-all duration-500 border-0 hover:text-white hover:bg-color2'>
             Payments
           </Button>
         </Link>
-        <Button
-          variant='outline'
-          className='transition-all duration-500 border-0 hover:text-white hover:bg-blue-400'>
-          Profile
-        </Button>
       </div>
 
       {profile?.isAuthenticated && profile.role === "Student" && (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Avatar className='transition-all duration-500 hover:cursor-pointer hover:scale-110'>
-              <AvatarImage src={profile?.profilePicture} />
-              <AvatarFallback className='text-white bg-blue-300'>
-                {getFirstCharacters(profile?.fullName)}
-              </AvatarFallback>
-            </Avatar>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className='flex flex-col items-center text-white bg-blue-300 border-none shadow-2xl'>
-            <DropdownMenuLabel className='font-normal text-blue-400 bg-blue-200 rounded'>
-              {profile.email}
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup className='flex flex-col items-center w-full'>
-              <DropdownMenuItem
-                onClick={() => openModal("profile-modal")}
-                className='flex justify-center w-full hover:cursor-pointer hover:bg-white hover:text-blue-400'>
-                <User /> Profile
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <Button
-              variant='destructive'
-              size='icon'
-              onClick={() => logoutMutation.mutate()}
-              className='mt-4 transition-all duration-200 hover:scale-110'>
-              <LogOut />
-            </Button>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className='flex items-center gap-2'>
+          <p className='flex items-center justify-center gap-2 p-2 font-bold rounded text-color1'>
+            {"Credit: "} {profile?.credits} {" LE"}
+          </p>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Avatar className='transition-all duration-500 hover:cursor-pointer hover:scale-110'>
+                <AvatarImage src={profile?.profilePicture} />
+                <AvatarFallback className='text-white bg-color2'>
+                  {getFirstCharacters(profile?.fullName)}
+                </AvatarFallback>
+              </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className='flex flex-col items-center text-white border-none shadow-2xl bg-color2'>
+              <DropdownMenuLabel className='font-normal text-white rounded bg-color2'>
+                {profile.email}
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup className='flex flex-col items-center w-full'>
+                <DropdownMenuItem
+                  onClick={() => openModal("profile-modal")}
+                  className='flex justify-center w-full hover:cursor-pointer hover:bg-white hover:text-color2'>
+                  <User /> Profile
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+              <Button
+                size='icon'
+                variant='outline'
+                onClick={() => logoutMutation.mutate()}
+                className='mt-4 transition-all duration-200 bg-color1 hover:scale-110'>
+                <LogOut />
+              </Button>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       )}
     </div>
   );

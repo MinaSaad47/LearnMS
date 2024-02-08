@@ -14,7 +14,7 @@ const Footer = () => {
             className='relative block fill-white'></path>
         </svg>
       </div>
-      <div className='w-full text-white bg-blue-400 h-[300px] flex items-center justify-center gap-5'>
+      <div className='w-full text-white bg-color2 h-[300px] flex items-center justify-center gap-5'>
         <a className='transition-all duration-300 hover:cursor-pointer hover:scale-125'>
           <FaFacebook className='w-10 h-10' />
         </a>

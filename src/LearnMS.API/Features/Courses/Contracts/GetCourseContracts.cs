@@ -18,6 +18,7 @@ public record GetCourseResponse
     public required string? ImageUrl { get; init; }
     public required decimal? Price { get; init; }
     public required decimal? RenewalPrice { get; init; }
+    public required StudentLevel? Level { get; init; }
     public required bool IsPublished { get; init; }
     public required int? ExpirationDays { get; init; }
     public required IEnumerable<SingleCourseItem> Items { get; init; } = [];
@@ -29,6 +30,7 @@ public record GetCourseResult
     public required string Title { get; init; }
     public required string? Description { get; init; }
     public required string? ImageUrl { get; init; }
+    public required StudentLevel? Level { get; init; }
     public required decimal? Price { get; init; }
     public required decimal? RenewalPrice { get; init; }
     public required int? ExpirationDays { get; init; }
@@ -70,6 +72,7 @@ public sealed record GetStudentCourseResult
     public required decimal? Price { get; init; }
     public required string Enrollment { get; set; }
     public required decimal? RenewalPrice { get; init; }
+    public required StudentLevel? Level { get; init; }
     public required DateTime? ExpiresAt { get; init; }
     public required int? ExpirationDays { get; init; }
     public IEnumerable<SingleStudentCourseItem> Items { get; set; } = [];
@@ -83,6 +86,7 @@ public sealed record GetStudentCourseResponse
     public required string Title { get; init; }
     public required string? Description { get; init; }
     public required string? ImageUrl { get; init; }
+    public required StudentLevel? Level { get; init; }
     public required string Enrollment { get; set; }
     public required decimal? Price { get; init; }
     public required decimal? RenewalPrice { get; init; }

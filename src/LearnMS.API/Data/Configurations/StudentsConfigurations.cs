@@ -10,6 +10,7 @@ public sealed class StudentsConfigurations : IEntityTypeConfiguration<Student>
     {
         builder.HasBaseType<User>();
 
+        builder.Property(x => x.Level).HasConversion(x => x.ToString(), x => (StudentLevel)Enum.Parse(typeof(StudentLevel), x));
 
     }
 }

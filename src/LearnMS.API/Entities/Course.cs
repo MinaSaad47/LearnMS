@@ -8,6 +8,7 @@ public sealed class Course
     public string? ImageUrl { get; set; }
     public decimal? Price { get; set; }
     public decimal? RenewalPrice { get; set; }
+    public StudentLevel? Level { get; set; }
 
     public List<CourseItem> Items = new();
     public int? ExpirationDays { get; set; }
@@ -37,6 +38,7 @@ public sealed class Course
             if (string.IsNullOrWhiteSpace(ImageUrl)) return false;
             if (Price == null) return false;
             if (RenewalPrice == null) return false;
+            if (Level == null) return false;
             if (ExpirationDays == null) return false;
             return true;
         }

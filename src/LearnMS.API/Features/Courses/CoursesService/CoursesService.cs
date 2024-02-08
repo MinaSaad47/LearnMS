@@ -318,6 +318,11 @@ public sealed class CoursesService : ICoursesService
             course.ImageUrl = command.ImageUrl;
         }
 
+        if (command.Level is not null)
+        {
+            course.Level = command.Level;
+        }
+
 
         _dbContext.Courses.Update(course);
         await _dbContext.SaveChangesAsync();
@@ -377,7 +382,7 @@ public sealed class CoursesService : ICoursesService
             throw new ApiException(CoursesErrors.AlreadyPurchased);
         }
 
-        var course = await _dbContext.Courses.FirstOrDefaultAsync(x => x.Id == command.CourseId && x.IsPublished) ?? throw new ApiException(CoursesErrors.NotFound);
+        var course = await _dbContext.Courses.FirstOrDefaultAsync(x => x.Id == command.CourseId && x.IsPublished && x.Level == student.Level) ?? throw new ApiException(CoursesErrors.NotFound);
 
 
         if (studentCourse is not null)
@@ -463,14 +468,22 @@ public sealed class CoursesService : ICoursesService
 
     public async Task<GetStudentCoursesResult> QueryAsync(GetStudentCoursesQuery query)
     {
+        var student = await _dbContext.Students.FirstOrDefaultAsync(x => x.Id == query.StudentId);
+
+        if (student is null)
+        {
+            throw new ApiException(ProfileErrors.NoStudentFound);
+        }
+
         var result = from courses in _dbContext.Courses
                      join studentCourse in _dbContext.Set<StudentCourse>() on new { CourseId = courses.Id, query.StudentId } equals new { studentCourse.CourseId, studentCourse.StudentId } into groupedStudentCourse
                      from gsc in groupedStudentCourse.DefaultIfEmpty()
-                     where courses.IsPublished
+                     where courses.IsPublished && courses.Level == student.Level
                      select new SingleStudentCourse
                      {
                          Id = courses.Id,
                          Title = courses.Title,
+                         Level = courses.Level,
                          Description = courses.Description,
                          ExpiresAt = gsc != null ? gsc.ExpirationDate : null,
                          Enrollment = gsc != null ? (gsc.ExpirationDate > DateTime.UtcNow ? "Active" : "Expired") : "NotEnrolled",
@@ -494,6 +507,7 @@ public sealed class CoursesService : ICoursesService
                           Title = c.Title,
                           Description = c.Description,
                           ImageUrl = c.ImageUrl,
+                          Level = c.Level,
                           IsPublished = c.IsPublished,
                           Price = c.Price,
                           RenewalPrice = c.RenewalPrice
@@ -503,6 +517,7 @@ public sealed class CoursesService : ICoursesService
         {
             courses = courses.Where(x => x.IsPublished);
         }
+
 
         return new()
         {
@@ -517,6 +532,7 @@ public sealed class CoursesService : ICoursesService
                       where c.Id == query.Id
                       select new GetCourseResult
                       {
+                          Level = c.Level,
                           ExpirationDays = c.ExpirationDays,
                           Id = c.Id,
                           IsPublished = c.IsPublished,
@@ -567,14 +583,22 @@ public sealed class CoursesService : ICoursesService
 
     public async Task<GetStudentCourseResult> QueryAsync(GetStudentCourseQuery query)
     {
+        var student = await _dbContext.Students.FirstOrDefaultAsync(x => x.Id == query.StudentId);
+
+        if (student is null)
+        {
+            throw new ApiException(ProfileErrors.NoStudentFound);
+        }
+
         var courses = from c in _dbContext.Courses
                       join sc in _dbContext.Set<StudentCourse>() on new { CourseId = c.Id, StudentId = query.StudentId } equals new { CourseId = sc.CourseId, StudentId = sc.StudentId } into groupedCourseItems
                       from gci in groupedCourseItems.DefaultIfEmpty()
-                      where c.IsPublished && c.Id == query.Id
+                      where c.IsPublished && c.Id == query.Id && c.Level == student.Level
                       select new GetStudentCourseResult
                       {
                           ExpirationDays = c.ExpirationDays,
                           Id = c.Id,
+                          Level = c.Level,
                           ExpiresAt = gci != null ? gci.ExpirationDate : null,
                           Enrollment = gci != null ? (gci.ExpirationDate > DateTime.UtcNow ? "Active" : "Expired") : "NotEnrolled",
                           Title = c.Title,

@@ -25,6 +25,7 @@ public record SingleCourse
     public required string Title { get; init; }
     public required string? Description { get; init; }
     public required string? ImageUrl { get; init; }
+    public required StudentLevel? Level { get; init; }
     public required decimal? Price { get; init; }
     public required decimal? RenewalPrice { get; init; }
     public required bool IsPublished { get; init; }
@@ -54,6 +55,7 @@ public sealed record SingleStudentCourse
     public required string Title { get; init; }
     public required string? Description { get; init; }
     public required string? ImageUrl { get; init; }
+    public required StudentLevel? Level { get; init; }
     public required decimal? Price { get; init; }
     public required decimal? RenewalPrice { get; init; }
     public required string? Enrollment { get; set; }

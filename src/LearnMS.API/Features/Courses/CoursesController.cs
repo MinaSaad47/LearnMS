@@ -102,9 +102,9 @@ public sealed class CoursesController : ControllerBase
             response = new GetCourseResponse
             {
                 Id = result.Id,
+                Level = result.Level,
                 ExpirationDays = result.ExpirationDays,
                 Description = result.Description,
-
                 ImageUrl = result.ImageUrl,
                 Price = result.Price,
                 RenewalPrice = result.RenewalPrice,
@@ -121,6 +121,7 @@ public sealed class CoursesController : ControllerBase
             response = new GetStudentCourseResponse
             {
                 Id = result.Id,
+                Level = result.Level,
                 ExpirationDays = result.ExpirationDays,
                 Description = result.Description,
                 ImageUrl = result.ImageUrl,
@@ -141,6 +142,7 @@ public sealed class CoursesController : ControllerBase
                 Id = result.Id,
                 Description = result.Description,
                 ImageUrl = result.ImageUrl,
+                Level = result.Level,
                 Price = result.Price,
                 RenewalPrice = result.RenewalPrice,
                 Title = result.Title,
@@ -187,6 +189,7 @@ public sealed class CoursesController : ControllerBase
             Id = courseId,
             Title = request.Title,
             Description = request.Description,
+            Level = request.Level,
             Price = request.Price,
             RenewalPrice = request.RenewalPrice,
             ExpirationDays = request.ExpirationDays

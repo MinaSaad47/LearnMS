@@ -79,13 +79,15 @@ const SignInSignUpPage = () => {
 
   return (
     <div className='w-screen h-screen' id='sign-in-sign-up-body' translate='no'>
-      <h2 className='mb-6 text-4xl font-bold'>Welcome to EduVibe Academy</h2>
+      <h2 className='mb-6 text-4xl italic font-bold'>
+        Welcome to Newton's Academy
+      </h2>
       <div
         className={cn("container", isSignUp ? "right-panel-active" : "")}
         id='container'>
         <div className={"form-container sign-up-container"}>
           <form action='#' onSubmit={registerFrom.handleSubmit(onRegister)}>
-            <h1>Create Account</h1>
+            <h1 className='text-2xl'>Create Account</h1>
             <input
               type='text'
               placeholder='Full Name'
@@ -179,7 +181,7 @@ const SignInSignUpPage = () => {
         </div>
         <div className='form-container sign-in-container'>
           <form onSubmit={loginFrom.handleSubmit(onLogin)}>
-            <h1>Sign in</h1>
+            <h1 className='text-3xl'>Sign in</h1>
             <input
               type='email'
               placeholder='Email'
@@ -206,8 +208,8 @@ const SignInSignUpPage = () => {
         <div className='overlay-container'>
           <div className='overlay'>
             <div className='overlay-panel overlay-left'>
-              <h1>We Missed You our HERO!</h1>
-              <p>Welcome back to your account </p>
+              <h1 className='text-3xl'>We Missed You our HERO!</h1>
+              <p className='text-2xl'>Welcome back to your account </p>
               <button
                 className='ghost'
                 onClick={() => setIsSignUp(false)}
@@ -216,8 +218,10 @@ const SignInSignUpPage = () => {
               </button>
             </div>
             <div className='overlay-panel overlay-right'>
-              <h1>Hello, our HERO!</h1>
-              <p>Enter your personal details to start our journey</p>
+              <h1 className='text-3xl'>Hello, our HERO!</h1>
+              <p className='text-2xl'>
+                Enter your personal details to start our journey
+              </p>
               <button
                 className='ghost'
                 onClick={() => setIsSignUp(true)}

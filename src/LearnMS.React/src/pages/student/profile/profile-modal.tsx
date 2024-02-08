@@ -55,7 +55,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
           <DialogTitle className='flex items-center gap-2'>
             <Avatar className='transition-all duration-500 hover:cursor-pointer hover:scale-110'>
               <AvatarImage src={profile?.profilePicture} />
-              <AvatarFallback className='text-white bg-blue-300'>
+              <AvatarFallback className='text-white bg-color2'>
                 {getFirstCharacters(profile?.fullName)}
               </AvatarFallback>
             </Avatar>
@@ -121,7 +121,7 @@ function ProfileContent() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className='p-4 text-white bg-blue-300 rounded-2xl'>
+        className='p-4 text-white bg-color2 rounded-2xl'>
         <fieldset disabled={updateProfileMutation.isPending}>
           <FormField
             name='fullName'
@@ -129,7 +129,7 @@ function ProfileContent() {
               <FormItem>
                 <FormLabel className='font-bold'>Full Name</FormLabel>
                 <FormControl>
-                  <Input className='text-blue-400' type='text' {...field} />
+                  <Input className='text-color2' type='text' {...field} />
                 </FormControl>
                 <FormDescription className='text-sm text-white text-muted'>
                   Your full name
@@ -144,7 +144,7 @@ function ProfileContent() {
               <FormItem>
                 <FormLabel className='font-bold'>School</FormLabel>
                 <FormControl>
-                  <Input className='text-blue-400' type='text' {...field} />
+                  <Input className='text-color2' type='text' {...field} />
                 </FormControl>
                 <FormDescription className='text-sm text-white text-muted'>
                   Your school
@@ -163,11 +163,11 @@ function ProfileContent() {
                   onValueChange={field.onChange}
                   defaultValue={field.value}>
                   <FormControl>
-                    <SelectTrigger className='text-blue-400'>
+                    <SelectTrigger className='text-color2'>
                       <SelectValue placeholder='Select your level' />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent className='text-blue-400'>
+                  <SelectContent className='text-color2'>
                     <SelectItem value='Level0'>3rd Prep School</SelectItem>
                     <SelectItem value='Level1'>1st Secondary School</SelectItem>
                     <SelectItem value='Level2'>2st Secondary School</SelectItem>
@@ -181,7 +181,7 @@ function ProfileContent() {
               </FormItem>
             )}
           />
-          <Button className='w-full mt-10 bg-blue-500'>
+          <Button className='w-full mt-10 bg-color2'>
             <SaveAll /> Update
           </Button>
         </fieldset>
@@ -228,7 +228,7 @@ function ContactContent() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className='p-4 text-white bg-blue-300 rounded-2xl'>
+        className='p-4 text-white bg-color2 rounded-2xl'>
         <fieldset disabled={updateProfileMutation.isPending}>
           <FormField
             name='phoneNumber'
@@ -236,7 +236,7 @@ function ContactContent() {
               <FormItem>
                 <FormLabel className='font-bold'>Phone Number</FormLabel>
                 <FormControl>
-                  <Input className='text-blue-400' type='text' {...field} />
+                  <Input className='text-color2' type='text' {...field} />
                 </FormControl>
                 <FormDescription className='text-sm text-white text-muted'>
                   We will use this phone number to contact you
@@ -251,7 +251,7 @@ function ContactContent() {
               <FormItem>
                 <FormLabel className='font-bold'>Parent Phone Number</FormLabel>
                 <FormControl>
-                  <Input className='text-blue-400' type='text' {...field} />
+                  <Input className='text-color2' type='text' {...field} />
                 </FormControl>
                 <FormDescription className='text-sm text-white text-muted'>
                   We will use this phone number to contact you
@@ -260,7 +260,7 @@ function ContactContent() {
               </FormItem>
             )}
           />
-          <Button className='w-full mt-10 bg-blue-500'>
+          <Button className='w-full mt-10 bg-color2'>
             <SaveAll /> Update
           </Button>
         </fieldset>

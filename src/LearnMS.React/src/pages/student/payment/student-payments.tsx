@@ -60,43 +60,40 @@ const StudentPayments = () => {
 
   return (
     <div className='flex flex-col items-center justify-center w-full h-full gap-4'>
-      <Card className='w-[80%] p-2 my-10  text-white bg-blue-400'>
-        <CardTitle>Redeem Credits</CardTitle>
-        <p>Redeem credits to purchase courses</p>
-        <CardContent className='p-4'>
-          <Form {...redeemForm}>
-            <form
-              className='flex gap-4'
-              onSubmit={redeemForm.handleSubmit(onSubmit)}>
-              <FormField
-                control={redeemForm.control}
-                name='code'
-                render={({ field }) => (
-                  <FormItem className='w-full'>
-                    <FormControl {...field}>
-                      <Input
-                        className='font-bold text-blue-700'
-                        placeholder='Code'
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button>Redeem</Button>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
-      <Card className='flex items-baseline gap-2 p-2 text-white bg-slate-500'>
-        <CardTitle>
-          <h2 className='text-5xl'>Credit: </h2>
-        </CardTitle>
-        <CardContent>
-          <span className='text-4xl text-center'>{profile.credits} LE</span>
-        </CardContent>
-      </Card>
-
+      <div className='flex items-center justify-center w-full h-full'>
+        <Card className='w-[80%]  p-2 my-10  text-white bg-color2'>
+          <CardTitle>Redeem Credits</CardTitle>
+          <p>Redeem credits to purchase courses</p>
+          <CardContent className='p-4'>
+            <Form {...redeemForm}>
+              <form
+                className='flex gap-4'
+                onSubmit={redeemForm.handleSubmit(onSubmit)}>
+                <FormField
+                  control={redeemForm.control}
+                  name='code'
+                  render={({ field }) => (
+                    <FormItem className='w-full'>
+                      <FormControl {...field}>
+                        <Input
+                          className='font-bold text-color2'
+                          placeholder='Code'
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button
+                  variant='outline'
+                  className='bg-white text-color2 hover:scale-105'>
+                  Redeem
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+      </div>
       <div className='w-full mt-auto'>
         <Footer />
       </div>
