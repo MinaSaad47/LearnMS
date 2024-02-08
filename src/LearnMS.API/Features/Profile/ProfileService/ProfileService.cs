@@ -62,13 +62,25 @@ public sealed class ProfileService : IProfileService
 
     }
 
-    public async Task<GetProfileResult> QueryAsync(GetProfileQuery query)
+    public async Task<GetProfileResult?> QueryAsync(GetProfileQuery query)
     {
-        var profile = await _dbContext.Accounts.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == query.Id);
+        // var profile = await _dbContext.Accounts.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == query.Id);
 
-        return new()
-        {
-            Account = profile
-        };
+        var result = from accounts in _dbContext.Accounts
+                     join students in _dbContext.Students on accounts.Id equals students.Id into groupedStudents
+                     from gs in groupedStudents.DefaultIfEmpty()
+                     where accounts.Id == query.Id
+                     select new GetProfileResult
+                     {
+                         Account = accounts,
+                         FullName = gs != null ? gs.FullName : null,
+                         Level = gs != null ? gs.Level : null,
+                         ParentPhoneNumber = gs != null ? gs.ParentPhoneNumber : null,
+                         PhoneNumber = gs != null ? gs.PhoneNumber : null,
+                         School = gs != null ? gs.SchoolName : null,
+                     };
+
+
+        return await result.FirstOrDefaultAsync();
     }
 }

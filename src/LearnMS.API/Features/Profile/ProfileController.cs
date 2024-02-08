@@ -60,7 +60,7 @@ public sealed class ProfileController : ControllerBase
         var result = await _profileService.QueryAsync(new GetProfileQuery { Id = user.Id });
 
 
-        if (result.Account is null)
+        if (result is null or { Account: null })
         {
             throw new ApiException(ProfileErrors.NotLoggedIn);
         }
@@ -71,7 +71,11 @@ public sealed class ProfileController : ControllerBase
             {
                 Id = result.Account.Id,
                 Email = result.Account.Email,
-                Name = result.Account.User is Student ? ((Student)result.Account.User).FullName : null,
+                FullName = result.FullName,
+                Level = result.Level,
+                ParentPhoneNumber = result.ParentPhoneNumber,
+                PhoneNumber = result.PhoneNumber,
+                School = result.School,
                 Permissions = result.Account.User is Assistant ? ((Assistant)result.Account.User).Permissions.ToArray() : null,
                 ProfilePicture = result.Account.ProfilePicture,
                 Role = result.Account.User!.Role.ToString(),

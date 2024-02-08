@@ -7,5 +7,5 @@ public interface IProfileService
 {
     public Task ExecuteAsync(UpdateStudentProfileCommand command);
 
-    public Task<GetProfileResult> QueryAsync(GetProfileQuery query);
+    public Task<GetProfileResult?> QueryAsync(GetProfileQuery query);
 }

@@ -15,3 +15,9 @@ export function validateEgyptianPhoneNumber(phoneNumber?: string) {
 
   return regex.test(phoneNumber);
 }
+
+export function getFirstCharacters(string: string) {
+  const [firstName, lastName] = string.split(" ");
+
+  return firstName?.[0] + lastName?.[0];
+}

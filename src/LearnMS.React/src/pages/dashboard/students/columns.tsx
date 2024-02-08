@@ -31,13 +31,11 @@ export const studentsColumns: ColumnDef<Student>[] = [
     header: "Profile Picture",
     cell: ({ row }) => {
       const student = row.original;
-      const [firstName, lastName] = student.fullName.split(" ");
       return (
         <Avatar className='m-auto'>
           <AvatarImage src={student.profilePicture} alt='' />
           <AvatarFallback className='text-blue-500 bg-blue-200'>
-            {firstName?.[0]}
-            {lastName?.[0]}
+            getFirstCharacters(student.fullName)
           </AvatarFallback>
         </Avatar>
       );
