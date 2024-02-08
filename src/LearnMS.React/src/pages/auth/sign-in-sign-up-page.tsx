@@ -30,7 +30,7 @@ const SignInSignUpPage = () => {
       fullName: "",
       parentPhoneNumber: "",
       school: "",
-      level: "0",
+      level: "Level0",
     },
   });
   const registerErrors = registerFrom.formState.errors;
@@ -40,7 +40,7 @@ const SignInSignUpPage = () => {
       onSuccess: (data) => {
         toast({
           title: "Register successful",
-          description: `registered successfully with id ${data.data.id}`,
+          description: data.message,
         });
       },
       onError: () => {},
