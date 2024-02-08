@@ -1,4 +1,5 @@
 import { useCoursesQuery } from "@/api/courses-api";
+import Footer from "@/components/footer";
 import Loading from "@/components/loading/loading";
 import {
   Card,
@@ -34,26 +35,31 @@ export const StudentCoursesPage = () => {
         </h3>
       </div>
       <div className='absolute flex flex-wrap w-full gap-4 top-[550px] '>
-        <div className='z-10 flex flex-wrap w-full gap-4 p-20'>
+        <div className='z-10 grid w-full grid-cols-2 gap-8 p-20 md:grid-cols-4'>
           {data?.data.items.map((course) => (
             <CourseCard key={course.id} course={course} />
           ))}
         </div>
       </div>
       <div className='z-0 bottom-0 rounded-t-[50%]  -translate-y-1/2 bg-white h-full w-full'></div>
+      <Footer />
     </div>
   );
 };
 
 function CourseCard({ course }: { course: Course }) {
   return (
-    <Card className='bg-white/70 h-fit border-blue-300 border-[3px] relative w-[20%] hover:bg-zinc-300 transition-all duration-300 hover:scale-125 hover:cursor-pointer'>
+    <Card className='bg-white/70  border-blue-300 border-[3px] w-full h-full relative hover:bg-zinc-300 transition-all duration-300 hover:scale-125 hover:cursor-pointer'>
       <Link to={`/courses/${course.id}`}>
         <CardHeader>
           <p>{course.title}</p>
         </CardHeader>
-        <CardContent>
-          <img src={course.imageUrl ?? ""} alt='Course Image' />
+        <CardContent className='object-cover'>
+          <img
+            className='w-full h-full'
+            src={course.imageUrl ?? ""}
+            alt='Course Image'
+          />
         </CardContent>
         <CardFooter>
           {course.enrollment === "Expired" ? (

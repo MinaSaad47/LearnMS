@@ -159,14 +159,15 @@ const SignInSignUpPage = () => {
             <Controller
               render={({ field }) => (
                 <select className='box' {...field}>
-                  <option value={"1"}>1st Secondary</option>
-                  <option value={"2"}>2nd Secondary</option>
-                  <option value={"3"}>3rd Secondary</option>
+                  <option value={"Level0"}>3rd Prep School</option>
+                  <option value={"Level1"}>1st Secondary</option>
+                  <option value={"Level2"}>2nd Secondary</option>
+                  <option value={"Level3"}>3rd Secondary</option>
                 </select>
               )}
               control={registerFrom.control}
               name='level'
-              defaultValue={"1"}
+              defaultValue={"Level0"}
             />
             {registerErrors?.level && (
               <p className='text-red-500 form-error'>
@@ -216,7 +217,7 @@ const SignInSignUpPage = () => {
             </div>
             <div className='overlay-panel overlay-right'>
               <h1>Hello, our HERO!</h1>
-              <p>Enter your personal details to start our journy</p>
+              <p>Enter your personal details to start our journey</p>
               <button
                 className='ghost'
                 onClick={() => setIsSignUp(true)}

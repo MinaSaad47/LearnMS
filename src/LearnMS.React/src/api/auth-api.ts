@@ -1,5 +1,6 @@
 import { ApiResponse, api } from "@/api";
 import { toast } from "@/components/ui/use-toast";
+import { validateEgyptianPhoneNumber } from "@/lib/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 
@@ -16,14 +17,16 @@ export type LoginResponse = {
 
 export const RegisterRequest = z
   .object({
-    level: z.enum(["0", "1", "2"], {
+    level: z.enum(["Level0", "Level1", "Level2", "Level3"], {
       errorMap: () => ({ message: "Level is required" }),
     }),
     fullName: z.string().min(1, { message: "Name is required" }),
-    phoneNumber: z.string().min(1, { message: "Phone number is required" }),
-    parentPhoneNumber: z
-      .string()
-      .min(1, { message: "Parent phone number is required" }),
+    phoneNumber: z.string().refine(validateEgyptianPhoneNumber, {
+      message: "Invalid egyptian phone number",
+    }),
+    parentPhoneNumber: z.string().refine(validateEgyptianPhoneNumber, {
+      message: "Invalid egyptian phone number",
+    }),
     school: z.string().min(1, { message: "School is required" }),
     email: z.string().email().min(1, { message: "Email is required" }),
     password: z

@@ -9,11 +9,13 @@ const NavBar = () => {
   return (
     <div className='top-0 left-0 flex items-start justify-around w-full gap-2 py-4 shadow-2xl rounded-b-2xl'>
       <div>
-        <Button
-          variant='outline'
-          className='transition-all duration-500 border-0 hover:text-white hover:bg-blue-400'>
-          Home
-        </Button>
+        <Link to='/'>
+          <Button
+            variant='outline'
+            className='transition-all duration-500 border-0 hover:text-white hover:bg-blue-400'>
+            Home
+          </Button>
+        </Link>
         <Link to='/courses'>
           <Button
             variant='outline'

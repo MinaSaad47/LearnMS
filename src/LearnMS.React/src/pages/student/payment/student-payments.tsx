@@ -1,5 +1,6 @@
 import { RedeemRequest, useRedeemMutation } from "@/api/credits-api";
 import { useProfileQuery } from "@/api/profile-api";
+import Footer from "@/components/footer";
 import Loading from "@/components/loading/loading";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
@@ -58,8 +59,8 @@ const StudentPayments = () => {
   };
 
   return (
-    <div className='flex flex-col items-center justify-center w-full h-full gap-4 p-10'>
-      <Card className='w-full p-2 text-white bg-blue-400 '>
+    <div className='flex flex-col items-center justify-center w-full h-full gap-4'>
+      <Card className='w-[80%] p-2 my-10  text-white bg-blue-400'>
         <CardTitle>Redeem Credits</CardTitle>
         <p>Redeem credits to purchase courses</p>
         <CardContent className='p-4'>
@@ -95,6 +96,10 @@ const StudentPayments = () => {
           <span className='text-4xl text-center'>{profile.credits} LE</span>
         </CardContent>
       </Card>
+
+      <div className='w-full mt-auto'>
+        <Footer />
+      </div>
     </div>
   );
 };

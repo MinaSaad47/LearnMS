@@ -14,7 +14,7 @@ import QuizPage from "@/pages/dashboard/quizzes/quiz-page";
 import StudentsPage from "@/pages/dashboard/students/students-page";
 import { StudentCoursePage } from "@/pages/student/courses/student-course-page";
 import { StudentCoursesPage } from "@/pages/student/courses/student-courses-page";
-import StudentHomePage from "@/pages/student/home/student-home.page";
+import StudentHomePage2 from "@/pages/student/home/student-home.page";
 import StudentLecturePage from "@/pages/student/lectures/student-lecture-page";
 import StudentLessonPage from "@/pages/student/lessons/student-lesson-page";
 import StudentPayments from "@/pages/student/payment/student-payments";
@@ -33,7 +33,7 @@ function App() {
             <StudentLayout />
           </RequireAuth>
         }>
-        <Route path='/' element={<StudentHomePage />} />
+        <Route path='/' element={<StudentHomePage2 />} />
 
         <Route path='courses' element={<StudentCoursesPage />} />
         <Route path='courses/:courseId' element={<StudentCoursePage />} />
