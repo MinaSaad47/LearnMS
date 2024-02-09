@@ -10,6 +10,7 @@ using LearnMS.API.Middlewares;
 using LearnMS.API.Security;
 using LearnMS.API.Security.JwtBearer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -22,6 +23,7 @@ using tusdotnet.Stores;
 var builder = WebApplication.CreateBuilder(args);
 {
     var cfg = builder.Configuration;
+
 
 
     builder.Services.AddHttpContextAccessor();
@@ -57,6 +59,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers().AddNewtonsoftJson();
+builder.Services.Configure<ApiBehaviorOptions>(opts =>
+{
+    opts.InvalidModelStateResponseFactory = ApiWrapper.Failure.GenerateErrorResponse;
+});
 // builder.Services.AddControllers().AddJsonOptions(opts =>
 // {
 //     opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());

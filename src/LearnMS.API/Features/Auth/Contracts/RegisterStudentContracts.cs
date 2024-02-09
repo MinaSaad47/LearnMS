@@ -1,9 +1,13 @@
+using System.ComponentModel.DataAnnotations;
 using LearnMS.API.Entities;
-
 namespace LearnMS.API.Features.Auth;
 
 public sealed record RegisterStudentRequest(
+
+    [Required]
+    [EmailAddress]
     string Email,
+    [Required]
     string Password,
     string School,
     string FullName,
@@ -17,15 +21,16 @@ public sealed record RegisterStudentExternalRequest(
     string Provider
 );
 
-public sealed record RegisterStudentCommand(
-    string Email,
-    string Password,
-    string School,
-    string FullName,
-    string PhoneNumber,
-    string ParentPhoneNumber,
-    StudentLevel Level
-);
+public sealed record RegisterStudentCommand
+{
+    public required string Email;
+    public required string Password;
+    public required string School;
+    public required string FullName;
+    public required string PhoneNumber;
+    public required string ParentPhoneNumber;
+    public required StudentLevel Level;
+};
 
 
 

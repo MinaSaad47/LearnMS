@@ -6,6 +6,7 @@ namespace LearnMS.API.Features.Auth;
 
 [Route("api/auth")]
 [Tags("Auth")]
+[ApiController]
 public sealed class AuthController : ControllerBase
 {
 
@@ -20,9 +21,18 @@ public sealed class AuthController : ControllerBase
 
     [HttpPost("students/register")]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    public async Task<ApiWrapper.Success<RegisterResult>> RegisterStudent([FromBody] RegisterStudentCommand request)
+    public async Task<ApiWrapper.Success<RegisterResult>> RegisterStudent([FromBody] RegisterStudentRequest request)
     {
-        var result = await _authService.ExecuteAsync(request);
+        var result = await _authService.ExecuteAsync(new RegisterStudentCommand
+        {
+            Email = request.Email,
+            FullName = request.FullName,
+            Level = request.Level,
+            ParentPhoneNumber = request.ParentPhoneNumber,
+            Password = request.Password,
+            PhoneNumber = request.PhoneNumber,
+            School = request.School
+        });
 
         Response.StatusCode = StatusCodes.Status201Created;
 
