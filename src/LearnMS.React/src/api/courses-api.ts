@@ -99,3 +99,14 @@ export const usePublishingCourseMutation = () => {
         .then((res) => res.data),
   });
 };
+
+export const useDeleteCourseMutation = () => {
+  const qc = useQueryClient();
+  return useMutation<ApiResponse<{}>, {}, { id: string }>({
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["courses"] });
+    },
+    mutationFn: ({ id }) =>
+      api.delete(`/api/courses/${id}`).then((res) => res.data),
+  });
+};

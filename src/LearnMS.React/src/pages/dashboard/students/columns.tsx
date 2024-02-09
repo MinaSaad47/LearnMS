@@ -1,3 +1,5 @@
+import { useDeleteStudentMutation } from "@/api/students-api";
+import Confirmation from "@/components/confirmation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +18,7 @@ import {
   CreditCard,
   MailCheck,
   MoreHorizontal,
+  Trash,
 } from "lucide-react";
 
 const levelMap = {
@@ -84,6 +87,11 @@ export const studentsColumns: ColumnDef<Student>[] = [
     cell: ({ row }) => {
       const student = row.original;
       const { openModal } = useModalStore();
+      const deleteStudentMutation = useDeleteStudentMutation();
+
+      const onDeleting = () => {
+        deleteStudentMutation.mutate({ id: student.id });
+      };
 
       return (
         <DropdownMenu>
@@ -113,10 +121,21 @@ export const studentsColumns: ColumnDef<Student>[] = [
               <MailCheck /> Verify Email
             </DropdownMenuItem>
             */}
-            <DropdownMenuItem className='flex items-center gap-2 hover:cursor-pointer hover:bg-blue-600 hover:text-white'>
-              <MoreHorizontal />
-              View Details
-            </DropdownMenuItem>
+            <div className='flex items-center w-full gap-2 hover:cursor-pointer hover:text-red-500'>
+              <Confirmation
+                button={
+                  <Button
+                    className='flex w-full gap-2 text-red-500 border-none hover:bg-red-500 hover:text-white'
+                    variant='outline'>
+                    <Trash className='w-4 h-4' />
+                    Delete
+                  </Button>
+                }
+                title='Are you sure you want to delete this student?'
+                description='This action cannot be undone.'
+                onConfirm={onDeleting}
+              />
+            </div>
           </DropdownMenuContent>
         </DropdownMenu>
       );

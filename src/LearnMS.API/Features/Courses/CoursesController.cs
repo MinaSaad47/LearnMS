@@ -37,6 +37,19 @@ public sealed class CoursesController : ControllerBase
         };
     }
 
+    [HttpDelete("{courseId:guid}")]
+    public async Task<ApiWrapper.Success<object?>> Delete(Guid courseId)
+    {
+        await _coursesService.ExecuteAsync(new DeleteCourseCommand
+        {
+            Id = courseId
+        });
+        return new()
+        {
+            Message = "Course deleted successfully"
+        };
+    }
+
     [HttpGet]
     [ProducesResponseType(typeof(ApiWrapper.Success<GetCoursesResponse>), 200)]
     [ProducesResponseType(typeof(ApiWrapper.Success<GetStudentCoursesResponse>), 200)]

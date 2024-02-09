@@ -17,6 +17,20 @@ public sealed class LecturesController : ControllerBase
         _currentUserService = currentUserService;
     }
 
+    [HttpDelete("{lectureId:guid}")]
+    public async Task<ApiWrapper.Success<object?>> Delete(Guid lectureId, Guid courseId)
+    {
+        await _coursesService.ExecuteAsync(new DeleteLectureCommand
+        {
+            CourseId = courseId,
+            Id = lectureId
+        });
+        return new()
+        {
+            Message = "Lecture deleted successfully"
+        };
+    }
+
     [HttpPost("{lectureId:guid}/buy")]
     [ApiAuthorize(Role = UserRole.Student)]
     public async Task<ApiWrapper.Success<object?>> Buy(Guid lectureId, Guid courseId)

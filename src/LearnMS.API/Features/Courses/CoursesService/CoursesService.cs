@@ -466,6 +466,60 @@ public sealed class CoursesService : ICoursesService
         await _dbContext.SaveChangesAsync();
     }
 
+    public async Task ExecuteAsync(DeleteCourseCommand command)
+    {
+        var course = _dbContext.Courses.FirstOrDefault(x => x.Id == command.Id);
+
+        if (course is null)
+        {
+            throw new ApiException(CoursesErrors.NotFound);
+        }
+
+        _dbContext.Remove(course);
+
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task ExecuteAsync(DeleteLectureCommand command)
+    {
+        var result = from courses in _dbContext.Courses
+                     join courseItems in _dbContext.Set<CourseItem>() on courses.Id equals courseItems.CourseId
+                     join lectures in _dbContext.Set<Lecture>() on courseItems.Id equals lectures.Id
+                     where lectures.Id == command.Id && courses.Id == command.CourseId
+                     select courseItems;
+
+        var lecture = await result.FirstOrDefaultAsync();
+
+        if (lecture is null)
+        {
+            throw new ApiException(LecturesErrors.NotFound);
+        }
+
+        _dbContext.Remove(lecture);
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task ExecuteAsync(DeleteLessonCommand command)
+    {
+        var result = from courses in _dbContext.Courses
+                     join courseItems in _dbContext.Set<CourseItem>() on courses.Id equals courseItems.CourseId
+                     join lectures in _dbContext.Set<Lecture>() on courseItems.Id equals lectures.Id
+                     join lectureItems in _dbContext.Set<LectureItem>() on lectures.Id equals lectureItems.LectureId
+                     join lessons in _dbContext.Set<Lesson>() on lectureItems.Id equals lessons.Id
+                     where lectures.Id == command.LectureId && courses.Id == command.CourseId && lessons.Id == command.Id
+                     select lectureItems;
+
+        var lesson = await result.FirstOrDefaultAsync();
+
+        if (lesson is null)
+        {
+            throw new ApiException(LessonsErrors.NotFound);
+        }
+
+        _dbContext.Remove(lesson);
+        await _dbContext.SaveChangesAsync();
+    }
+
     public async Task<GetStudentCoursesResult> QueryAsync(GetStudentCoursesQuery query)
     {
         var student = await _dbContext.Students.FirstOrDefaultAsync(x => x.Id == query.StudentId);

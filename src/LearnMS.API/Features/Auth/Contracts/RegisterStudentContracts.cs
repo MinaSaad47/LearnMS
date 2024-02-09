@@ -4,15 +4,19 @@ namespace LearnMS.API.Features.Auth;
 
 public sealed record RegisterStudentRequest(
 
-    [Required]
-    [EmailAddress]
+    [Required, EmailAddress]
     string Email,
-    [Required]
+    [Required, MinLength(8)]
     string Password,
+    [Required]
     string School,
+    [Required]
     string FullName,
+    [Required]
     string PhoneNumber,
+    [Required]
     string ParentPhoneNumber,
+    [Required]
     StudentLevel Level
 );
 

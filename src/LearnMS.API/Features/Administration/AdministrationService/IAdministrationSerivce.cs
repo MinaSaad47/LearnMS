@@ -88,6 +88,24 @@ public sealed class AdministrationService : IAdministrationService
         await _dbContext.SaveChangesAsync();
     }
 
+    public async Task ExecuteAsync(DeleteAssistantCommand command)
+    {
+
+        var assistant = await _dbContext.Assistants
+            .Include(x => x.Accounts)
+            .FirstOrDefaultAsync(x => x.Id == command.Id);
+
+
+        if (assistant is null)
+        {
+            throw new ApiException(AdministrationErrors.AssistantNotFound);
+        }
+
+
+        _dbContext.Assistants.Remove(assistant);
+        await _dbContext.SaveChangesAsync();
+    }
+
     public async Task<GetAssistantsResponse> QueryAsync(GetAssistantsQuery query)
     {
         var result = from assistants in _dbContext.Set<Assistant>()
@@ -111,6 +129,7 @@ public interface IAdministrationService
 
     public Task ExecuteAsync(UpdateAssistantCommand command);
     public Task ExecuteAsync(CreateAssistantCommand command);
+    public Task ExecuteAsync(DeleteAssistantCommand command);
     public Task ExecuteAsync(CreateTeacherCommand command);
 
 

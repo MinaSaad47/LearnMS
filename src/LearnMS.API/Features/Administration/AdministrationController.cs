@@ -49,6 +49,20 @@ public sealed class AdministrationController : ControllerBase
         };
     }
 
+    [HttpDelete("assistants/{assistantId:guid}")]
+    public async Task<ApiWrapper.Success<object?>> DeleteAssistant(Guid assistantId)
+    {
+        await _assistantsService.ExecuteAsync(new DeleteAssistantCommand
+        {
+            Id = assistantId
+        });
+
+        return new()
+        {
+            Message = "Assistant deleted"
+        };
+    }
+
     [HttpPatch("assistants/{assistantId:guid}")]
     public async Task<ApiWrapper.Success<object?>> PatchAssistant([FromBody] UpdateAssistantRequest request, Guid assistantId)
     {

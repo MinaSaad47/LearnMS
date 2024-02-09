@@ -83,3 +83,14 @@ export const addStudentCreditMutation = () => {
       api.post(`/api/students/${id}/credit`, data).then((res) => res.data),
   });
 };
+
+export const useDeleteStudentMutation = () => {
+  const qc = useQueryClient();
+  return useMutation<ApiResponse<{}>, {}, { id: string }>({
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["students"] });
+    },
+    mutationFn: ({ id }) =>
+      api.delete(`/api/students/${id}`).then((res) => res.data),
+  });
+};

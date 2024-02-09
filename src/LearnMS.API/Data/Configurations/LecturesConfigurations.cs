@@ -15,6 +15,6 @@ public sealed class LecturesConfigurations : IEntityTypeConfiguration<Lecture>
         // builder.Property(x => x.Items).HasField("_items").UsePropertyAccessMode(PropertyAccessMode.Field);
         builder.HasMany(x => x.Items).WithOne().HasForeignKey(x => x.LectureId);
 
-        builder.HasOne<CourseItem>().WithOne().HasForeignKey<Lecture>(x => x.Id);
+        builder.HasOne<CourseItem>().WithOne().HasForeignKey<Lecture>(x => x.Id).OnDelete(DeleteBehavior.Cascade);
     }
 }

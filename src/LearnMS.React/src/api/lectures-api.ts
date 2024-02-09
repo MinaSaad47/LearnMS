@@ -101,3 +101,24 @@ export const usePublishingLectureMutation = () => {
     },
   });
 };
+
+export const useDeleteLectureMutation = () => {
+  const qc = useQueryClient();
+  return useMutation<
+    ApiResponse<{}>,
+    {},
+    { lectureId: string; courseId: string }
+  >({
+    onSuccess: (_, { lectureId, courseId }) => {
+      qc.invalidateQueries({
+        queryKey: ["lecture", { id: lectureId, courseId }],
+      });
+      qc.invalidateQueries({ queryKey: ["course", { id: courseId }] });
+      qc.invalidateQueries({ queryKey: ["courses"] });
+    },
+    mutationFn: ({ lectureId, courseId }) =>
+      api
+        .delete(`/api/courses/${courseId}/lectures/${lectureId}`)
+        .then((res) => res.data),
+  });
+};

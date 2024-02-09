@@ -29,6 +29,19 @@ public sealed class StudentsController(IStudentsService studentsService) : Contr
         };
     }
 
+    [HttpDelete("{studentId:guid}")]
+    public async Task<ApiWrapper.Success<object?>> Delete(Guid studentId)
+    {
+        await studentsService.ExecuteAsync(new DeleteStudentCommand
+        {
+            Id = studentId
+        });
+        return new()
+        {
+            Message = "Deleted all students"
+        };
+    }
+
     [HttpPost]
     [ApiAuthorize(Role = UserRole.Assistant, Permissions = [Permission.ManageStudents])]
     public async Task<ApiWrapper.Success<object?>> Post([FromBody] CreateStudentRequest request)

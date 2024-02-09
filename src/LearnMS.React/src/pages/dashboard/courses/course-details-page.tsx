@@ -1,9 +1,11 @@
 import {
   useCourseQuery,
+  useDeleteCourseMutation,
   usePublishingCourseMutation,
   useUpdateCourseMutation,
 } from "@/api/courses-api";
 import { AddLectureRequest, useAddLectureMutation } from "@/api/lectures-api";
+import Confirmation from "@/components/confirmation";
 import Loading from "@/components/loading/loading";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -39,15 +41,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Edit2, ListCollapse, LucideMove, Menu, Settings2 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { UpdateCourseRequest } from "../../../api/courses-api";
 
 const CourseDetailsPage = () => {
   const { courseId } = useParams();
+  const navigate = useNavigate();
 
   const { data: course, isLoading, isError } = useCourseQuery(courseId!);
 
   const publishingCourseMutation = usePublishingCourseMutation();
+  const deleteCourseMutation = useDeleteCourseMutation();
 
   if (isLoading) {
     return (
@@ -77,11 +81,33 @@ const CourseDetailsPage = () => {
     );
   };
 
+  const onDeleting = () => {
+    deleteCourseMutation.mutate(
+      { id: course!.data.id! },
+      {
+        onSuccess() {
+          toast({
+            title: "Deleting",
+            description: "Successfully deleted the course",
+          });
+          navigate("/dashboard/courses", { replace: true });
+        },
+      }
+    );
+  };
+
   return (
     <div className='w-full h-full p-4'>
       <div className='flex justify-between w-full'>
         <h1 className='text-3xl'>Course Setup</h1>
         <div className='flex gap-2 item-center'>
+          <Confirmation
+            disabled={deleteCourseMutation.isPending}
+            button={<Button variant='destructive'>Delete</Button>}
+            description='Are you sure you want to delete this course?'
+            title='Delete Course'
+            onConfirm={onDeleting}
+          />
           <Button
             onClick={onPublishing}
             className='text-blue-500 bg-white border border-blue-500 rounded hover:bg-blue-500 hover:text-white'>

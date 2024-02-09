@@ -18,6 +18,21 @@ public sealed class LessonsController : ControllerBase
         _currentUserService = currentUserService;
     }
 
+    [HttpDelete("{lessonId:guid}")]
+    public async Task<ApiWrapper.Success<object?>> Delete(Guid courseId, Guid lectureId, Guid lessonId)
+    {
+        await _coursesService.ExecuteAsync(new DeleteLessonCommand
+        {
+            CourseId = courseId,
+            Id = lessonId,
+            LectureId = lectureId
+        });
+        return new()
+        {
+            Message = "Lesson deleted successfully"
+        };
+    }
+
     [HttpGet("{lessonId:guid}")]
     [ApiAuthorize()]
     public async Task<ApiWrapper.Success<GetLessonResponse>> Get(Guid courseId, Guid lectureId, Guid lessonId)

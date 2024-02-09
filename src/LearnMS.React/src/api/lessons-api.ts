@@ -100,3 +100,26 @@ export const useAddLessonMutation = () => {
     },
   });
 };
+
+export const useDeleteLessonMutation = () => {
+  const qc = useQueryClient();
+  return useMutation<
+    ApiResponse<{}>,
+    {},
+    { courseId: string; lectureId: string; lessonId: string }
+  >({
+    onSuccess: (_, { courseId, lectureId }) => {
+      qc.invalidateQueries({ queryKey: ["course", { id: courseId }] });
+      qc.invalidateQueries({
+        queryKey: ["lecture", { id: lectureId, courseId }],
+      });
+      qc.invalidateQueries({ queryKey: ["courses"] });
+    },
+    mutationFn: ({ courseId, lectureId, lessonId }) =>
+      api
+        .delete(
+          `/api/courses/${courseId}/lectures/${lectureId}/lessons/${lessonId}`
+        )
+        .then((res) => res.data),
+  });
+};

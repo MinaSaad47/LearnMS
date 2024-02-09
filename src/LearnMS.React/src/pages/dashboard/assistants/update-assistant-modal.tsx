@@ -1,8 +1,10 @@
 import {
   UpdateAssistantRequest,
+  useDeleteAssistantMutation,
   usePermissionsQuery,
   useUpdateAssistantMutation,
 } from "@/api/assistants-api";
+import Confirmation from "@/components/confirmation";
 import Loading from "@/components/loading/loading";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,6 +42,7 @@ const UpdateAssistantModal: React.FC<UpdateAssistantModal> = ({
   assistant,
 }) => {
   const { data: permissions, isLoading } = usePermissionsQuery();
+  const deleteAssistantMutation = useDeleteAssistantMutation();
 
   const updateAssistantMutation = useUpdateAssistantMutation();
 
@@ -71,6 +74,21 @@ const UpdateAssistantModal: React.FC<UpdateAssistantModal> = ({
       ...permissionsValues,
     },
   });
+
+  const onDeleting = () => {
+    deleteAssistantMutation.mutate(
+      { id: assistant.id },
+      {
+        onSuccess: () => {
+          toast({
+            title: "Assistant deleted",
+            description: "Assistant deleted successfully",
+          });
+          onClose();
+        },
+      }
+    );
+  };
 
   if (isLoading) {
     return <Loading />;
@@ -143,7 +161,17 @@ const UpdateAssistantModal: React.FC<UpdateAssistantModal> = ({
                   )}
                 />
               ))}
-              <DialogFooter>
+              <DialogFooter className='mt-4'>
+                <Confirmation
+                  button={
+                    <Button variant='destructive' className='me-auto'>
+                      Delete
+                    </Button>
+                  }
+                  title='Are you sure you want to delete this assistant?'
+                  description='This action cannot be undone.'
+                  onConfirm={onDeleting}
+                />
                 <Button type='submit'>Submit</Button>
               </DialogFooter>
             </fieldset>

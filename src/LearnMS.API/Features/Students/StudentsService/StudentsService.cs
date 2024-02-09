@@ -50,6 +50,19 @@ public sealed class StudentsService(AppDbContext db, IPasswordHasher passwordHas
         await db.SaveChangesAsync();
     }
 
+    public async Task ExecuteAsync(DeleteStudentCommand command)
+    {
+        var student = await db.Students.FirstOrDefaultAsync(x => x.Id == command.Id);
+
+        if (student is null)
+        {
+            throw new ApiException(StudentsErrors.NotFound);
+        }
+
+        db.Remove(student);
+        await db.SaveChangesAsync();
+    }
+
     public async Task<PageList<SingleStudent>> QueryAsync(GetStudentsQuery query)
     {
         var result = from students in db.Set<Student>()

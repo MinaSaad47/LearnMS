@@ -1,8 +1,10 @@
 import {
   UpdateLessonRequest,
+  useDeleteLessonMutation,
   useLessonsQuery,
   useUpdateLessonMutation,
 } from "@/api/lessons-api";
+import Confirmation from "@/components/confirmation";
 import Loading from "@/components/loading/loading";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,10 +22,11 @@ import { LessonDetails } from "@/types/lessons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ListCollapse, Settings2 } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const LessonDetailsPage = () => {
   const { courseId, lectureId, lessonId } = useParams();
+  const navigate = useNavigate();
 
   const {
     data: lesson,
@@ -35,6 +38,8 @@ const LessonDetailsPage = () => {
     lessonId: lessonId!,
   });
 
+  const deleteLessonMutation = useDeleteLessonMutation();
+
   if (isLoading) {
     return (
       <div className='flex items-center justify-center w-full h-full'>
@@ -42,6 +47,27 @@ const LessonDetailsPage = () => {
       </div>
     );
   }
+
+  const onDeleting = () => {
+    deleteLessonMutation.mutate(
+      {
+        lectureId: lectureId!,
+        courseId: courseId!,
+        lessonId: lessonId!,
+      },
+      {
+        onSuccess() {
+          navigate(`/dashboard/courses/${courseId}/lectures/${lectureId}`, {
+            replace: true,
+          });
+          toast({
+            title: "Deleting",
+            description: "Successfully deleted the lesson",
+          });
+        },
+      }
+    );
+  };
 
   if (isError) {
     return;
@@ -51,6 +77,14 @@ const LessonDetailsPage = () => {
     <div className='w-full h-full p-4'>
       <div className='flex justify-between w-full'>
         <h1 className='text-3xl'>Lesson Setup</h1>
+        <div className='flex gap-2 item-center'>
+          <Confirmation
+            button={<Button variant='destructive'>Delete</Button>}
+            title='Are you sure you want to delete this lesson?'
+            description='This action cannot be undone.'
+            onConfirm={onDeleting}
+          />
+        </div>
       </div>
 
       <div className='grid w-full grid-cols-2 mt-10'>

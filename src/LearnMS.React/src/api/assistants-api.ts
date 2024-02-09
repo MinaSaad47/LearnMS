@@ -65,3 +65,16 @@ export const useCreateAssistantMutation = () => {
     },
   });
 };
+
+export const useDeleteAssistantMutation = () => {
+  const qc = useQueryClient();
+  return useMutation<ApiResponse<{}>, {}, { id: string }>({
+    mutationFn: ({ id }) =>
+      api
+        .delete(`/api/administration/assistants/${id}`)
+        .then((res) => res.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["assistants"] });
+    },
+  });
+};

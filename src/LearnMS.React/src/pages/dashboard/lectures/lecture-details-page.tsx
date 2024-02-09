@@ -1,10 +1,12 @@
 import {
   UpdateLectureRequest,
+  useDeleteLectureMutation,
   useLectureQuery,
   usePublishingLectureMutation,
   useUpdateLectureMutation,
 } from "@/api/lectures-api";
 import { AddLessonRequest, useAddLessonMutation } from "@/api/lessons-api";
+import Confirmation from "@/components/confirmation";
 import Loading from "@/components/loading/loading";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -33,10 +35,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Edit2, ListCollapse, LucideMove, Menu, Settings2 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 const LectureDetailsPage = () => {
   const { courseId, lectureId } = useParams();
+  const navigate = useNavigate();
 
   console.log({ courseId, lectureId });
 
@@ -47,6 +50,7 @@ const LectureDetailsPage = () => {
   } = useLectureQuery({ courseId: courseId!, lectureId: lectureId! });
 
   const publishingLectureMutation = usePublishingLectureMutation();
+  const deleteLectureMutation = useDeleteLectureMutation();
 
   if (isLoading) {
     return (
@@ -76,6 +80,26 @@ const LectureDetailsPage = () => {
     );
   };
 
+  const onDeleting = () => {
+    deleteLectureMutation.mutate(
+      {
+        lectureId: lectureId!,
+        courseId: courseId!,
+      },
+      {
+        onSuccess() {
+          navigate(`/dashboard/courses/${courseId}`, {
+            replace: true,
+          });
+          toast({
+            title: "Deleting",
+            description: "Successfully deleted the lecture",
+          });
+        },
+      }
+    );
+  };
+
   if (isError) {
     return;
   }
@@ -85,6 +109,13 @@ const LectureDetailsPage = () => {
       <div className='flex justify-between w-full'>
         <h1 className='text-3xl'>Lecture Setup</h1>
         <div className='flex gap-2 item-center'>
+          <Confirmation
+            button={<Button variant='destructive'>Delete</Button>}
+            title='Are you sure you want to delete this lecture?'
+            description='This action cannot be undone.'
+            onConfirm={onDeleting}
+          />
+
           <Button
             disabled={publishingLectureMutation.isPending}
             onClick={onPublish}
