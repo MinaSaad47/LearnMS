@@ -26,6 +26,10 @@ function App() {
     <Routes>
       <Route path='/sign-in-sign-up' element={<SignInSignUpPage />} />
 
+      <Route path='/' element={<StudentLayout />}>
+        <Route path='/' element={<StudentHomePage2 />} />
+      </Route>
+
       <Route
         path='/'
         element={
@@ -33,8 +37,6 @@ function App() {
             <StudentLayout />
           </RequireAuth>
         }>
-        <Route path='/' element={<StudentHomePage2 />} />
-
         <Route path='courses' element={<StudentCoursesPage />} />
         <Route path='courses/:courseId' element={<StudentCoursePage />} />
         <Route

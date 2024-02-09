@@ -238,8 +238,8 @@ function CourseDetailsForm({
                   <SelectContent>
                     <SelectItem value='Level0'>3rd Prep School</SelectItem>
                     <SelectItem value='Level1'>1st Secondary School</SelectItem>
-                    <SelectItem value='Level2'>2st Secondary School</SelectItem>
-                    <SelectItem value='Level3'>3st Secondary School</SelectItem>
+                    <SelectItem value='Level2'>2nd Secondary School</SelectItem>
+                    <SelectItem value='Level3'>3rd Secondary School</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />

@@ -17,6 +17,11 @@ module.exports = {
       },
     },
     extend: {
+      fontFamily: {
+        patua: "Patua One",
+        signika: "Signika",
+        catamaran: "Catamaran",
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -27,8 +32,8 @@ module.exports = {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
         },
-        color1: "rgb(14, 9, 15)",
-        color2: "rgb(96, 112, 255)",
+        color1: "#1c1850",
+        color2: "#4e28fc",
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",

@@ -1,6 +1,7 @@
 import Footer from "@/components/footer";
 import { Flame, HandMetalIcon, School2 } from "lucide-react";
 import { ReactNode } from "react";
+import { Link } from "react-router-dom";
 
 const StudentHomePage = () => {
   return (
@@ -15,8 +16,8 @@ const StudentHomePage = () => {
 
 const HomeSection = () => {
   return (
-    <section className='relative min-h-[1400px] md:min-h-[800px] flex flex-col items-center text-center p-10'>
-      <div className="absolute top-0 left-0 w-full h-[700px] bg-cover bg-no-repeat overflow-hidden bg-[url('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2F4.bp.blogspot.com%2F-HfYl6MlH9gU%2FU0-VHPd0JeI%2FAAAAAAAAA5Q%2Fr0F4xE7a9v8%2Fs1600%2Fmath-photography-hd-wallpaper-1920x1200-9897.jpg&f=1&nofb=1&ipt=638a0886543efacbe870c72e4ea9f8825b66c8a0a4d15d32dea0c62fe381ca0d&ipo=images')]">
+    <section className='font-patua min-h-[1400px] md:min-h-[800px] flex flex-col items-center text-center p-10'>
+      <div className="z-10 absolute top-[140px] right-[70px] w-[500px] h-[500px] bg-cover bg-center bg-repeat overflow-hidden bg-[url('/home.png')]">
         <svg
           className='absolute bottom-0 left-0 z-10 h-72'
           data-name='Layer 1'
@@ -29,31 +30,30 @@ const HomeSection = () => {
             fill='white'></path>
         </svg>
       </div>
-      <div className='z-20 flex flex-col items-center gap-10 m-auto my-10'>
-        <h1 className='text-3xl font-bold md:text-6xl text-color1'>
+      <div className='z-20 flex flex-col items-start gap-10 m-auto my-0 md:my-10'>
+        <h1 className='text-4xl font-bold md:text-6xl text-color1'>
           MR RAFIK ISAAC
         </h1>
-        <h2 className='text-lg md:text-2xl w-[60%] text-center font-bold text-color1'>
-          Don't Waste Your Time, Check Out Our Productive Courses. Our Self
-          Improvement Courses Is Very Effective
-        </h2>
-        <button className='px-4 py-2 text-white transition-all duration-300 rounded-full bg-color2 w-fit hover:text-xl'>
-          Let's Start
-        </button>
-        <div className='flex flex-wrap items-center justify-center gap-4'>
+
+        <Link
+          to='/sign-in-sign-up'
+          className='px-4 py-2 ml-auto text-xl text-white transition-all duration-300 rounded-full md:mr-0 bg-color2 w-fit hover:text-xl'>
+          <button>Let's Start</button>
+        </Link>
+        <div className='flex flex-wrap items-center justify-center gap-4 mt-20'>
           <CardItem
-            title='Mission'
-            description='We Foster Our Students’ Love For Learning, Encourage Them To Try New And Exciting Things, And Give Them A Solid Foundation To Build On.'
+            title='Learn'
+            description=''
             icon={<School2 className='w-10 h-10' />}
           />
           <CardItem
-            title='Vision'
-            description='Our Vision Is To Develop Well Rounded, Confident And Responsible Individuals Who Aspire To Achieve Their Full Potential.'
+            title='Practice'
+            description=''
             icon={<Flame className='w-10 h-10' />}
           />
           <CardItem
-            title='Goal'
-            description='If You Are Looking For High-Quality And Reliable Online Courses. It Will Be Us'
+            title='Achieve'
+            description=''
             icon={<HandMetalIcon className='w-10 h-10' />}
           />
         </div>
@@ -74,14 +74,18 @@ function CardItem({
   icon: ReactNode;
 }) {
   return (
-    <div className='group hover:cursor-pointer w-[300px] flex flex-col items-center gap-2 h-[300px] bg-white/60 border-[rgb(96, 112, 255, 0.7)] border-[3px] shadow-2xl text-color2 rounded-3xl p-4 '>
-      <div className='flex items-center justify-center w-20 h-20 text-white transition-all duration-300 rounded-full bg-color1 group-hover:bg-color2'>
+    <div className='group hover:cursor-pointer w-[300px] flex justify-center flex-col items-center gap-2 h-[300px] bg-white/60 border-[rgb(96, 112, 255, 0.7)] border-[3px] shadow-2xl text-color2 rounded-3xl p-4 '>
+      <div className='flex items-center justify-center w-20 h-20 text-white transition-all duration-300 rounded-full bg-color2 group-hover:bg-color1'>
         {icon}
       </div>
-      <h3 className='text-2xl font-bold transition-all duration-300 text-color1 group-hover:text-color2'>
+      <h3 className='text-2xl font-bold transition-all duration-300 text-color2 group-hover:text-color1'>
         {title}
       </h3>
-      <p className='text-sm font-bold text-center text-color2'>{description}</p>
+      {description && (
+        <p className='text-sm font-bold text-center text-color2'>
+          {description}
+        </p>
+      )}
     </div>
   );
 }
