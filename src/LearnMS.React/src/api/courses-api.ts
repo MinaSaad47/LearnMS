@@ -35,6 +35,7 @@ export const UpdateCourseRequest = z.object({
     .number()
     .min(0, { message: "Expiration days must be greater than 0" }),
   imageUrl: z.string().url().min(1, { message: "Image URL is required" }),
+  level: z.enum(["Level0", "Level1", "Level2", "Level3"]),
 });
 
 export type UpdateCourseRequest = z.infer<typeof UpdateCourseRequest>;

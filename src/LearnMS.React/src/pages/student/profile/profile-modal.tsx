@@ -97,8 +97,9 @@ function ProfileContent() {
       school: profile?.school ?? "",
     },
     defaultValues: {
-      phoneNumber: profile?.phoneNumber ?? "",
-      parentPhoneNumber: profile?.parentPhoneNumber ?? "",
+      fullName: profile?.fullName ?? "",
+      level: profile?.level ?? "Level0",
+      school: profile?.school ?? "",
     },
   });
 
@@ -181,7 +182,7 @@ function ProfileContent() {
               </FormItem>
             )}
           />
-          <Button className='w-full mt-10 bg-color2'>
+          <Button className='w-full mt-10 bg-color2 hover:bg-white hover:text-color2'>
             <SaveAll /> Update
           </Button>
         </fieldset>
@@ -260,7 +261,7 @@ function ContactContent() {
               </FormItem>
             )}
           />
-          <Button className='w-full mt-10 bg-color2'>
+          <Button className='w-full mt-10 bg-color2 hover:bg-white hover:text-color2'>
             <SaveAll /> Update
           </Button>
         </fieldset>

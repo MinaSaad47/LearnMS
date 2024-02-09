@@ -23,6 +23,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
 import { CourseDetails } from "@/types/courses";
@@ -98,6 +105,7 @@ function CourseDetailsForm({
   expirationDays,
   renewalPrice,
   imageUrl,
+  level,
   price,
 }: CourseDetails) {
   const updateCourseMutation = useUpdateCourseMutation();
@@ -108,11 +116,13 @@ function CourseDetailsForm({
       description,
       title,
       expirationDays,
+      level,
       renewalPrice,
       price,
       imageUrl,
     },
     values: {
+      level,
       description,
       title,
       expirationDays,
@@ -182,6 +192,30 @@ function CourseDetailsForm({
                 <FormControl>
                   <Textarea className='text-blue-500' {...field} />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />{" "}
+          <FormField
+            name='level'
+            render={({ field }) => (
+              <FormItem className='p-3 bg-blue-200 border-2 border-blue-400 rounded'>
+                <FormLabel className='text-blue-500'>Level</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger className='text-blue-500'>
+                      <SelectValue placeholder='Select a level' />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value='Level0'>3rd Prep School</SelectItem>
+                    <SelectItem value='Level1'>1st Secondary School</SelectItem>
+                    <SelectItem value='Level2'>2st Secondary School</SelectItem>
+                    <SelectItem value='Level3'>3st Secondary School</SelectItem>
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}

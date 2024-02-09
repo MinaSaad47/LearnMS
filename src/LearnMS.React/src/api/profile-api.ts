@@ -1,8 +1,6 @@
 import { ApiResponse, api } from "@/api";
-import { toast } from "@/components/ui/use-toast";
 import { validateEgyptianPhoneNumber } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
 import { z } from "zod";
 
 type Permission = "view" | "create" | "update" | "delete";
@@ -54,16 +52,6 @@ export const useProfileQuery = () => {
     },
   });
 
-  useEffect(() => {
-    if (query.isSuccess && query.data.isAuthenticated) {
-      toast({
-        title: "Greeting",
-        description: `Welcome ${query.data.email}`,
-        variant: "default",
-      });
-    }
-  }, [query.isSuccess]);
-
   return { profile: query.data, ...query };
 };
 
@@ -103,6 +91,7 @@ export const useUpdateProfileMutation = () => {
       api.patch("/api/profile", data).then((res) => res.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["profile"] });
+      qc.invalidateQueries({ queryKey: ["courses"] });
     },
   });
 };

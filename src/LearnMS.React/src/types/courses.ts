@@ -8,6 +8,7 @@ export type CourseDetails = Course & {
 export type Course = {
   id: string;
   title: string;
+  level: "Level0" | "Level1" | "Level2" | "Level3";
   description: string;
   enrollment: "Expired" | "Active" | "NotEnrolled" | undefined;
   expiresAt?: string;
