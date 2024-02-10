@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using LearnMS.API.Entities;
 
 namespace LearnMS.API.Features.CreditCodes.Contracts;
@@ -9,6 +10,7 @@ public record SellCreditCodesCommand
 
 public record SellCreditCodesRequest
 {
+    [Required]
     public required List<string> Codes { get; init; }
 }
 

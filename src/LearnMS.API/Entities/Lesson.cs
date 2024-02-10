@@ -5,5 +5,7 @@ public class Lesson
     public Guid Id { get; set; }
     public required string Title { get; set; }
     public required string Description { get; set; }
+    public required decimal RenewalPrice { get; set; }
+    public required int ExpirationHours { get; set; }
     public required string VideoSrc { get; set; }
 }

@@ -3,6 +3,7 @@ using LearnMS.API.Data;
 using LearnMS.API.Entities;
 using LearnMS.API.Features.Courses.Contracts;
 using LearnMS.API.Features.Profile;
+using LearnMS.API.Features.Students;
 using Microsoft.EntityFrameworkCore;
 
 namespace LearnMS.API.Features.Courses;
@@ -194,6 +195,8 @@ public sealed class CoursesService : ICoursesService
         var lesson = new Lesson
         {
             Title = command.Title,
+            RenewalPrice = command.RenewalPrice,
+            ExpirationHours = command.ExpirationHours,
             Description = command.Description,
             VideoSrc = command.VideoSrc
 
@@ -255,6 +258,18 @@ public sealed class CoursesService : ICoursesService
         {
             lesson.VideoSrc = command.VideoSrc;
         }
+
+        if (command.ExpirationHours is not null && command.ExpirationHours > 0)
+        {
+            lesson.ExpirationHours = command.ExpirationHours.Value;
+        }
+
+        if (command.RenewalPrice is not null && command.RenewalPrice > 0)
+        {
+
+            lesson.RenewalPrice = command.RenewalPrice.Value;
+        }
+
 
         _dbContext.Lessons.Update(lesson);
 
@@ -517,6 +532,69 @@ public sealed class CoursesService : ICoursesService
         }
 
         _dbContext.Remove(lesson);
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task ExecuteAsync(RenewLessonExpirationCommand command)
+    {
+        var result = from courses in _dbContext.Courses
+                     join courseItems in _dbContext.Set<CourseItem>() on courses.Id equals courseItems.CourseId
+                     join lectures in _dbContext.Set<Lecture>() on courseItems.Id equals lectures.Id
+                     join lectureItems in _dbContext.Set<LectureItem>() on lectures.Id equals lectureItems.LectureId
+                     join lessons in _dbContext.Set<Lesson>() on lectureItems.Id equals lessons.Id
+                     where courses.Id == command.CourseId && lessons.Id == command.LessonId && lectures.Id == command.LectureId && courses.IsPublished && courseItems.IsPublished
+                     select lessons;
+
+        var lesson = await result.FirstOrDefaultAsync() ?? throw new ApiException(LessonsErrors.NotFound);
+
+        var student = await _dbContext.Students.FirstOrDefaultAsync(x => x.Id == command.StudentId) ?? throw new ApiException(StudentsErrors.NotFound);
+
+        var studentLesson = await _dbContext.Set<StudentLesson>()
+            .FirstOrDefaultAsync(x => x.LessonId == command.LessonId && x.StudentId == command.StudentId);
+
+        if (studentLesson is null) return;
+
+        if (student.Credit < lesson.RenewalPrice)
+        {
+            throw new ApiException(ProfileErrors.InsufficientCredits);
+        }
+
+        student.Credit -= lesson.RenewalPrice;
+        _dbContext.Update(student);
+
+        _dbContext.Remove(studentLesson);
+        await _dbContext.SaveChangesAsync();
+
+    }
+
+    public async Task ExecuteAsync(StartLessonCommand command)
+    {
+        var result = from courses in _dbContext.Courses
+                     join courseItems in _dbContext.Set<CourseItem>() on courses.Id equals courseItems.CourseId
+                     join lectures in _dbContext.Set<Lecture>() on courseItems.Id equals lectures.Id
+                     join lectureItems in _dbContext.Set<LectureItem>() on lectures.Id equals lectureItems.LectureId
+                     join lessons in _dbContext.Set<Lesson>() on lectureItems.Id equals lessons.Id
+                     where courses.Id == command.CourseId && lessons.Id == command.LessonId && lectures.Id == command.LectureId && courses.IsPublished && courseItems.IsPublished
+                     select lessons;
+
+        var lesson = await result.FirstOrDefaultAsync() ?? throw new ApiException(LessonsErrors.NotFound);
+
+
+        var studentLesson = await _dbContext.Set<StudentLesson>()
+            .FirstOrDefaultAsync(x => x.LessonId == command.LessonId && x.StudentId == command.StudentId);
+
+        if (studentLesson is not null)
+        {
+            throw new ApiException(LessonsErrors.AlreadyAcceptedExpirationRule);
+        }
+
+        await _dbContext.AddAsync(new StudentLesson
+        {
+            ExpirationDate = DateTime.UtcNow.AddHours(lesson.ExpirationHours),
+            LessonId = command.LessonId,
+            StudentId = command.StudentId
+        });
+
         await _dbContext.SaveChangesAsync();
     }
 
@@ -834,20 +912,36 @@ public sealed class CoursesService : ICoursesService
             throw new ApiException(LessonsErrors.NotFound);
         }
 
-        var result = from courseItem in _dbContext.Set<CourseItem>()
-                     join lectureItem in _dbContext.Set<LectureItem>() on courseItem.Id equals lectureItem.LectureId
-                     join lesson in _dbContext.Set<Lesson>() on lectureItem.Id equals lesson.Id
-                     where lesson.Id == query.LessonId
-                     select new GetStudentLessonResult
-                     {
-                         Id = lesson.Id,
-                         Title = lesson.Title,
-                         Description = lesson.Description,
-                         VideoSrc = lesson.VideoSrc
-                     };
+        var result = await (from courseItem in _dbContext.Set<CourseItem>()
+                            join lectureItem in _dbContext.Set<LectureItem>() on courseItem.Id equals lectureItem.LectureId
+                            join lesson in _dbContext.Set<Lesson>() on lectureItem.Id equals lesson.Id
+                            join studentLesson in _dbContext.Set<StudentLesson>() on lesson.Id equals studentLesson.LessonId into groupedStudentLessons
+                            from studentLesson in groupedStudentLessons.DefaultIfEmpty()
+                            where lesson.Id == query.LessonId
+                            select new
+                            {
+                                lesson,
+                                studentLesson
+                            }).FirstOrDefaultAsync();
+
+        if (result is null || result.lesson is null)
+        {
+            throw new ApiException(LessonsErrors.NotFound);
+        }
 
 
-        return await result.FirstOrDefaultAsync() ?? throw new ApiException(LessonsErrors.NotFound);
+
+        return new()
+        {
+            Id = result.lesson.Id,
+            RenewalPrice = result.lesson.RenewalPrice,
+            Title = result.lesson.Title,
+            Description = result.lesson.Description,
+            ExpirationHours = result.lesson.ExpirationHours,
+            Enrollment = result.studentLesson == null ? "NotEnrolled" : (result.studentLesson.ExpirationDate > DateTime.UtcNow ? "Active" : "Expired"),
+            ExpiresAt = result.studentLesson?.ExpirationDate,
+            VideoSrc = result.studentLesson == null || result.studentLesson.ExpirationDate > DateTime.UtcNow ? result.lesson.VideoSrc : null,
+        };
     }
 
     public async Task<GetLessonResult> QueryAsync(GetLessonQuery query)
@@ -862,6 +956,8 @@ public sealed class CoursesService : ICoursesService
                       lectureItem.Id == query.LessonId
                       select new GetLessonResult
                       {
+                          ExpirationHours = lesson.ExpirationHours,
+                          RenewalPrice = lesson.RenewalPrice,
                           Id = lesson.Id,
                           Title = lesson.Title,
                           Description = lesson.Description,

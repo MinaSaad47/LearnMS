@@ -1,3 +1,4 @@
+import { Enrollment } from "@/types/enrollment";
 import { Lesson } from "./lessons";
 import { Quiz } from "./quiz";
 
@@ -10,11 +11,9 @@ export type Lecture = {
   description: string;
   price: number;
   renewalPrice: number;
-  enrollment: "Expired" | "Active" | "NotEnrolled" | undefined;
   isPublished?: boolean;
   expirationDays: number;
-  expiresAt?: Date;
-};
+} & Enrollment;
 
 export type LectureDetails = Lecture & {
   items: (Quiz | Lesson)[];

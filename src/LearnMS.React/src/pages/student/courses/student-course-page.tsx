@@ -54,7 +54,7 @@ function CourseHeader({ course }: { course: CourseDetails }) {
           <CardContent>
             <p>{course.description}</p>
           </CardContent>
-          {new Date(course.expiresAt!) < new Date() ? (
+          {course.enrollment !== "Active" ? (
             <BuyButton course={course} />
           ) : (
             <Badge variant='destructive' className='self-end w-fit'>
@@ -91,15 +91,15 @@ function CourseItem({
           </CardContent>
         )}
         <CardHeader>
-          {item.expiresAt != null && item.isExpired ? (
+          {item.type === "Lecture" && item.enrollment === "Expired" ? (
             <p>{item.renewalPrice}</p>
           ) : (
             <p>{item.price} LE</p>
           )}
 
           <p className='text-left'>
-            {item.expiresAt &&
-              !item.isExpired &&
+            {item.type === "Lecture" &&
+              item.enrollment === "Active" &&
               `Expires on ${new Date(item.expiresAt).toDateString()}`}
           </p>
           <div className='flex justify-end'>
@@ -134,7 +134,14 @@ export function BuyButton({ course }: { course: CourseDetails }) {
         onClick={() => setIsOpen(!isOpen)}
         className='px-6 py-2 mt-auto mb-3 text-3xl transition-all duration-300 bg-pink-500 ms-auto hover:scale-105 hover:text-pink-400 hover:bg-white hover:border-pink-400'
         asChild>
-        <Button variant='outline'>Buy for {course.price} LE</Button>
+        <Button variant='outline'>
+          {course.enrollment === "NotEnrolled" && (
+            <div>Buy for {course.price} LE</div>
+          )}
+          {course.enrollment === "Expired" && (
+            <div>Renew for {course.renewalPrice} LE</div>
+          )}
+        </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

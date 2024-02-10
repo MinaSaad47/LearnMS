@@ -48,15 +48,21 @@ public sealed class AdministrationService : IAdministrationService
 
     public async Task ExecuteAsync(CreateTeacherCommand command)
     {
-        var account = new Account
+        var account = await _dbContext.Accounts
+                .FirstOrDefaultAsync(x => x.Email == command.Email);
+
+        if (account != null)
+        {
+            throw new ApiException(AdministrationErrors.EmailAlreadyRegistered);
+        }
+
+        var teacher = Teacher.Register(new Account
         {
             Email = command.Email,
             PasswordHash = _passwordHasher.Hash(command.Password),
             ProviderType = ProviderType.Local,
             VerifiedAt = DateTime.UtcNow
-        };
-
-        var teacher = Teacher.Register(account);
+        });
 
         await _dbContext.Teachers.AddAsync(teacher);
         await _dbContext.SaveChangesAsync();

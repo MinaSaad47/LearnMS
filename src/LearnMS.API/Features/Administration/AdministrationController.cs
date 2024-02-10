@@ -20,7 +20,7 @@ public sealed class AdministrationController : ControllerBase
     }
 
     [HttpPost("teachers")]
-    public async Task<ApiWrapper.Success<object?>> PostTeacher([FromBody] CreateTeacherCommand request)
+    public async Task<ApiWrapper.Success<object?>> PostTeacher([FromBody] CreateTeacherRequest request)
     {
         await _assistantsService.ExecuteAsync(new CreateTeacherCommand
         {
@@ -35,7 +35,7 @@ public sealed class AdministrationController : ControllerBase
     }
 
     [HttpPost("assistants")]
-    public async Task<ApiWrapper.Success<object?>> PostAssistant([FromBody] CreateAssistantCommand request)
+    public async Task<ApiWrapper.Success<object?>> PostAssistant([FromBody] CreateAssistantRequest request)
     {
         await _assistantsService.ExecuteAsync(new CreateAssistantCommand
         {

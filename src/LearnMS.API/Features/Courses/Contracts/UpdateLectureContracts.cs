@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace LearnMS.API.Features.Courses.Contracts;
 
 public sealed record UpdateLectureCommand
@@ -16,10 +18,16 @@ public sealed record UpdateLectureCommand
 public sealed record UpdateLectureRequest
 {
     public Guid CourseId { get; init; }
+    [Length(0, 100)]
     public string? Title { get; init; }
+    [Length(0, 1000)]
     public string? Description { get; init; }
+    [Range(0, 100)]
     public decimal? Price { get; init; }
+    [Url]
     public string? ImageUrl { get; init; }
+    [Range(0, 100)]
     public decimal? RenewalPrice { get; init; }
+    [Range(0, 1000)]
     public int? ExpirationDays { get; init; }
 }

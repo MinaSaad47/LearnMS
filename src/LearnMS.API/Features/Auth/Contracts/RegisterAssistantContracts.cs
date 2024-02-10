@@ -1,7 +1,11 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace LearnMS.API.Features.Auth;
 
 public sealed record RegisterAssistantRequest(
+    [Required, EmailAddress]
     string Email,
+    [Required, MinLength(8)]
     string Password
 );
 

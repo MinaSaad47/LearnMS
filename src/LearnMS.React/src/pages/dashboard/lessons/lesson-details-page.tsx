@@ -103,6 +103,8 @@ function LessonDetailsContent({
   id,
   description,
   title,
+  expirationHours,
+  renewalPrice,
   videoSrc,
   courseId,
   lectureId,
@@ -111,8 +113,14 @@ function LessonDetailsContent({
 
   const form = useForm<UpdateLessonRequest>({
     resolver: zodResolver(UpdateLessonRequest),
-    defaultValues: { description, title, videoSrc },
-    values: { description, title, videoSrc },
+    defaultValues: {
+      description,
+      title,
+      videoSrc,
+      expirationHours,
+      renewalPrice,
+    },
+    values: { description, title, videoSrc, expirationHours, renewalPrice },
   });
 
   const onSubmit = (data: UpdateLessonRequest) => {
@@ -174,6 +182,35 @@ function LessonDetailsContent({
                 <FormLabel className='text-blue-500'>Description</FormLabel>
                 <FormControl>
                   <Textarea className='text-blue-500' {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name='renewalPrice'
+            render={({ field }) => (
+              <FormItem className='p-3 bg-blue-200 border-2 border-blue-400 rounded'>
+                <FormLabel className='text-blue-500'>Renewal Price</FormLabel>
+                <FormControl>
+                  <Input type='number' className='text-blue-500' {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='expirationHours'
+            render={({ field }) => (
+              <FormItem className='p-3 bg-blue-200 border-2 border-blue-400 rounded'>
+                <FormLabel className='text-blue-500'>
+                  Expiration Hours
+                </FormLabel>
+                <FormControl>
+                  <Input type='number' className='text-blue-500' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

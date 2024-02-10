@@ -122,3 +122,24 @@ export const useDeleteLectureMutation = () => {
         .then((res) => res.data),
   });
 };
+
+export const useBuyLectureMutation = () => {
+  const qc = useQueryClient();
+  return useMutation<
+    ApiResponse<{}>,
+    {},
+    { lectureId: string; courseId: string }
+  >({
+    onSuccess: (_, { lectureId, courseId }) => {
+      qc.invalidateQueries({
+        queryKey: ["lecture", { id: lectureId, courseId }],
+      });
+      qc.invalidateQueries({ queryKey: ["course", { id: courseId }] });
+      qc.invalidateQueries({ queryKey: ["courses"] });
+    },
+    mutationFn: ({ lectureId, courseId }) =>
+      api
+        .post(`/api/courses/${courseId}/lectures/${lectureId}/buy`)
+        .then((res) => res.data),
+  });
+};

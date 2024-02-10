@@ -20,6 +20,8 @@ public interface ICoursesService
     public Task ExecuteAsync(UpdateLessonCommand command);
     public Task ExecuteAsync(BuyCourseCommand command);
     public Task ExecuteAsync(BuyLectureCommand command);
+    public Task ExecuteAsync(RenewLessonExpirationCommand command);
+    public Task ExecuteAsync(StartLessonCommand command);
 
 
     // queries

@@ -1,4 +1,12 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace LearnMS.API.Features.CreditCodes.Contracts;
+
+public sealed record RedeemCreditCodeRequest
+{
+    [Required]
+    public required string Code { get; init; }
+};
 
 public sealed record RedeemCreditCodeCommand
 {

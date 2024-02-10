@@ -34,12 +34,14 @@ public sealed class LessonsController : ControllerBase
     }
 
     [HttpGet("{lessonId:guid}")]
+    [ProducesResponseType(typeof(GetLessonResponse), 200)]
+    [ProducesResponseType(typeof(GetStudentLessonResponse), 200)]
     [ApiAuthorize()]
-    public async Task<ApiWrapper.Success<GetLessonResponse>> Get(Guid courseId, Guid lectureId, Guid lessonId)
+    public async Task<ApiWrapper.Success<object>> Get(Guid courseId, Guid lectureId, Guid lessonId)
     {
         var currentUser = await _currentUserService.GetUserAsync();
 
-        GetLessonResponse response;
+        object response;
 
         if (currentUser!.Role != UserRole.Student)
         {
@@ -47,7 +49,9 @@ public sealed class LessonsController : ControllerBase
 
             response = new GetLessonResponse
             {
+                ExpirationHours = result.ExpirationHours,
                 Description = result.Description,
+                RenewalPrice = result.RenewalPrice,
                 Id = result.Id,
                 Title = result.Title,
                 VideoSrc = result.VideoSrc
@@ -60,6 +64,10 @@ public sealed class LessonsController : ControllerBase
 
             response = new GetStudentLessonResponse
             {
+                ExpirationHours = result.ExpirationHours,
+                Enrollment = result.Enrollment,
+                ExpiresAt = result.ExpiresAt,
+                RenewalPrice = result.RenewalPrice,
                 Description = result.Description,
                 Id = result.Id,
                 Title = result.Title,
@@ -80,8 +88,10 @@ public sealed class LessonsController : ControllerBase
         await _coursesService.ExecuteAsync(new CreateLessonCommand
         {
             VideoSrc = request.VideoSrc,
+            RenewalPrice = request.RenewalPrice,
             Title = request.Title,
             CourseId = courseId,
+            ExpirationHours = request.ExpirationHours,
             Description = request.Description,
             LectureId = lectureId
         });
@@ -102,6 +112,9 @@ public sealed class LessonsController : ControllerBase
             Id = lessonId,
             Title = request.Title,
             Description = request.Description,
+            ExpirationHours = request.ExpirationHours,
+            VideoSrc = request.VideoSrc,
+            RenewalPrice = request.RenewalPrice,
             CourseId = courseId,
             LectureId = lectureId
         });
@@ -112,5 +125,44 @@ public sealed class LessonsController : ControllerBase
         };
     }
 
+    [HttpPost("{lessonId:guid}/start")]
+    [ApiAuthorize(Role = UserRole.Student)]
+    public async Task<ApiWrapper.Success<object?>> Start(Guid lessonId, Guid courseId, Guid lectureId)
+    {
+        var currentUser = await _currentUserService.GetUserAsync();
 
+        await _coursesService.ExecuteAsync(new StartLessonCommand
+        {
+            CourseId = courseId,
+            LessonId = lessonId,
+            LectureId = lectureId,
+            StudentId = currentUser!.Id
+        });
+
+        return new()
+        {
+            Message = "Accepted expiration rule successfully"
+        };
+    }
+
+    [HttpPost("{lessonId:guid}/renew")]
+    [ApiAuthorize(Role = UserRole.Student)]
+    public async Task<ApiWrapper.Success<object?>> RenewExpiration(Guid lessonId, Guid courseId, Guid lectureId)
+    {
+        var currentUser = await _currentUserService.GetUserAsync();
+
+        await _coursesService.ExecuteAsync(new RenewLessonExpirationCommand
+        {
+            CourseId = courseId,
+            LessonId = lessonId,
+            LectureId = lectureId,
+            StudentId = currentUser!.Id
+        });
+
+        return new()
+        {
+            Message = "Renewed expiration successfully"
+        };
+
+    }
 }

@@ -39,10 +39,17 @@ public sealed class CreditCodesController : ControllerBase
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ApiAuthorize(Role = UserRole.Assistant)]
-    public async Task<ApiWrapper.Success<object?>> Post([FromBody] GenerateCreditCodesCommand request)
+    public async Task<ApiWrapper.Success<object?>> Post([FromBody] GenerateCreditCodesRequest request)
     {
+        var currentUser = await _currentUserService.GetUserAsync();
+
+        await _creditCodesService.ExecuteAsync(new GenerateCreditCodesCommand
+        {
+            Count = request.Count,
+            Value = request.Value,
+            AssistantId = currentUser!.Role == UserRole.Assistant ? currentUser.Id : null,
+        });
         Response.StatusCode = StatusCodes.Status201Created;
-        await _creditCodesService.ExecuteAsync(request);
         return new()
         {
             Message = "successfully created credit codes"

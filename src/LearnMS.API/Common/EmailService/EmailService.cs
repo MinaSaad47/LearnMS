@@ -26,7 +26,7 @@ public sealed class EmailService(IOptions<EmailConfig> cfg, ILogger<EmailService
 
         await smtp.AuthenticateAsync(cfg.Value.Username, cfg.Value.Password);
 
-        logger.LogInformation("[EmailService] ==> sending email using {@email}", email);
+        logger.LogInformation("[EmailService] ==> sending {@subject} email to {@address}", request.Subject, request.To);
 
         await smtp.SendAsync(email);
 

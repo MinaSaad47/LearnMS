@@ -406,12 +406,14 @@ function AddLessonForm({
 }) {
   const addLecture = useAddLessonMutation();
 
-  const form = useForm({
+  const form = useForm<AddLessonRequest>({
     resolver: zodResolver(AddLessonRequest),
     defaultValues: {
       title: "",
       description: "",
       VideoSrc: "",
+      expirationHours: 0,
+      renewalPrice: 0,
     },
   });
 
@@ -459,6 +461,34 @@ function AddLessonForm({
                 <FormLabel className='text-blue-500'>Description</FormLabel>
                 <FormControl>
                   <Input type='text' className='text-blue-500' {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='renewalPrice'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className='text-blue-500'>Renewal Price</FormLabel>
+                <FormControl>
+                  <Input type='number' className='text-blue-500' {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='expirationHours'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className='text-blue-500'>
+                  Expiration Hours
+                </FormLabel>
+                <FormControl>
+                  <Input type='number' className='text-blue-500' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

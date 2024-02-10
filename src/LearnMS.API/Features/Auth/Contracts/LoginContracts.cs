@@ -1,7 +1,11 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace LearnMS.API.Features.Auth.Contracts;
 
 public sealed record LoginRequest(
+        [Required, EmailAddress]
     string Email,
+        [Required, MinLength(8)]
     string Password
 );
 

@@ -1,6 +1,9 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace LearnMS.API.Features.Courses.Contracts;
 
 public sealed record CreateCourseRequest(
+        [Required,Length(3,100)]
     string Name
 );
 

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using LearnMS.API.Entities;
 
 namespace LearnMS.API.Features.Profile.Contracts;
@@ -5,10 +6,14 @@ namespace LearnMS.API.Features.Profile.Contracts;
 public sealed record UpdateStudentProfileRequest
 {
     public string? FullName { get; init; }
+    [Url]
     public string? ProfilePicture { get; init; }
 
+    [Length(11, 11)]
     public string? PhoneNumber { get; init; }
+    [Length(11, 11)]
     public string? ParentPhoneNumber { get; init; }
+    [MinLength(0)]
     public string? SchoolName { get; init; }
     public StudentLevel? Level { get; init; }
 }
