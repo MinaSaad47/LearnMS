@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
+import PaymentBackground from "@/pages/student/payment/payment-background";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Navigate } from "react-router-dom";
@@ -59,7 +60,10 @@ const StudentPayments = () => {
   };
 
   return (
-    <div className='flex flex-col items-center justify-center w-full h-full gap-4'>
+    <div className='flex flex-col items-center justify-center w-full h-full gap-2'>
+      <div className='h-[300px] md:h-[500px]'>
+        <PaymentBackground />
+      </div>
       <div className='flex items-center justify-center w-full h-full'>
         <Card className='w-[80%]  p-2 my-10  text-white bg-color2'>
           <CardTitle>Redeem Credits</CardTitle>

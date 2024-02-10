@@ -1,4 +1,4 @@
-import { FaFacebook, FaGoogle, FaTwitter } from "react-icons/fa";
+import { FaFacebook, FaWhatsapp, FaYoutube } from "react-icons/fa";
 
 const Footer = () => {
   return (
@@ -15,14 +15,20 @@ const Footer = () => {
         </svg>
       </div>
       <div className='w-full text-white bg-color2 h-[250px] flex items-center justify-center gap-5'>
-        <a className='transition-all duration-300 hover:cursor-pointer hover:scale-125'>
+        <a
+          href='https://www.facebook.com/people/Newtons-Academy-Mr-Rafik-Isaac/100064151013051'
+          className='transition-all duration-300 hover:text-blue-500 hover:cursor-pointer hover:scale-125'>
           <FaFacebook className='w-10 h-10' />
         </a>
-        <a className='transition-all duration-300 hover:cursor-pointer hover:scale-125'>
-          <FaGoogle className='w-10 h-10' />
+        <a
+          href='https://www.youtube.com/@newtonacademy9097'
+          className='transition-all duration-300 hover:text-red-500 hover:cursor-pointer hover:scale-125'>
+          <FaYoutube className='w-10 h-10' />
         </a>
-        <a className='transition-all duration-300 hover:cursor-pointer hover:scale-125'>
-          <FaTwitter className='w-10 h-10' />
+        <a
+          href='https://wa.me/1222343492'
+          className='transition-all duration-300 hover:text-green-500 hover:cursor-pointer hover:scale-125'>
+          <FaWhatsapp className='w-10 h-10' />
         </a>
       </div>
     </footer>

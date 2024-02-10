@@ -264,7 +264,7 @@ public sealed class CoursesService : ICoursesService
             lesson.ExpirationHours = command.ExpirationHours.Value;
         }
 
-        if (command.RenewalPrice is not null && command.RenewalPrice > 0)
+        if (command.RenewalPrice is not null)
         {
 
             lesson.RenewalPrice = command.RenewalPrice.Value;
@@ -933,6 +933,16 @@ public sealed class CoursesService : ICoursesService
             throw new ApiException(LessonsErrors.NotFound);
         }
 
+        string? enrollment;
+
+        if (result.lesson.RenewalPrice == 0)
+        {
+            enrollment = "Active";
+        }
+        else
+        {
+            enrollment = result.studentLesson == null ? "NotEnrolled" : (result.studentLesson.ExpirationDate > DateTime.UtcNow ? "Active" : "Expired");
+        }
 
 
         return new()
@@ -942,7 +952,7 @@ public sealed class CoursesService : ICoursesService
             Title = result.lesson.Title,
             Description = result.lesson.Description,
             ExpirationHours = result.lesson.ExpirationHours,
-            Enrollment = result.studentLesson == null ? "NotEnrolled" : (result.studentLesson.ExpirationDate > DateTime.UtcNow ? "Active" : "Expired"),
+            Enrollment = enrollment,
             ExpiresAt = result.studentLesson?.ExpirationDate,
             VideoSrc = result.studentLesson == null || result.studentLesson.ExpirationDate > DateTime.UtcNow ? result.lesson.VideoSrc : null,
         };

@@ -10,7 +10,7 @@ public sealed record CreateLessonRequest
     public required string Description { get; set; }
     [Required, Range(1, 100)]
     public required decimal RenewalPrice { get; set; }
-    [Required, Range(1, 24)]
+    [Required, Range(0, 24)]
     public required int ExpirationHours { get; set; }
     [Required, Url]
     public required string VideoSrc { get; set; }

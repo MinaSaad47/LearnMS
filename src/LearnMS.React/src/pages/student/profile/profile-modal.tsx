@@ -4,7 +4,6 @@ import {
   useUpdateProfileMutation,
 } from "@/api/profile-api";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -33,7 +32,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/components/ui/use-toast";
 import { getFirstCharacters } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SaveAll } from "lucide-react";
 import React from "react";
 import { useForm } from "react-hook-form";
 
@@ -62,7 +60,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
             Profile
           </DialogTitle>
           <DialogDescription>
-            This is your profile, you can edit it
+            Contact assistant to edit your profile
           </DialogDescription>
         </DialogHeader>
         <Tabs defaultValue='account'>
@@ -123,7 +121,7 @@ function ProfileContent() {
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className='p-4 text-white bg-color2 rounded-2xl'>
-        <fieldset disabled={updateProfileMutation.isPending}>
+        <fieldset disabled={true || updateProfileMutation.isPending}>
           <FormField
             name='fullName'
             render={({ field }) => (
@@ -182,9 +180,11 @@ function ProfileContent() {
               </FormItem>
             )}
           />
+          {/*
           <Button className='w-full mt-10 bg-color2 hover:bg-white hover:text-color2'>
             <SaveAll /> Update
           </Button>
+            */}
         </fieldset>
       </form>
     </Form>
@@ -230,7 +230,7 @@ function ContactContent() {
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className='p-4 text-white bg-color2 rounded-2xl'>
-        <fieldset disabled={updateProfileMutation.isPending}>
+        <fieldset disabled={true || updateProfileMutation.isPending}>
           <FormField
             name='phoneNumber'
             render={({ field }) => (
@@ -261,9 +261,11 @@ function ContactContent() {
               </FormItem>
             )}
           />
+          {/*
           <Button className='w-full mt-10 bg-color2 hover:bg-white hover:text-color2'>
             <SaveAll /> Update
           </Button>
+            */}
         </fieldset>
       </form>
     </Form>

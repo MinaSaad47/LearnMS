@@ -1,3 +1,4 @@
+import { useProfileQuery } from "@/api/profile-api";
 import Footer from "@/components/footer";
 import { Flame, HandMetalIcon, School2 } from "lucide-react";
 import { ReactNode } from "react";
@@ -15,11 +16,12 @@ const StudentHomePage = () => {
 };
 
 const HomeSection = () => {
+  const { profile } = useProfileQuery();
   return (
     <section className='font-patua min-h-[1400px] md:min-h-[800px] flex flex-col items-center text-center p-10'>
-      <div className="z-10 absolute top-[140px] right-[70px] w-[500px] h-[500px] bg-cover bg-center bg-repeat overflow-hidden bg-[url('/home.png')]">
+      <div className="z-10 absolute top-[250px] md:top-[140px]  md:right-[70px] md:w-[500px] w-[400px] h-[400px] md:h-[500px] bg-cover bg-center bg-repeat overflow-hidden bg-[url('/home.png')]">
         <svg
-          className='absolute bottom-0 left-0 z-10 h-72'
+          className='absolute left-0 z-10 -bottom-[100px] md:bottom-0 h-72'
           data-name='Layer 1'
           xmlns='http://www.w3.org/2000/svg'
           viewBox='0 0 1200 120'
@@ -34,13 +36,16 @@ const HomeSection = () => {
         <h1 className='text-4xl font-bold md:text-6xl text-color1'>
           MR RAFIK ISAAC
         </h1>
+        <h2 className='text-3xl font-bold text-color1'>Newton's Academy</h2>
 
-        <Link
-          to='/sign-in-sign-up'
-          className='px-4 py-2 ml-auto text-xl text-white transition-all duration-300 rounded-full md:mr-0 bg-color2 w-fit hover:text-xl'>
-          <button>Let's Start</button>
-        </Link>
-        <div className='flex flex-wrap items-center justify-center gap-4 mt-20'>
+        {!profile?.isAuthenticated && (
+          <Link
+            to='/sign-in-sign-up'
+            className='self-start px-4 py-2 text-xl text-white transition-all duration-300 rounded-full md:mr-0 bg-color2 w-fit hover:text-xl'>
+            <button>Let's Start</button>
+          </Link>
+        )}
+        <div className='flex flex-wrap items-center justify-center gap-4 mt-72 md:mt-20'>
           <CardItem
             title='Learn'
             description=''
@@ -74,7 +79,7 @@ function CardItem({
   icon: ReactNode;
 }) {
   return (
-    <div className='group hover:cursor-pointer w-[300px] flex justify-center flex-col items-center gap-2 h-[300px] bg-white/60 border-[rgb(96, 112, 255, 0.7)] border-[3px] shadow-2xl text-color2 rounded-3xl p-4 '>
+    <div className='group hover:cursor-pointer shadow-color2 w-[300px]  flex justify-center flex-col items-center gap-2 h-[300px] bg-white/60 border-[rgb(96, 112, 255, 0.7)] border-[3px] shadow-2xl text-color2 rounded-3xl p-4 '>
       <div className='flex items-center justify-center w-20 h-20 text-white transition-all duration-300 rounded-full bg-color2 group-hover:bg-color1'>
         {icon}
       </div>

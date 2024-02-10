@@ -33,7 +33,7 @@ export const UpdateLessonRequest = z.object({
     .max(24, { message: "Expiration hours must be less than 24" }),
   renewalPrice: z.coerce
     .number()
-    .min(1, { message: "Renewal Price is greater than 0" }),
+    .min(0, { message: "Renewal Price is greater than 0" }),
   description: z.string(),
 });
 
@@ -76,7 +76,7 @@ export const AddLessonRequest = z.object({
     .max(24, { message: "Expiration hours must be less than 24" }),
   renewalPrice: z.coerce
     .number()
-    .min(1, { message: "Renewal Price is greater than 0" }),
+    .min(0, { message: "Renewal Price is greater than 0" }),
   description: z.string().min(1, { message: "Description is required" }),
 });
 
