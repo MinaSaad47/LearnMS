@@ -24,8 +24,8 @@ const NavBar = () => {
   const { openModal } = useModalStore();
 
   return (
-    <div className='top-0 left-0 z-50 flex items-center justify-around w-full gap-2 py-4 shadow-2xl bg-white/20 font-signika rounded-b-2xl'>
-      <div className='flex items-center justify-center gap-2'>
+    <div className='top-0 left-0 z-50 flex items-center justify-between w-full gap-2 py-4 shadow-2xl md:justify-around bg-white/20 font-signika rounded-b-2xl'>
+      <div className='flex items-center gap-2'>
         <div className='hidden object-fill w-20 h-20 md:block'>
           <img className='w-full h-full' src='/logo.png' alt='' />
         </div>
@@ -61,6 +61,48 @@ const NavBar = () => {
             </Button>
           </Link>
         </div>
+      </div>
+
+      <div className='flex items-center justify-between flex-grow gap-2 px-4 md:flex-grow-0 md:px-0'>
+        {profile?.isAuthenticated && profile.role === "Student" ? (
+          <div className='flex flex-row-reverse items-center gap-2 md:flex-row'>
+            <p className='flex items-center justify-center gap-2 p-2 font-bold rounded text-color1'>
+              {"Credit: "} {profile?.credits} {" LE"}
+            </p>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Avatar className='transition-all duration-500 hover:cursor-pointer hover:scale-110'>
+                  <AvatarImage src={profile?.profilePicture} />
+                  <AvatarFallback className='text-white bg-color2'>
+                    {getFirstCharacters(profile?.fullName)}
+                  </AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className='flex flex-col items-center text-white border-none shadow-2xl bg-color2'>
+                <DropdownMenuLabel className='font-normal text-white rounded bg-color2'>
+                  {profile.email}
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup className='flex flex-col items-center w-full'>
+                  <DropdownMenuItem
+                    onClick={() => openModal("profile-modal")}
+                    className='flex justify-center w-full hover:cursor-pointer hover:bg-white hover:text-color2'>
+                    <User /> Profile
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <Button
+                  size='icon'
+                  variant='outline'
+                  onClick={() => logoutMutation.mutate()}
+                  className='mt-4 transition-all duration-200 bg-color1 hover:scale-110'>
+                  <LogOut />
+                </Button>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        ) : (
+          <div></div>
+        )}
 
         <Sheet>
           <SheetTrigger className='md:hidden'>
@@ -94,46 +136,6 @@ const NavBar = () => {
           </SheetContent>
         </Sheet>
       </div>
-
-      {profile?.isAuthenticated && profile.role === "Student" ? (
-        <div className='flex items-center gap-2'>
-          <p className='flex items-center justify-center gap-2 p-2 font-bold rounded text-color1'>
-            {"Credit: "} {profile?.credits} {" LE"}
-          </p>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Avatar className='transition-all duration-500 hover:cursor-pointer hover:scale-110'>
-                <AvatarImage src={profile?.profilePicture} />
-                <AvatarFallback className='text-white bg-color2'>
-                  {getFirstCharacters(profile?.fullName)}
-                </AvatarFallback>
-              </Avatar>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className='flex flex-col items-center text-white border-none shadow-2xl bg-color2'>
-              <DropdownMenuLabel className='font-normal text-white rounded bg-color2'>
-                {profile.email}
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup className='flex flex-col items-center w-full'>
-                <DropdownMenuItem
-                  onClick={() => openModal("profile-modal")}
-                  className='flex justify-center w-full hover:cursor-pointer hover:bg-white hover:text-color2'>
-                  <User /> Profile
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-              <Button
-                size='icon'
-                variant='outline'
-                onClick={() => logoutMutation.mutate()}
-                className='mt-4 transition-all duration-200 bg-color1 hover:scale-110'>
-                <LogOut />
-              </Button>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      ) : (
-        <div></div>
-      )}
     </div>
   );
 };

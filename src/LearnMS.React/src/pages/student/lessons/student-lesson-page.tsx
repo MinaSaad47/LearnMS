@@ -49,7 +49,7 @@ const StudentLessonPage = () => {
     return (
       <div className='flex flex-col items-center justify-center w-full h-full gap-6'>
         <h1 className='text-3xl'>Start the lesson</h1>
-        <p>
+        <p className='text-center'>
           {`Are you sure you want to start the lesson? you will have ${lesson.data.expirationHours} hours to complete it, after which it will be locked for ${lesson.data.renewalPrice} LE`}
         </p>
 
@@ -67,7 +67,7 @@ const StudentLessonPage = () => {
     return (
       <div className='flex flex-col items-center justify-center w-full h-full gap-6'>
         <h1 className='text-3xl'>Lesson expired</h1>
-        <p>
+        <p className='text-center'>
           {`The lesson has expired. you can renew it for ${lesson.data.renewalPrice} LE`}
         </p>
 
@@ -83,13 +83,13 @@ const StudentLessonPage = () => {
 
   return (
     <div className='flex flex-col items-center w-full h-full gap-10 p-4'>
-      <div className='flex items-center justify-between w-[80%]'>
-        <h1 className='text-3xl'>{lesson?.data.title}</h1>
-        <Badge>
+      <div className='flex flex-col items-center justify-between w-[80%] gap-4'>
+        <h1 className='self-start md:text-3xl'>{lesson?.data.title}</h1>
+        <Badge className='self-end'>
           expires at {new Date(lesson!.data.expiresAt).toLocaleString()}
         </Badge>
       </div>
-      <div className='w-[80%] rounded-xl aspect-video overflow-clip'>
+      <div className='w-full md:w-[80%] rounded-xl aspect-video overflow-clip'>
         <iframe
           src={lesson?.data.videoSrc!}
           allowFullScreen

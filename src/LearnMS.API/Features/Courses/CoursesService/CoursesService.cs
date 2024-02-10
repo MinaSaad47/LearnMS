@@ -723,7 +723,7 @@ public sealed class CoursesService : ICoursesService
         }
 
         var courses = from c in _dbContext.Courses
-                      join sc in _dbContext.Set<StudentCourse>() on new { CourseId = c.Id, StudentId = query.StudentId } equals new { CourseId = sc.CourseId, StudentId = sc.StudentId } into groupedCourseItems
+                      join sc in _dbContext.Set<StudentCourse>() on new { CourseId = c.Id, query.StudentId } equals new { CourseId = sc.CourseId, StudentId = sc.StudentId } into groupedCourseItems
                       from gci in groupedCourseItems.DefaultIfEmpty()
                       where c.IsPublished && c.Id == query.Id && c.Level == student.Level
                       select new GetStudentCourseResult
@@ -749,7 +749,7 @@ public sealed class CoursesService : ICoursesService
 
         var lectures = await (from ci in _dbContext.Set<CourseItem>()
                               join l in _dbContext.Set<Lecture>() on ci.Id equals l.Id
-                              join sl in _dbContext.Set<StudentLecture>() on l.Id equals sl.LectureId into groupedStudentLectures
+                              join sl in _dbContext.Set<StudentLecture>() on new { LectureId = l.Id, query.StudentId } equals new { sl.LectureId, sl.StudentId } into groupedStudentLectures
                               from gsl in groupedStudentLectures.DefaultIfEmpty()
                               where ci.CourseId == query.Id && (query.IsCourseItemPublished == null || ci.IsPublished == query.IsCourseItemPublished)
                               select new SingleStudentCourseItem
@@ -767,7 +767,7 @@ public sealed class CoursesService : ICoursesService
 
         var exams = await (from ci in _dbContext.Set<CourseItem>()
                            join e in _dbContext.Set<Exam>() on ci.Id equals e.Id
-                           join se in _dbContext.Set<StudentExam>() on e.Id equals se.ExamId into groupedStudentExams
+                           join se in _dbContext.Set<StudentExam>() on new { ExamId = e.Id, query.StudentId } equals new { ExamId = se.ExamId, se.StudentId } into groupedStudentExams
                            from gse in groupedStudentExams.DefaultIfEmpty()
                            where ci.CourseId == query.Id && (query.IsCourseItemPublished == null || ci.IsPublished == query.IsCourseItemPublished)
                            select new SingleStudentCourseItem
@@ -839,13 +839,14 @@ public sealed class CoursesService : ICoursesService
         var lectures = from course in _dbContext.Set<Course>()
                        join courseItem in _dbContext.Set<CourseItem>() on course.Id equals courseItem.CourseId
                        join lecture in _dbContext.Set<Lecture>() on courseItem.Id equals lecture.Id
-                       join studentLecture in _dbContext.Set<StudentLecture>() on lecture.Id equals studentLecture.LectureId into groupedStudentLectures
+                       join studentLecture in _dbContext.Set<StudentLecture>() on new { LectureId = lecture.Id, query.StudentId } equals new { LectureId = studentLecture.LectureId, studentLecture.StudentId } into groupedStudentLectures
                        from gsl in groupedStudentLectures.DefaultIfEmpty()
                        where
                        course.IsPublished &&
                        courseItem.IsPublished &&
                        course.Id == query.CourseId &&
                        lecture.Id == query.LectureId
+
                        select new GetStudentLectureResult
                        {
                            Id = lecture.Id,
@@ -899,15 +900,18 @@ public sealed class CoursesService : ICoursesService
                             join studentLecture in _dbContext.Set<StudentLecture>() on lecture.Id equals studentLecture.LectureId
                             where
                             studentLecture.StudentId == query.StudentId &&
+                            lecture.Id == query.LectureId &&
                             studentLecture.ExpirationDate > DateTime.UtcNow
                             select new
                             {
                                 lectureId = lecture.Id
                             };
 
+        var courseCount = await courseResult.CountAsync();
+        var lectureCount = await lectureResult.CountAsync();
 
 
-        if (courseResult.Count() == 0 && lectureResult.Count() == 0)
+        if (courseCount == 0 && lectureCount == 0)
         {
             throw new ApiException(LessonsErrors.NotFound);
         }
@@ -917,7 +921,7 @@ public sealed class CoursesService : ICoursesService
                             join lesson in _dbContext.Set<Lesson>() on lectureItem.Id equals lesson.Id
                             join studentLesson in _dbContext.Set<StudentLesson>() on lesson.Id equals studentLesson.LessonId into groupedStudentLessons
                             from studentLesson in groupedStudentLessons.DefaultIfEmpty()
-                            where lesson.Id == query.LessonId
+                            where lesson.Id == query.LessonId && courseItem.CourseId == query.CourseId && courseItem.Id == query.LectureId
                             select new
                             {
                                 lesson,

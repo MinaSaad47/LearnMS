@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { toast } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils";
 import { Lesson } from "@/types/lessons";
 import { Quiz } from "@/types/quiz";
 import { useNavigate, useParams } from "react-router-dom";
@@ -80,7 +81,7 @@ function LectureHeader({
   };
 
   return (
-    <Card className='m-4 text-white bg-blue-400 rounded-2xl'>
+    <Card className='m-4 text-white bg-color2 rounded-2xl'>
       <div className='flex justify-between w-full h-full gap-2 overflow-clip'>
         <div className='flex flex-col w-full'>
           <CardHeader>
@@ -95,7 +96,7 @@ function LectureHeader({
           {lecture.enrollment !== "Active" ? (
             <Confirmation
               button={
-                <Button className='mt-auto mb-2 ml-auto mr-2 w-fit'>
+                <Button className='mt-auto mb-2 ml-auto mr-2 transition-all bg-white shadow-md duration-400 text-color1 hover:bg-color1 hover:text-white w-fit hover:scale-115'>
                   {lecture.enrollment === "Expired"
                     ? `Renew for ${lecture.renewalPrice} LE`
                     : `Buy for ${lecture.price} LE`}
@@ -153,11 +154,16 @@ function LectureItem({
   return (
     <Card
       onClick={onClick}
-      className='relative m-auto w-[80%] p-3 transition-all duration-300 hover:bg-blue-300 hover:scale-105 hover:cursor-pointer bg-blue-400 text-white'>
+      className='relative border-none m-auto w-[80%] p-3 transition-all duration-300 shadow-lg hover:shadow-color2 rounded-2xl hover:scale-105 hover:cursor-pointer  bg-color2/75 hover:bg-color2 text-white'>
       <CardTitle>{item.title}</CardTitle>
       <CardFooter>
         <div className='flex justify-end w-full gap-2'>
-          <Badge variant={item.type == "Quiz" ? "destructive" : "default"}>
+          <Badge
+            className={cn(
+              item.type !== "Quiz" &&
+                "bg-color1/75 hover:bg-white hover:text-color1"
+            )}
+            variant={item.type == "Quiz" ? "destructive" : "default"}>
             {item.type}
           </Badge>
           {isLocked && <Badge variant='secondary'>Locked</Badge>}

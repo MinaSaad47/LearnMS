@@ -2,7 +2,8 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App.tsx";
 
-import { Toaster } from "@/components/ui/sonner.tsx";
+import { Toaster as Sonner } from "@/components/ui/sonner.tsx";
+import { Toaster } from "@/components/ui/toaster.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import ModalProvider from "./components/modals/modal-provider.tsx";
@@ -20,6 +21,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <App />
       </BrowserRouter>
       <Toaster />
+      <Sonner />
     </ThemeProvider>
     <ReactQueryDevtools initialIsOpen={false} />
   </QueryClientProvider>

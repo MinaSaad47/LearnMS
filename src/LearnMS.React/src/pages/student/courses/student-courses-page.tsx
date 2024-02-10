@@ -46,7 +46,7 @@ export const StudentCoursesPage = () => {
 
 function CourseCard({ course }: { course: Course }) {
   return (
-    <Card className='w-[200px] h-[300px] md:w-[300px] md:h-[400px] bg-white/70  border-color2 border-[3px] relative hover:bg-zinc-300 transition-all duration-300 hover:scale-125 hover:cursor-pointer'>
+    <Card className=' bg-white/70 min-h-[300px] border-color2 border-[3px] relative hover:bg-zinc-300 transition-all duration-300 hover:scale-125 hover:cursor-pointer'>
       <Link to={`/courses/${course.id}`}>
         <CardHeader>
           <p>{course.title}</p>

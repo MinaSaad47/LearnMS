@@ -18,6 +18,7 @@ public sealed class LecturesController : ControllerBase
     }
 
     [HttpDelete("{lectureId:guid}")]
+    [ApiAuthorize(Role = UserRole.Teacher)]
     public async Task<ApiWrapper.Success<object?>> Delete(Guid lectureId, Guid courseId)
     {
         await _coursesService.ExecuteAsync(new DeleteLectureCommand

@@ -45,7 +45,7 @@ public sealed class AuthService : IAuthService
             throw new ApiException(AuthErrors.EmailAlreadyExists);
         }
 
-        var passwordHash = _passwordHasher.Hash(command.Password);
+        var passwordHash = _passwordHasher.Hash(command.Password.Trim());
 
         var token = await _codeGenerator.GenerateAsync(20, async (token) =>
         {
@@ -91,7 +91,7 @@ public sealed class AuthService : IAuthService
             throw new ApiException(AuthErrors.InvalidCredentials);
         }
 
-        if (!_passwordHasher.Verify(account.PasswordHash, command.Password))
+        if (!_passwordHasher.Verify(account.PasswordHash, command.Password.Trim()))
         {
             throw new ApiException(AuthErrors.InvalidCredentials);
         }

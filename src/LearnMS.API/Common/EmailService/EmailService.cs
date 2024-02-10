@@ -14,6 +14,7 @@ public sealed class EmailService(IOptions<EmailConfig> cfg, ILogger<EmailService
         var from = request.From is not null ? MailboxAddress.Parse(request.From) : MailboxAddress.Parse(cfg.Value.Sender);
         email.From.Add(from);
         var to = MailboxAddress.Parse(request.To);
+        email.Subject = request.Subject;
         email.To.Add(to);
         email.Body = new TextPart("html")
         {
