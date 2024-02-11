@@ -22,8 +22,8 @@ export const StudentCoursesPage = () => {
   console.log(data);
 
   return (
-    <div className='z-10 w-full' style={{}}>
-      <div className='flex flex-col-reverse items-center justify-around md:flex-row'>
+    <div className='z-10 flex flex-col w-full h-full' style={{}}>
+      <div className='flex flex-col-reverse items-center justify-around flex-grow md:flex-row'>
         <h1 className='text-3xl font-bold text-center text-color1 md:text-5xl w-[80%]'>
           TAKE THE FIRST STEP TO YOUR JOURNEY TO SUCCESS WITH US
         </h1>
@@ -38,8 +38,9 @@ export const StudentCoursesPage = () => {
           ))}
         </div>
       </div>
-      <div className='z-0 bottom-0 rounded-t-[50%]  -translate-y-1/2 bg-white h-full w-full'></div>
-      <Footer />
+      <div className='mt-full'>
+        <Footer />
+      </div>
     </div>
   );
 };

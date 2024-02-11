@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LearnMS.API.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240205202007_Migrations_2")]
-    partial class Migrations_2
+    [Migration("20240210211100_Migrations_initial")]
+    partial class Migrations_initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,13 +40,28 @@ namespace LearnMS.API.Data.Migrations
                     b.Property<string>("PasswordHash")
                         .HasColumnType("text");
 
+                    b.Property<string>("PasswordResetToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("PasswordResetTokenExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("ProfilePicture")
                         .HasColumnType("text");
 
                     b.Property<string>("ProviderId")
                         .HasColumnType("text");
 
+                    b.Property<string>("VerificationToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("VerifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id", "ProviderType");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.HasIndex("ProviderId", "ProviderType");
 
@@ -68,15 +83,17 @@ namespace LearnMS.API.Data.Migrations
                     b.Property<string>("ImageUrl")
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Level")
+                        .HasColumnType("text");
+
                     b.Property<decimal?>("Price")
                         .HasColumnType("numeric");
 
                     b.Property<decimal?>("RenewalPrice")
                         .HasColumnType("numeric");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -95,12 +112,11 @@ namespace LearnMS.API.Data.Migrations
                     b.Property<Guid>("CourseId")
                         .HasColumnType("uuid");
 
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("boolean");
+
                     b.Property<int>("Order")
                         .HasColumnType("integer");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -205,11 +221,17 @@ namespace LearnMS.API.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("ExpirationHours")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("RenewalPrice")
+                        .HasColumnType("numeric");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("VideoEmbed")
+                    b.Property<string>("VideoSrc")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -266,6 +288,22 @@ namespace LearnMS.API.Data.Migrations
                     b.ToTable("StudentLecture");
                 });
 
+            modelBuilder.Entity("LearnMS.API.Entities.StudentLesson", b =>
+                {
+                    b.Property<Guid>("StudentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("LessonId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("ExpirationDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("StudentId", "LessonId");
+
+                    b.ToTable("StudentLesson");
+                });
+
             modelBuilder.Entity("User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -298,18 +336,23 @@ namespace LearnMS.API.Data.Migrations
                         .HasColumnType("numeric");
 
                     b.Property<string>("FullName")
+                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("Level")
-                        .HasColumnType("integer");
+                    b.Property<string>("Level")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("ParentPhoneNumber")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("SchoolName")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.ToTable("Students");
@@ -346,11 +389,13 @@ namespace LearnMS.API.Data.Migrations
                 {
                     b.HasOne("LearnMS.API.Entities.Assistant", null)
                         .WithMany()
-                        .HasForeignKey("AssistantId");
+                        .HasForeignKey("AssistantId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("LearnMS.API.Entities.Student", null)
                         .WithMany()
-                        .HasForeignKey("StudentId");
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.SetNull);
                 });
 
             modelBuilder.Entity("LearnMS.API.Entities.Exam", b =>
@@ -430,6 +475,21 @@ namespace LearnMS.API.Data.Migrations
                     b.HasOne("LearnMS.API.Entities.Student", null)
                         .WithOne()
                         .HasForeignKey("LearnMS.API.Entities.StudentLecture", "StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("LearnMS.API.Entities.StudentLesson", b =>
+                {
+                    b.HasOne("LearnMS.API.Entities.Lesson", null)
+                        .WithOne()
+                        .HasForeignKey("LearnMS.API.Entities.StudentLesson", "LessonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LearnMS.API.Entities.Student", null)
+                        .WithOne()
+                        .HasForeignKey("LearnMS.API.Entities.StudentLesson", "StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
