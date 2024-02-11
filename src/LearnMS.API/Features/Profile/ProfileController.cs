@@ -21,6 +21,7 @@ public sealed class ProfileController : ControllerBase
     }
 
     [HttpPatch]
+    [ApiAuthorize(Role = UserRole.Student)]
     public async Task<ApiWrapper.Success<object?>> Patch([FromBody] UpdateStudentProfileRequest request)
     {
         var user = await _currentUserService.GetUserAsync();

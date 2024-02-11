@@ -20,6 +20,7 @@ public sealed class AdministrationController : ControllerBase
     }
 
     [HttpPost("teachers")]
+    [ApiAuthorize(Role = UserRole.Teacher)]
     public async Task<ApiWrapper.Success<object?>> PostTeacher([FromBody] CreateTeacherRequest request)
     {
         await _assistantsService.ExecuteAsync(new CreateTeacherCommand
@@ -35,6 +36,7 @@ public sealed class AdministrationController : ControllerBase
     }
 
     [HttpPost("assistants")]
+    [ApiAuthorize(Role = UserRole.Assistant, Permissions = [Permission.ManageAssistants])]
     public async Task<ApiWrapper.Success<object?>> PostAssistant([FromBody] CreateAssistantRequest request)
     {
         await _assistantsService.ExecuteAsync(new CreateAssistantCommand
@@ -50,6 +52,7 @@ public sealed class AdministrationController : ControllerBase
     }
 
     [HttpDelete("assistants/{assistantId:guid}")]
+    [ApiAuthorize(Role = UserRole.Assistant, Permissions = [Permission.ManageAssistants])]
     public async Task<ApiWrapper.Success<object?>> DeleteAssistant(Guid assistantId)
     {
         await _assistantsService.ExecuteAsync(new DeleteAssistantCommand
@@ -64,6 +67,7 @@ public sealed class AdministrationController : ControllerBase
     }
 
     [HttpPatch("assistants/{assistantId:guid}")]
+    [ApiAuthorize(Role = UserRole.Assistant, Permissions = [Permission.ManageAssistants])]
     public async Task<ApiWrapper.Success<object?>> PatchAssistant([FromBody] UpdateAssistantRequest request, Guid assistantId)
     {
         await _assistantsService.ExecuteAsync(new UpdateAssistantCommand
@@ -80,7 +84,7 @@ public sealed class AdministrationController : ControllerBase
     }
 
     [HttpGet("assistants")]
-    [ApiAuthorize(Role = UserRole.Teacher)]
+    [ApiAuthorize(Role = UserRole.Assistant, Permissions = [Permission.ManageAssistants])]
     public async Task<ApiWrapper.Success<GetAssistantsResponse>> GetAssistants()
     {
         var result = await _assistantsService.QueryAsync(new GetAssistantsQuery());
@@ -96,7 +100,7 @@ public sealed class AdministrationController : ControllerBase
     }
 
     [HttpGet("permissions")]
-    [ApiAuthorize(Role = UserRole.Teacher)]
+    [ApiAuthorize(Role = UserRole.Assistant, Permissions = [Permission.ManageAssistants])]
     public async Task<ApiWrapper.Success<GetPermissionsResponse>> GetPermissions()
     {
         await Task.CompletedTask;

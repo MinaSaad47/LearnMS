@@ -32,9 +32,13 @@ public class ApiAuthorizeAttribute : ActionFilterAttribute, IAsyncAuthorizationF
 
         if (user.Role is UserRole.Assistant && Role is not UserRole.Student)
         {
-            if (Permissions is null || Permissions.All(p => user.Permissions.Contains(p)))
+            if (Permissions is null || Permissions.Any(p => user.Permissions.Contains(p)))
             {
                 return;
+            }
+            else
+            {
+                throw new ApiException(AuthErrors.Forbidden);
             }
         }
 

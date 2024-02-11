@@ -1,4 +1,5 @@
 using LearnMS.API.Common;
+using LearnMS.API.Entities;
 using LearnMS.API.Features.Courses.Contracts;
 using LearnMS.API.Security;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +20,7 @@ public sealed class LecturesController : ControllerBase
 
     [HttpDelete("{lectureId:guid}")]
     [ApiAuthorize(Role = UserRole.Teacher)]
+    [ApiAuthorize(Role = UserRole.Assistant, Permissions = [Permission.ManageCourses])]
     public async Task<ApiWrapper.Success<object?>> Delete(Guid lectureId, Guid courseId)
     {
         await _coursesService.ExecuteAsync(new DeleteLectureCommand
@@ -133,6 +135,7 @@ public sealed class LecturesController : ControllerBase
 
 
     [HttpPost]
+    [ApiAuthorize(Role = UserRole.Assistant, Permissions = [Permission.ManageCourses])]
     public async Task<ApiWrapper.Success<object?>> Post([FromBody] CreateLectureRequest request, Guid courseId)
     {
         await _coursesService.ExecuteAsync(new CreateLectureCommand
@@ -148,6 +151,7 @@ public sealed class LecturesController : ControllerBase
     }
 
     [HttpPatch("{lectureId:guid}")]
+    [ApiAuthorize(Role = UserRole.Assistant, Permissions = [Permission.ManageCourses])]
     public async Task<ApiWrapper.Success<object?>> Patch([FromBody] UpdateLectureRequest request, Guid lectureId, Guid courseId)
     {
         await _coursesService.ExecuteAsync(new UpdateLectureCommand
@@ -184,6 +188,7 @@ public sealed class LecturesController : ControllerBase
     }
 
     [HttpPost("{lectureId:guid}/unpublish")]
+    [ApiAuthorize(Role = UserRole.Assistant, Permissions = [Permission.ManageCourses])]
     public async Task<ApiWrapper.Success<object?>> Unpublish(Guid lectureId, Guid courseId)
     {
         await _coursesService.ExecuteAsync(new UnPublishLectureCommand

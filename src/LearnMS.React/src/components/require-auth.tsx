@@ -1,16 +1,17 @@
-import { useProfileQuery } from "@/api/profile-api";
+import { Permission, useProfileQuery } from "@/api/profile-api";
 import LoadingPage from "@/pages/shared/loading-page";
+import PermissionDeniedPage from "@/pages/shared/permission-denied-page";
 import { Navigate } from "react-router-dom";
 
 interface RequireAuthProps {
   children: JSX.Element;
-  role?: "Student" | "Teacher" | "Assistant";
-  permissions?: string[];
+  roles: ("Student" | "Teacher" | "Assistant")[];
+  permissions?: Permission[];
 }
 
 const RequireAuth: React.FC<RequireAuthProps> = ({
   children,
-  role,
+  roles,
   permissions,
 }) => {
   const { profile, isError, isLoading, isFetching } = useProfileQuery();
@@ -25,7 +26,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
 
   if (
     profile?.isAuthenticated &&
-    role !== profile.role &&
+    !roles.includes(profile.role) &&
     profile.role === "Student"
   ) {
     return <Navigate to='/' />;
@@ -33,10 +34,21 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
 
   if (
     profile?.isAuthenticated &&
-    role !== profile.role &&
-    profile.role === "Teacher"
+    !roles.includes(profile.role) &&
+    (profile.role === "Teacher" || profile.role === "Assistant")
   ) {
     return <Navigate to='/dashboard' />;
+  }
+
+  if (
+    profile?.isAuthenticated &&
+    profile.role === "Assistant" &&
+    permissions &&
+    !permissions.every((permission) =>
+      profile.permissions.includes(permission as any)
+    )
+  ) {
+    return <PermissionDeniedPage permissions={permissions} />;
   }
 
   return children;

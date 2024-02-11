@@ -5,6 +5,7 @@ namespace LearnMS.API.Features.CreditCodes.Contracts;
 public sealed record GetCreditCodesQuery
 {
     public string? Search { get; init; }
+    public Guid? AssistantId { get; init; }
     public int? Page { get; init; } = 0;
     public int? PageSize { get; init; } = 10;
     public string? SortOrder { get; init; } = "asc";

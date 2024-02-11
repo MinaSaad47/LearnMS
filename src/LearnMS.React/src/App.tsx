@@ -36,7 +36,7 @@ function App() {
       <Route
         path='/'
         element={
-          <RequireAuth role='Student'>
+          <RequireAuth roles={["Student"]}>
             <StudentLayout />
           </RequireAuth>
         }>
@@ -56,31 +56,121 @@ function App() {
       <Route
         path='/dashboard'
         element={
-          <RequireAuth role='Teacher'>
+          <RequireAuth roles={["Teacher", "Assistant"]}>
             <DashboardLayout />
           </RequireAuth>
         }>
-        <Route path='courses' element={<CoursesPage />} />
-        <Route path='courses/add' element={<AddCoursePage />} />
-        <Route path='courses/:courseId' element={<CourseDetailsPage />} />
+        <Route
+          path='courses'
+          element={
+            <RequireAuth
+              roles={["Teacher", "Assistant"]}
+              permissions={["ManageCourses"]}>
+              <CoursesPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path='courses/add'
+          element={
+            <RequireAuth
+              roles={["Teacher", "Assistant"]}
+              permissions={["ManageCourses"]}>
+              <AddCoursePage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path='courses/:courseId'
+          element={
+            <RequireAuth
+              roles={["Teacher", "Assistant"]}
+              permissions={["ManageCourses"]}>
+              <CourseDetailsPage />
+            </RequireAuth>
+          }
+        />
         <Route
           path='courses/:courseId/lectures/:lectureId'
-          element={<LectureDetailsPage />}
+          element={
+            <RequireAuth
+              roles={["Teacher", "Assistant"]}
+              permissions={["ManageCourses"]}>
+              <LectureDetailsPage />
+            </RequireAuth>
+          }
         />
         <Route
           path='courses/:courseId/lectures/:lectureId/lessons/:lessonId'
-          element={<LessonDetailsPage />}
+          element={
+            <RequireAuth
+              roles={["Teacher", "Assistant"]}
+              permissions={["ManageCourses"]}>
+              <LessonDetailsPage />
+            </RequireAuth>
+          }
         />
         <Route
           path='courses/:courseId/lectures/:lecturesId/quizzes/:quizId'
-          element={<QuizPage />}
+          element={
+            <RequireAuth
+              roles={["Teacher", "Assistant"]}
+              permissions={["ManageCourses"]}>
+              <QuizPage />
+            </RequireAuth>
+          }
         />
-        <Route path='courses/:courseId/exams/:examId' element={<ExamPage />} />
+        <Route
+          path='courses/:courseId/exams/:examId'
+          element={
+            <RequireAuth
+              roles={["Teacher", "Assistant"]}
+              permissions={["ManageCourses"]}>
+              <ExamPage />
+            </RequireAuth>
+          }
+        />
         <Route path='credit-codes' element={<CreditCodesPage />} />
-        <Route path='files' element={<FilesPage />} />
-        <Route path='assistants' element={<AssistantsPage />} />
-        <Route path='students' element={<StudentsPage />} />
-        <Route path='students/:studentId' element={<StudentDetailsPage />} />
+        <Route
+          path='files'
+          element={
+            <RequireAuth
+              roles={["Teacher", "Assistant"]}
+              permissions={["ManageFiles"]}>
+              <FilesPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path='assistants'
+          element={
+            <RequireAuth
+              roles={["Teacher", "Assistant"]}
+              permissions={["ManageAssistants"]}>
+              <AssistantsPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path='students'
+          element={
+            <RequireAuth
+              roles={["Teacher", "Assistant"]}
+              permissions={["ManageStudents"]}>
+              <StudentsPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path='students/:studentId'
+          element={
+            <RequireAuth
+              roles={["Teacher", "Assistant"]}
+              permissions={["ManageStudents"]}>
+              <StudentDetailsPage />
+            </RequireAuth>
+          }
+        />
       </Route>
     </Routes>
   );

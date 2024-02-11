@@ -1,4 +1,5 @@
 using LearnMS.API.Common;
+using LearnMS.API.Entities;
 using LearnMS.API.Features.Courses.Contracts;
 using LearnMS.API.Security;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +20,7 @@ public sealed class LessonsController : ControllerBase
     }
 
     [HttpDelete("{lessonId:guid}")]
+    [ApiAuthorize(Role = UserRole.Assistant, Permissions = [Permission.ManageCourses])]
     public async Task<ApiWrapper.Success<object?>> Delete(Guid courseId, Guid lectureId, Guid lessonId)
     {
         await _coursesService.ExecuteAsync(new DeleteLessonCommand
@@ -83,6 +85,7 @@ public sealed class LessonsController : ControllerBase
     }
 
     [HttpPost]
+    [ApiAuthorize(Role = UserRole.Assistant, Permissions = [Permission.ManageCourses])]
     public async Task<ApiWrapper.Success<object?>> Post([FromForm] CreateLessonRequest request, Guid lectureId, Guid courseId)
     {
         await _coursesService.ExecuteAsync(new CreateLessonCommand
@@ -105,6 +108,7 @@ public sealed class LessonsController : ControllerBase
     }
 
     [HttpPatch("{lessonId:guid}")]
+    [ApiAuthorize(Role = UserRole.Assistant, Permissions = [Permission.ManageCourses])]
     public async Task<ApiWrapper.Success<object?>> Patch([FromBody] UpdateLessonRequest request, Guid lessonId, Guid courseId, Guid lectureId)
     {
         await _coursesService.ExecuteAsync(new UpdateLessonCommand

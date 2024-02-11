@@ -3,7 +3,11 @@ import { validateEgyptianPhoneNumber } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 
-type Permission = "view" | "create" | "update" | "delete";
+export type Permission =
+  | "ManageCourses"
+  | "ManageStudents"
+  | "ManageAssistants"
+  | "ManageFiles";
 
 export type Profile = {
   id: string;

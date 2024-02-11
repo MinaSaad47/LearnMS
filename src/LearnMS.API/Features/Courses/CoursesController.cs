@@ -38,6 +38,7 @@ public sealed class CoursesController : ControllerBase
     }
 
     [HttpDelete("{courseId:guid}")]
+    [ApiAuthorize(Role = UserRole.Assistant, Permissions = [Permission.ManageCourses])]
     public async Task<ApiWrapper.Success<object?>> Delete(Guid courseId)
     {
         await _coursesService.ExecuteAsync(new DeleteCourseCommand
@@ -176,6 +177,8 @@ public sealed class CoursesController : ControllerBase
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ApiAuthorize(Permissions = [Permission.ManageCourses])]
+
+    [ApiAuthorize(Role = UserRole.Assistant, Permissions = [Permission.ManageCourses])]
     public async Task<ApiWrapper.Success<CreateCourseResponse>> Post([FromBody] CreateCourseCommand request)
     {
         var result = await _coursesService.ExecuteAsync(request);
@@ -194,6 +197,7 @@ public sealed class CoursesController : ControllerBase
     }
 
     [HttpPatch("{courseId:guid}")]
+    [ApiAuthorize(Role = UserRole.Assistant, Permissions = [Permission.ManageCourses])]
     public async Task<ApiWrapper.Success<object?>> Patch([FromBody] UpdateCourseRequest request, Guid courseId)
     {
         await _coursesService.ExecuteAsync(new UpdateCourseCommand
@@ -217,6 +221,7 @@ public sealed class CoursesController : ControllerBase
     }
 
     [HttpPost("{courseId:guid}/publish")]
+    [ApiAuthorize(Role = UserRole.Assistant, Permissions = [Permission.ManageCourses])]
     public async Task<ApiWrapper.Success<object?>> Publish(Guid courseId)
     {
         await _coursesService.ExecuteAsync(new PublishCourseCommand
@@ -231,6 +236,7 @@ public sealed class CoursesController : ControllerBase
 
 
     [HttpPost("{courseId:guid}/unpublish")]
+    [ApiAuthorize(Role = UserRole.Assistant, Permissions = [Permission.ManageCourses])]
     public async Task<ApiWrapper.Success<object?>> Unpublish(Guid courseId)
     {
         await _coursesService.ExecuteAsync(new UnPublishCourseCommand

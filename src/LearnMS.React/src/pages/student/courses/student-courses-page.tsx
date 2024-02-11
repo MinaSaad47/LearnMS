@@ -24,7 +24,7 @@ export const StudentCoursesPage = () => {
   return (
     <div className='z-10 flex flex-col w-full h-full' style={{}}>
       <div className='flex flex-col-reverse items-center justify-around flex-grow md:flex-row'>
-        <h1 className='text-3xl font-bold text-center text-color1 md:text-5xl w-[80%]'>
+        <h1 className='md:mx-[300px] text-3xl font-bold text-center text-color1 md:text-5xl w-[80%]'>
           TAKE THE FIRST STEP TO YOUR JOURNEY TO SUCCESS WITH US
         </h1>
         <div className='h-[400px] md:h-[600px] w-fit ml-auto'>

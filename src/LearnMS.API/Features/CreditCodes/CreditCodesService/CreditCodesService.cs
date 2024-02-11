@@ -32,6 +32,7 @@ public class CreditCodesService : ICreditCodesService
             {
                 Code = code,
                 Value = request.Value,
+                AssistantId = request.AssistantId,
             };
             creditCodes.Add(creditCode);
         }
@@ -128,7 +129,8 @@ public class CreditCodesService : ICreditCodesService
                                from generator in generators.DefaultIfEmpty()
                                orderby query.SortOrder == "asc" ? code.Status : 0
                                orderby query.SortOrder != "desc" ? 0 : code.Status descending
-                               where status != null ? code.Status == status : true
+                               where status != null ? code.Status == status : true &&
+                               query.AssistantId != null ? code.AssistantId == query.AssistantId : true
                                select new SingleCreditCodeItem
                                {
                                    Code = code.Code,

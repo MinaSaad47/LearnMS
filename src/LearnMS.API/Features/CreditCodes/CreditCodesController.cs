@@ -20,14 +20,30 @@ public sealed class CreditCodesController : ControllerBase
     }
 
     [HttpGet]
+    [ApiAuthorize(Role = UserRole.Assistant, Permissions = [Permission.ManageCreditCodes, Permission.GenerateCreditCodes])]
     public async Task<ApiWrapper.Success<PageList<SingleCreditCodeItem>>> Get(int? page, int? pageSize, string? search, string? sortOrder)
     {
+        var currentUser = await _currentUserService.GetUserAsync();
+
+        bool canManage;
+
+        if (currentUser!.Role == UserRole.Student)
+        {
+            canManage = true;
+        }
+        else
+        {
+            canManage = currentUser.Permissions.Contains(Permission.ManageCreditCodes);
+        }
+
+
         var result = await _creditCodesService.QueryAsync(new GetCreditCodesQuery
         {
             Page = page,
             PageSize = pageSize,
             Search = search,
-            SortOrder = sortOrder
+            SortOrder = sortOrder,
+            AssistantId = canManage ? null : currentUser!.Role == UserRole.Assistant ? currentUser.Id : null
         });
         return new()
         {
@@ -38,7 +54,7 @@ public sealed class CreditCodesController : ControllerBase
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    [ApiAuthorize(Role = UserRole.Assistant)]
+    [ApiAuthorize(Role = UserRole.Assistant, Permissions = [Permission.ManageCreditCodes, Permission.GenerateCreditCodes])]
     public async Task<ApiWrapper.Success<object?>> Post([FromBody] GenerateCreditCodesRequest request)
     {
         var currentUser = await _currentUserService.GetUserAsync();
@@ -79,6 +95,7 @@ public sealed class CreditCodesController : ControllerBase
     }
 
     [HttpPost("sell")]
+    [ApiAuthorize(Role = UserRole.Assistant, Permissions = [Permission.ManageCreditCodes])]
     public async Task<ApiWrapper.Success<SellCreditCodesResponse>> Sell([FromBody] SellCreditCodesRequest request)
     {
         var result = await _creditCodesService.ExecuteAsync(new SellCreditCodesCommand

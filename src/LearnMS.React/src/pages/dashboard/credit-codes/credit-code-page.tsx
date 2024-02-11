@@ -1,32 +1,29 @@
-import
-  {
-    GenerateCreditCodeRequest,
-    useGenerateCreditCodeMutation,
-    useGetCreditCodesQuery,
-    useSellCreditCodesMutation,
-  } from "@/api/credits-api";
+import {
+  GenerateCreditCodeRequest,
+  useGenerateCreditCodeMutation,
+  useGetCreditCodesQuery,
+  useSellCreditCodesMutation,
+} from "@/api/credits-api";
 import Loading from "@/components/loading/loading";
 import { Button } from "@/components/ui/button";
-import
-  {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-  } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { creditCodesColumns } from "@/pages/dashboard/credit-codes/columns";
 import { CreditCodesDataTable } from "@/pages/dashboard/credit-codes/data-table";
 import { zodResolver } from "@hookform/resolvers/zod";
-import
-  {
-    PaginationState,
-    RowSelectionState,
-    SortingState,
-  } from "@tanstack/react-table";
+import {
+  PaginationState,
+  RowSelectionState,
+  SortingState,
+} from "@tanstack/react-table";
 import { FileWarningIcon, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -107,8 +104,6 @@ const CreditCodesPage = () => {
 
   const selectedCodes =
     Object.keys(rowSelection).length > 0 ? Object.keys(rowSelection) : null;
-
-  console.log(sorting);
 
   return (
     <div className='w-full h-full'>

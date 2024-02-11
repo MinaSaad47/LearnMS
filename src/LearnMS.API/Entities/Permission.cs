@@ -9,5 +9,8 @@ public enum Permission
 {
     ManageCourses,
     ManageStudents,
+    ManageCreditCodes,
+    GenerateCreditCodes,
+    ManageAssistants,
     ManageFiles,
 }

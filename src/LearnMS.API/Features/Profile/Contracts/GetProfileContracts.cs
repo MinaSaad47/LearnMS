@@ -1,4 +1,6 @@
 using LearnMS.API.Entities;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace LearnMS.API.Features.Profile.Contracts;
 
@@ -28,6 +30,7 @@ public sealed record GetProfileResponse
     public string? School { get; init; }
     public StudentLevel? Level { get; init; }
     public string? ProfilePicture { get; init; }
+    [JsonProperty(ItemConverterType = typeof(StringEnumConverter))]
     public Permission[]? Permissions { get; init; }
     public required string Role { get; init; }
     public decimal? Credits { get; init; }
