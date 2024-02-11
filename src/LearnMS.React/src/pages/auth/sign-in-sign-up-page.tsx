@@ -10,12 +10,22 @@ import { cn } from "@/lib/utils";
 import LoadingPage from "@/pages/shared/loading-page";
 import { useModalStore } from "@/store/use-modal-store";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Navigate } from "react-router-dom";
+import { Navigate, useSearchParams } from "react-router-dom";
 import "./auth.scss";
 
 const SignInSignUpPage = () => {
   const { openModal } = useModalStore();
+  const [searchParams] = useSearchParams();
+  const isEmailVerified = searchParams.get("email-verified") === "true";
+  useEffect(() => {
+    if (isEmailVerified) {
+      toast({
+        title: "Email verified",
+      });
+    }
+  }, [isEmailVerified]);
 
   const { profile, isFetching: profileFetching } = useProfileQuery();
 

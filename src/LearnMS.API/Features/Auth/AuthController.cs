@@ -91,17 +91,15 @@ public sealed class AuthController : ControllerBase
 
 
     [HttpGet("verify-email")]
-    public async Task<ApiWrapper.Success<object?>> VerifyEmail([FromQuery] string token)
+    public async Task VerifyEmail([FromQuery] string token)
     {
         await _authService.ExecuteAsync(new VerifyEmailCommand
         {
             Token = token
         });
 
-        return new()
-        {
-            Message = "Email verified successfully"
-        };
+
+        Response.Redirect("/sign-in-sign-up?email-verified=true");
     }
 
     [HttpPost("forgot-password")]

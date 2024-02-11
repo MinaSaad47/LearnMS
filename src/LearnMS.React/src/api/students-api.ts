@@ -94,3 +94,39 @@ export const useDeleteStudentMutation = () => {
       api.delete(`/api/students/${id}`).then((res) => res.data),
   });
 };
+
+export const useStudentQuery = ({ id }: { id: string }) => {
+  return useQuery<ApiResponse<Student>>({
+    queryKey: ["student", { id }],
+    queryFn: () => api.get(`/api/students/${id}`).then((res) => res.data),
+  });
+};
+
+export const UpdateStudentRequest = z.object({
+  schoolName: z.string().min(1, { message: "School is required" }),
+  fullName: z.string().min(3, { message: "Name is required" }),
+  phoneNumber: z.string().refine(validateEgyptianPhoneNumber, {
+    message: "Invalid egyptian phone number",
+  }),
+  parentPhoneNumber: z.string().refine(validateEgyptianPhoneNumber, {
+    message: "Invalid egyptian phone number",
+  }),
+  level: z.enum(["Level0", "Level1", "Level2", "Level3"]),
+});
+
+export type UpdateStudentRequest = z.infer<typeof UpdateStudentRequest>;
+
+export const useUpdateStudentMutation = () => {
+  const qc = useQueryClient();
+  return useMutation<
+    ApiResponse<{}>,
+    {},
+    { id: string; data: UpdateStudentRequest }
+  >({
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["students"] });
+    },
+    mutationFn: ({ id, data }) =>
+      api.patch(`/api/students/${id}`, data).then((res) => res.data),
+  });
+};

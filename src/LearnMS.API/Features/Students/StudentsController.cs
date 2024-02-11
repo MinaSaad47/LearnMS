@@ -78,4 +78,50 @@ public sealed class StudentsController(IStudentsService studentsService) : Contr
             Message = "Added credit successfully"
         };
     }
+
+    [HttpGet("{studentId:guid}")]
+    [ApiAuthorize(Role = UserRole.Assistant, Permissions = [Permission.ManageStudents])]
+    public async Task<ApiWrapper.Success<GetStudentResponse>> Get(Guid studentId)
+    {
+        var result = await studentsService.QueryAsync(new GetStudentQuery
+        {
+            Id = studentId
+        });
+        return new()
+        {
+            Data = new()
+            {
+                Credit = result.Credit,
+                Email = result.Email,
+                FullName = result.FullName,
+                Level = result.Level,
+                ParentPhoneNumber = result.ParentPhoneNumber,
+                PhoneNumber = result.PhoneNumber,
+                ProfilePicture = result.ProfilePicture,
+                SchoolName = result.SchoolName,
+                Id = result.Id,
+                IsVerified = result.IsVerified
+            }
+        };
+    }
+
+    [HttpPatch("{studentId:guid}")]
+    [ApiAuthorize(Role = UserRole.Assistant, Permissions = [Permission.ManageStudents])]
+    public async Task<ApiWrapper.Success<object?>> Patch([FromBody] UpdateStudentRequest request, Guid studentId)
+    {
+        await studentsService.ExecuteAsync(new UpdateStudentCommand
+        {
+            Id = studentId,
+            FullName = request.FullName,
+            Level = request.Level,
+            ParentPhoneNumber = request.ParentPhoneNumber,
+            PhoneNumber = request.PhoneNumber,
+            SchoolName = request.SchoolName
+        });
+
+        return new()
+        {
+            Message = "Student updated successfully"
+        };
+    }
 }

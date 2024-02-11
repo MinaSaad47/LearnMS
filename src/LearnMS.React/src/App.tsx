@@ -12,6 +12,7 @@ import FilesPage from "@/pages/dashboard/files/files-page";
 import LectureDetailsPage from "@/pages/dashboard/lectures/lecture-details-page";
 import LessonDetailsPage from "@/pages/dashboard/lessons/lesson-details-page";
 import QuizPage from "@/pages/dashboard/quizzes/quiz-page";
+import StudentDetailsPage from "@/pages/dashboard/students/student-details-page";
 import StudentsPage from "@/pages/dashboard/students/students-page";
 import { StudentCoursePage } from "@/pages/student/courses/student-course-page";
 import { StudentCoursesPage } from "@/pages/student/courses/student-courses-page";
@@ -79,6 +80,7 @@ function App() {
         <Route path='files' element={<FilesPage />} />
         <Route path='assistants' element={<AssistantsPage />} />
         <Route path='students' element={<StudentsPage />} />
+        <Route path='students/:studentId' element={<StudentDetailsPage />} />
       </Route>
     </Routes>
   );

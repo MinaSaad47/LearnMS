@@ -63,6 +63,42 @@ public sealed class StudentsService(AppDbContext db, IPasswordHasher passwordHas
         await db.SaveChangesAsync();
     }
 
+    public async Task ExecuteAsync(UpdateStudentCommand command)
+    {
+        var student = await db.Students.FirstOrDefaultAsync(x => x.Id == command.Id) ?? throw new ApiException(StudentsErrors.NotFound);
+
+
+        if (!string.IsNullOrEmpty(command.FullName))
+        {
+            student.FullName = command.FullName;
+        }
+
+        if (!string.IsNullOrEmpty(command.PhoneNumber))
+        {
+            student.PhoneNumber = command.PhoneNumber;
+        }
+
+        if (!string.IsNullOrEmpty(command.ParentPhoneNumber))
+        {
+            student.ParentPhoneNumber = command.ParentPhoneNumber;
+        }
+
+        if (!string.IsNullOrEmpty(command.SchoolName))
+        {
+            student.SchoolName = command.SchoolName;
+        }
+
+        if (command.Level is not null)
+        {
+            student.Level = command.Level.Value;
+        }
+
+
+        db.Update(student);
+        await db.SaveChangesAsync();
+
+    }
+
     public async Task<PageList<SingleStudent>> QueryAsync(GetStudentsQuery query)
     {
         var result = from students in db.Set<Student>()
@@ -84,5 +120,30 @@ public sealed class StudentsService(AppDbContext db, IPasswordHasher passwordHas
                      };
 
         return await PageList<SingleStudent>.CreateAsync(result, query.Page ?? 1, query.PageSize ?? 10);
+    }
+
+    public async Task<GetStudentResult> QueryAsync(GetStudentQuery query)
+    {
+        var result = from students in db.Set<Student>()
+                     join accounts in db.Set<Account>() on students.Id equals accounts.Id
+                     where students.Id == query.Id
+                     select new GetStudentResult
+                     {
+                         ProfilePicture = accounts.ProfilePicture,
+                         FullName = students.FullName,
+                         Level = students.Level,
+                         ParentPhoneNumber = students.ParentPhoneNumber,
+                         PhoneNumber = students.PhoneNumber,
+                         SchoolName = students.SchoolName,
+                         Credit = students.Credit
+                         ,
+                         Email = accounts.Email,
+                         Id = students.Id,
+                         IsVerified = accounts.VerifiedAt != null
+                     };
+
+        var student = await result.FirstOrDefaultAsync() ?? throw new ApiException(StudentsErrors.NotFound);
+
+        return student;
     }
 }

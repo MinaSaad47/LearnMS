@@ -18,8 +18,11 @@ import {
   CreditCard,
   MailCheck,
   MoreHorizontal,
+  MoreVertical,
   Trash,
 } from "lucide-react";
+import { Link } from "react-router-dom";
+import { getFirstCharacters } from "../../../lib/utils";
 
 const levelMap = {
   Level0: "3rd Prep School",
@@ -38,7 +41,7 @@ export const studentsColumns: ColumnDef<Student>[] = [
         <Avatar className='m-auto'>
           <AvatarImage src={student.profilePicture} alt='' />
           <AvatarFallback className='text-blue-500 bg-blue-200'>
-            getFirstCharacters(student.fullName)
+            {getFirstCharacters(student.fullName)}
           </AvatarFallback>
         </Avatar>
       );
@@ -101,7 +104,9 @@ export const studentsColumns: ColumnDef<Student>[] = [
               <MoreHorizontal className='w-4 h-4' />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align='end'>
+          <DropdownMenuContent
+            align='end'
+            className='border shadow-md shadow-primary border-primary'>
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
               className='flex items-center gap-2 hover:cursor-pointer hover:bg-blue-600 hover:text-white'
@@ -112,10 +117,16 @@ export const studentsColumns: ColumnDef<Student>[] = [
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => openModal("add-credit-modal", { student })}
-              className='flex items-center gap-2 hover:cursor-pointer hover:bg-blue-600 hover:text-white'>
+              className='flex items-center gap-2 hover:cursor-pointer hover:bg-primary hover:text-white'>
               <CreditCard />
               Add Credit
             </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <Link to={`/dashboard/students/${student.id}`}>
+              <DropdownMenuItem className='flex items-center gap-2 hover:cursor-pointer hover:bg-primary hover:text-white'>
+                <MoreVertical /> View
+              </DropdownMenuItem>
+            </Link>
             {/*
             <DropdownMenuItem className='flex items-center gap-2 hover:cursor-pointer hover:bg-blue-600 hover:text-white'>
               <MailCheck /> Verify Email
