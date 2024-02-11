@@ -919,7 +919,7 @@ public sealed class CoursesService : ICoursesService
         var result = await (from courseItem in _dbContext.Set<CourseItem>()
                             join lectureItem in _dbContext.Set<LectureItem>() on courseItem.Id equals lectureItem.LectureId
                             join lesson in _dbContext.Set<Lesson>() on lectureItem.Id equals lesson.Id
-                            join studentLesson in _dbContext.Set<StudentLesson>() on lesson.Id equals studentLesson.LessonId into groupedStudentLessons
+                            join studentLesson in _dbContext.Set<StudentLesson>() on new { LessonId = lesson.Id, query.StudentId } equals new { studentLesson.LessonId, studentLesson.StudentId } into groupedStudentLessons
                             from studentLesson in groupedStudentLessons.DefaultIfEmpty()
                             where lesson.Id == query.LessonId && courseItem.CourseId == query.CourseId && courseItem.Id == query.LectureId
                             select new
