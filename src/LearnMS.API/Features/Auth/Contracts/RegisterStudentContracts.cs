@@ -40,7 +40,19 @@ public sealed record RegisterStudentCommand
 
 public sealed record RegisterStudentExternalCommand
 {
+    [Required]
     public required string Token { get; init; }
-    public required string Provider { get; init; }
+    [Required]
+    public required ProviderType Provider { get; init; }
+    [Required]
+    public required string School;
+    [Required]
+    public required string FullName;
+    [Required]
+    public required string PhoneNumber;
+    [Required]
+    public required string ParentPhoneNumber;
+    [Required]
+    public required StudentLevel Level;
 
 }

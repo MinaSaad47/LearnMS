@@ -1,5 +1,6 @@
 import { DashboardLayout } from "@/components/dashboard-layout";
 import RequireAuth from "@/components/require-auth";
+import PasswordResetPage from "@/pages/auth/password-reset-page";
 import SignInSignUpPage from "@/pages/auth/sign-in-sign-up-page";
 import AssistantsPage from "@/pages/dashboard/assistants/assistants-page";
 import AddCoursePage from "@/pages/dashboard/courses/add-course-page";
@@ -25,6 +26,7 @@ function App() {
   return (
     <Routes>
       <Route path='/sign-in-sign-up' element={<SignInSignUpPage />} />
+      <Route path='/auth/reset-password' element={<PasswordResetPage />} />
 
       <Route path='/' element={<StudentLayout />}>
         <Route path='/' element={<StudentHomePage2 />} />

@@ -90,3 +90,42 @@ export function useLogoutMutation() {
     },
   });
 }
+
+export const ForgotPasswordRequest = z.object({
+  email: z.string().email().min(1, { message: "Email is required" }),
+});
+
+export type ForgotPasswordRequest = z.infer<typeof ForgotPasswordRequest>;
+
+export const useForgotPasswordMutation = () => {
+  return useMutation<ApiResponse<{}>, {}, ForgotPasswordRequest>({
+    mutationKey: ["forgot-password"],
+    mutationFn: (data) =>
+      api.post("/api/auth/forgot-password", data).then((res) => res.data),
+  });
+};
+
+export const ResetPasswordRequest = z
+  .object({
+    token: z.string().min(1, { message: "Token is required" }),
+    password: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters" }),
+    confirmPassword: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters" }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+export type ResetPasswordRequest = z.infer<typeof ResetPasswordRequest>;
+
+export const useResetPasswordMutation = () => {
+  return useMutation<ApiResponse<{}>, {}, ResetPasswordRequest>({
+    mutationKey: ["reset-password"],
+    mutationFn: (data) =>
+      api.post("/api/auth/reset-password", data).then((res) => res.data),
+  });
+};

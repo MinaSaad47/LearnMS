@@ -2,6 +2,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Google.Apis.Auth;
 using LearnMS.API.Common;
 using LearnMS.API.Common.EmailService;
 using LearnMS.API.Data;
@@ -108,7 +109,7 @@ public sealed class AuthService : IAuthService
 
     public Task<LoginResult> ExecuteAsync(LoginExternalCommand command)
     {
-        throw new NotImplementedException();
+        throw new ApiException(ServerErrors.NotImplemented);
     }
 
     public async Task ExecuteAsync(VerifyEmailCommand command)
@@ -121,6 +122,51 @@ public sealed class AuthService : IAuthService
         }
 
         account.VerifiedAt = DateTime.UtcNow;
+
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task ExecuteAsync(ForgotPasswordCommand command)
+    {
+        var account = await _dbContext.Accounts
+           .FirstOrDefaultAsync(x => x.Email.ToLower() == command.Email.ToLower());
+
+        if (account is null)
+        {
+            return;
+        }
+
+        account.PasswordResetToken = await _codeGenerator.GenerateAsync(20, async (token) =>
+        {
+            return await _dbContext.Accounts.CountAsync(a => a.PasswordResetToken == token || a.VerificationToken == token) == 0;
+        });
+
+        account.PasswordResetTokenExpiresAt = DateTime.UtcNow.AddHours(1);
+
+        await _emailService.SendAsync(
+            new SendEmailRequest
+            {
+                To = command.Email,
+                Body = $"<a href='{_jwtConfig.BaseUrl}/auth/reset-password?token={account.PasswordResetToken}'>Click here to reset your password</a>",
+                Subject = "Password Reset"
+            }
+        );
+
+        _dbContext.Update(account);
+
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task ExecuteAsync(ResetPasswordCommand command)
+    {
+        var account = await _dbContext.Accounts.FirstOrDefaultAsync(x => x.PasswordResetToken == command.Token && x.PasswordResetTokenExpiresAt > DateTime.UtcNow) ?? throw new ApiException(AuthErrors.InvalidToken);
+
+        account.PasswordHash = _passwordHasher.Hash(command.Password);
+
+        account.PasswordResetToken = null;
+        account.PasswordResetTokenExpiresAt = null;
+
+        _dbContext.Update(account);
 
         await _dbContext.SaveChangesAsync();
     }
@@ -154,4 +200,5 @@ public sealed class AuthService : IAuthService
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+
 }

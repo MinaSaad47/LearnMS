@@ -61,7 +61,7 @@
   p {
     font-size: small;
   }
-  button {
+  button:not(.forgot) {
     width: 60%;
     height: 40px;
     margin: 10px auto;

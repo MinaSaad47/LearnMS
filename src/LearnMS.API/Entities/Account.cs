@@ -1,10 +1,13 @@
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
 namespace LearnMS.API.Entities;
 
 
+[JsonConverter(typeof(StringEnumConverter))]
 public enum ProviderType
 {
     Google,
-    Facebook,
     Local
 }
 

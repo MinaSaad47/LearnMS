@@ -103,4 +103,34 @@ public sealed class AuthController : ControllerBase
             Message = "Email verified successfully"
         };
     }
+
+    [HttpPost("forgot-password")]
+    public async Task<ApiWrapper.Success<object?>> ForgotPassword([FromBody] ForgotPasswordRequest request)
+    {
+        await _authService.ExecuteAsync(new ForgotPasswordCommand
+        {
+            Email = request.Email
+        });
+
+        return new()
+        {
+            Message = "Email sent successfully, please check your inbox",
+        };
+    }
+
+    [HttpPost("reset-password")]
+    public async Task<ApiWrapper.Success<object?>> ResetPassword([FromBody] ResetPasswordRequest request)
+    {
+        await _authService.ExecuteAsync(new ResetPasswordCommand
+        {
+            Password = request.Password,
+            Token = request.Token,
+        });
+
+        return new()
+        {
+            Message = "Password reset successfully"
+
+        };
+    }
 }

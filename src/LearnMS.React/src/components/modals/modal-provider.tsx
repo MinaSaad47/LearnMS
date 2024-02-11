@@ -1,3 +1,4 @@
+import ForgotPasswordModal from "@/pages/auth/forgot-password-modal";
 import AddAssistantModal from "@/pages/dashboard/assistants/add-assistant-modal";
 import UpdateAssistantModal from "@/pages/dashboard/assistants/update-assistant-modal";
 import AddCreditModal from "@/pages/dashboard/students/add-credit-modal";
@@ -13,6 +14,7 @@ const modals: Record<string, React.FC<any>> = {
   "update-assistant-modal": UpdateAssistantModal,
   "add-credit-modal": AddCreditModal,
   "profile-modal": ProfileModal,
+  "forgot-password-modal": ForgotPasswordModal,
 };
 
 const ModalProvider = () => {
