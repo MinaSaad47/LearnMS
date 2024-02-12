@@ -7,7 +7,7 @@ public sealed record GenerateCreditCodesCommand
 
     public int Count;
     public decimal Value;
-    public Guid? AssistantId = null;
+    public Guid? GeneratorId = null;
 }
 
 public sealed record GenerateCreditCodesRequest

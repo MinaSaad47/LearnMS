@@ -43,7 +43,7 @@ public sealed class CreditCodesController : ControllerBase
             PageSize = pageSize,
             Search = search,
             SortOrder = sortOrder,
-            AssistantId = canManage ? null : currentUser!.Role == UserRole.Assistant ? currentUser.Id : null
+            GeneratorId = canManage ? null : currentUser!.Role == UserRole.Assistant ? currentUser.Id : null
         });
         return new()
         {
@@ -63,7 +63,7 @@ public sealed class CreditCodesController : ControllerBase
         {
             Count = request.Count,
             Value = request.Value,
-            AssistantId = currentUser!.Role == UserRole.Assistant ? currentUser.Id : null,
+            GeneratorId = currentUser!.Role == UserRole.Assistant ? currentUser.Id : null,
         });
         Response.StatusCode = StatusCodes.Status201Created;
         return new()
@@ -95,12 +95,16 @@ public sealed class CreditCodesController : ControllerBase
     }
 
     [HttpPost("sell")]
-    [ApiAuthorize(Role = UserRole.Assistant, Permissions = [Permission.ManageCreditCodes])]
+    [ApiAuthorize(Role = UserRole.Assistant, Permissions = [Permission.ManageCreditCodes, Permission.GenerateCreditCodes])]
     public async Task<ApiWrapper.Success<SellCreditCodesResponse>> Sell([FromBody] SellCreditCodesRequest request)
     {
+
+        var currentUser = await _currentUserService.GetUserAsync();
+
         var result = await _creditCodesService.ExecuteAsync(new SellCreditCodesCommand
         {
-            Codes = request.Codes
+            Codes = request.Codes,
+            SellerId = currentUser!.Role == UserRole.Assistant ? currentUser.Id : null,
         });
 
         return new()

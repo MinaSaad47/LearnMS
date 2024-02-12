@@ -3,6 +3,7 @@ using System;
 using LearnMS.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LearnMS.API.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240212120158_Migrations_2")]
+    partial class Migrations_2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -126,11 +129,11 @@ namespace LearnMS.API.Data.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
 
+                    b.Property<Guid?>("AssistantId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime>("GeneratedAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid?>("GeneratorId")
-                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("RedeemedAt")
                         .HasColumnType("timestamp with time zone");
@@ -152,9 +155,6 @@ namespace LearnMS.API.Data.Migrations
                         .HasColumnType("numeric");
 
                     b.HasKey("Code");
-
-                    b.HasIndex("Code")
-                        .IsUnique();
 
                     b.ToTable("CreditCodes");
                 });
@@ -401,7 +401,7 @@ namespace LearnMS.API.Data.Migrations
                 {
                     b.HasOne("LearnMS.API.Entities.Assistant", null)
                         .WithMany()
-                        .HasForeignKey("GeneratorId")
+                        .HasForeignKey("AssistantId")
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("LearnMS.API.Entities.Assistant", null)

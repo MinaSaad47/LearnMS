@@ -32,7 +32,7 @@ public class CreditCodesService : ICreditCodesService
             {
                 Code = code,
                 Value = request.Value,
-                AssistantId = request.AssistantId,
+                GeneratorId = request.GeneratorId,
             };
             creditCodes.Add(creditCode);
         }
@@ -63,7 +63,6 @@ public class CreditCodesService : ICreditCodesService
         }
 
         creditCode.StudentId = request.StudentId;
-        creditCode.Status = CreditCodeStatus.Redeemed;
         student.Credit += creditCode.Value;
 
         await _dbContext.SaveChangesAsync();
@@ -84,7 +83,7 @@ public class CreditCodesService : ICreditCodesService
             {
                 var code = await _dbContext.CreditCodes.Where(x => x.Code == toBeSold && x.Status == CreditCodeStatus.Fresh).FirstOrDefaultAsync();
                 if (code is null) continue;
-                code.Status = CreditCodeStatus.Sold;
+                code.SellerId = request.SellerId;
                 _dbContext.Update(code);
                 await _dbContext.SaveChangesAsync();
                 soldCodes.Add(code);
@@ -125,26 +124,36 @@ public class CreditCodesService : ICreditCodesService
         var creditCodesQuery = from code in _dbContext.CreditCodes
                                join redeemerAccount in _dbContext.Accounts on code.StudentId equals redeemerAccount.Id into redeemers
                                from redeemer in redeemers.DefaultIfEmpty()
-                               join generatorAccount in _dbContext.Accounts on code.AssistantId equals generatorAccount.Id into generators
+                               join generatorAccount in _dbContext.Accounts on code.GeneratorId equals generatorAccount.Id into generators
                                from generator in generators.DefaultIfEmpty()
+                               join sellerAccount in _dbContext.Accounts on code.SellerId equals sellerAccount.Id into sellers
+                               from seller in sellers.DefaultIfEmpty()
                                orderby query.SortOrder == "asc" ? code.Status : 0
                                orderby query.SortOrder != "desc" ? 0 : code.Status descending
                                where status != null ? code.Status == status : true &&
-                               query.AssistantId != null ? code.AssistantId == query.AssistantId : true
+                               query.GeneratorId != null ? code.GeneratorId == query.GeneratorId : true
                                select new SingleCreditCodeItem
                                {
                                    Code = code.Code,
                                    Value = code.Value,
-                                   Status = code.Status.ToString(),
-                                   Redeemer = redeemer != null ? new CreditCodeRedeemer
+                                   GeneratedAt = code.GeneratedAt,
+                                   Status = code.Status,
+                                   Redeemer = redeemer != null && code.RedeemedAt != null ? new CreditCodeRedeemer
                                    {
                                        Id = redeemer.Id,
-                                       Email = redeemer.Email
+                                       Email = redeemer.Email,
+                                       RedeemedAt = code.RedeemedAt!.Value,
                                    } : null,
                                    Generator = generator != null ? new CreditCodeGenerator
                                    {
                                        Id = generator.Id,
                                        Email = generator.Email
+                                   } : null,
+                                   SoldAt = code.SoldAt,
+                                   Seller = seller != null && code.SoldAt != null ? new CreditCodeSeller
+                                   {
+                                       Id = seller.Id,
+                                       Email = seller.Email,
                                    } : null
                                }
                                into result

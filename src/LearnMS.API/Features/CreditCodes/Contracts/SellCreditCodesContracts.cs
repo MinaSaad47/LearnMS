@@ -6,6 +6,7 @@ namespace LearnMS.API.Features.CreditCodes.Contracts;
 public record SellCreditCodesCommand
 {
     public required List<string> Codes { get; init; }
+    public Guid? SellerId = null;
 }
 
 public record SellCreditCodesRequest
