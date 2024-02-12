@@ -13,6 +13,7 @@ public sealed class CreditCodesConfigurations : IEntityTypeConfiguration<CreditC
         builder.Property(x => x.Code).HasMaxLength(20);
 
         builder.HasIndex(x => x.Code).IsUnique();
+        builder.HasIndex(x => x.SellerId);
 
 
         builder.Property(x => x.Status).HasConversion(x => x.ToString(), x => (CreditCodeStatus)Enum.Parse(typeof(CreditCodeStatus), x));

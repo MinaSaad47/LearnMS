@@ -2,6 +2,7 @@ import { DashboardLayout } from "@/components/dashboard-layout";
 import RequireAuth from "@/components/require-auth";
 import PasswordResetPage from "@/pages/auth/password-reset-page";
 import SignInSignUpPage from "@/pages/auth/sign-in-sign-up-page";
+import AssistantDetailsPage from "@/pages/dashboard/assistants/assistant-details-page";
 import AssistantsPage from "@/pages/dashboard/assistants/assistants-page";
 import AddCoursePage from "@/pages/dashboard/courses/add-course-page";
 import CourseDetailsPage from "@/pages/dashboard/courses/course-details-page";
@@ -148,6 +149,16 @@ function App() {
               roles={["Teacher", "Assistant"]}
               permissions={["ManageAssistants"]}>
               <AssistantsPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path='assistants/:assistantId'
+          element={
+            <RequireAuth
+              roles={["Teacher", "Assistant"]}
+              permissions={["ManageAssistants"]}>
+              <AssistantDetailsPage />
             </RequireAuth>
           }
         />

@@ -112,4 +112,62 @@ public sealed class AdministrationController : ControllerBase
             },
         };
     }
+
+    [HttpGet("assistants/{assistantId:guid}/incomes")]
+    [ApiAuthorize(Role = UserRole.Assistant, Permissions = [Permission.ManageAssistants])]
+    public async Task<ApiWrapper.Success<GetAssistantIncomeResponse>> GetIncomes(Guid assistantId, int? page, int? pageSize)
+    {
+        var result = await _assistantsService.QueryAsync(new GetAssistantIncomeQuery
+        {
+            AssistantId = assistantId,
+            Page = page,
+            PageSize = pageSize
+        });
+
+        return new()
+        {
+            Data = new()
+            {
+                Data = result.Data,
+                TotalIncome = result.TotalIncome,
+                UnClaimedIncome = result.UnClaimedIncome
+            }
+        };
+    }
+
+    [HttpGet("assistants/{assistantId:guid}")]
+    [ApiAuthorize(Role = UserRole.Assistant, Permissions = [Permission.ManageAssistants])]
+    public async Task<ApiWrapper.Success<GetAssistantResponse>> Get(Guid assistantId)
+    {
+        var result = await _assistantsService.QueryAsync(new GetAssistantQuery
+        {
+            Id = assistantId
+        });
+
+        return new()
+        {
+            Data = new()
+            {
+                Id = result.Id,
+                Email = result.Email,
+                Permissions = result.Permissions
+            },
+            Message = "Successfully retrieved assistant"
+        };
+    }
+
+    [HttpPost("assistants/{assistantId:guid}/claim")]
+    [ApiAuthorize(Role = UserRole.Assistant, Permissions = [Permission.ManageAssistants])]
+    public async Task<ApiWrapper.Success<object?>> Claim(Guid assistantId)
+    {
+        await _assistantsService.ExecuteAsync(new ClaimAssistantIncomesCommand
+        {
+            AssistantId = assistantId
+        });
+
+        return new()
+        {
+            Message = "Successfully claimed incomes"
+        };
+    }
 }

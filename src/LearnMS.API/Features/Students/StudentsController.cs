@@ -8,7 +8,7 @@ namespace LearnMS.API.Features.Students;
 
 [Route("api/students")]
 [Tags("Students")]
-public sealed class StudentsController(IStudentsService studentsService) : ControllerBase
+public sealed class StudentsController(IStudentsService studentsService, ICurrentUserService currentUserService) : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -67,10 +67,13 @@ public sealed class StudentsController(IStudentsService studentsService) : Contr
     [ApiAuthorize(Role = UserRole.Assistant, Permissions = [Permission.ManageStudents])]
     public async Task<ApiWrapper.Success<object?>> AddCredit([FromBody] AddStudentCreditRequest request, Guid studentId)
     {
+        var currentUser = await currentUserService.GetUserAsync();
+
         await studentsService.ExecuteAsync(new AddStudentCreditCommand
         {
             Amount = request.Amount,
             Id = studentId,
+            AssistantId = currentUser!.Role == UserRole.Assistant ? currentUser.Id : null
         });
 
         return new()

@@ -1,6 +1,5 @@
 import ForgotPasswordModal from "@/pages/auth/forgot-password-modal";
 import AddAssistantModal from "@/pages/dashboard/assistants/add-assistant-modal";
-import UpdateAssistantModal from "@/pages/dashboard/assistants/update-assistant-modal";
 import AddCreditModal from "@/pages/dashboard/students/add-credit-modal";
 import AddStudentModal from "@/pages/dashboard/students/add-student-modal";
 import ProfileModal from "@/pages/student/profile/profile-modal";
@@ -11,7 +10,6 @@ import React from "react";
 const modals: Record<string, React.FC<any>> = {
   "add-assistant-modal": AddAssistantModal,
   "add-student-modal": AddStudentModal,
-  "update-assistant-modal": UpdateAssistantModal,
   "add-credit-modal": AddCreditModal,
   "profile-modal": ProfileModal,
   "forgot-password-modal": ForgotPasswordModal,

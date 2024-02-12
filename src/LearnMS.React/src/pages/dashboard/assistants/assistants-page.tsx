@@ -9,6 +9,7 @@ import {
 import { useModalStore } from "@/store/use-modal-store";
 import { Assistant } from "@/types/assistants";
 import { Edit2, Shield } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const AssistantsPage = () => {
   const { data: assistants, isLoading } = useAssistantsQuery();
@@ -45,8 +46,6 @@ function AssistantsList({ assistants }: { assistants: Assistant[] }) {
 }
 
 function AssistantListItem({ assistant }: { assistant: Assistant }) {
-  const { openModal } = useModalStore();
-
   return (
     <div className='p-2 border-[3px] border-blue-400 rounded flex justify-between items-center'>
       <div className='flex items-center justify-center gap-2'>
@@ -68,12 +67,11 @@ function AssistantListItem({ assistant }: { assistant: Assistant }) {
             ))}
           </HoverCardContent>
         </HoverCard>
-        <Button
-          size='icon'
-          variant={"link"}
-          onClick={() => openModal("update-assistant-modal", { assistant })}>
-          <Edit2 />
-        </Button>
+        <Link to={`/dashboard/assistants/${assistant.id}`}>
+          <Button size='icon' variant={"link"}>
+            <Edit2 />
+          </Button>
+        </Link>
       </div>
     </div>
   );
