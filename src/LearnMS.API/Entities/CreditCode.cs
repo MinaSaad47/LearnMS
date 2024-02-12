@@ -33,6 +33,7 @@ public sealed class CreditCode
     public DateTime GeneratedAt { get; private set; } = DateTime.UtcNow;
     public DateTime? SoldAt { get; private set; }
     public DateTime? RedeemedAt { get; private set; }
+    public DateTime? ClaimedAt { get; set; }
 
 }
 

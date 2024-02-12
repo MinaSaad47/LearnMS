@@ -44,8 +44,10 @@ public sealed class StudentsService(AppDbContext db, IPasswordHasher passwordHas
             throw new ApiException(StudentsErrors.NotFound);
         }
 
-        student.Credit += command.Amount;
+        student.AddCredit(command.AssistantId, command.Amount, out var studentCredit);
 
+
+        await db.AddAsync(studentCredit);
         db.Update(student);
         await db.SaveChangesAsync();
     }

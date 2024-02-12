@@ -10,6 +10,8 @@ public sealed class StudentsConfigurations : IEntityTypeConfiguration<Student>
     {
         builder.HasBaseType<User>();
 
+        builder.Property(x => x.Credit).HasField("_credit").UsePropertyAccessMode(PropertyAccessMode.PreferFieldDuringConstruction);
+
         builder.Property(x => x.Level).HasConversion(x => x.ToString(), x => (StudentLevel)Enum.Parse(typeof(StudentLevel), x));
 
     }

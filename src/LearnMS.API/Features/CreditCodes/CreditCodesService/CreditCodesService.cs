@@ -62,8 +62,10 @@ public class CreditCodesService : ICreditCodesService
             throw new ApiException(CreditCodesErrors.AlreadyRedeemed);
         }
 
-        creditCode.StudentId = request.StudentId;
-        student.Credit += creditCode.Value;
+        student.RedeemCode(creditCode, out var redeemedCode);
+        _dbContext.Update(redeemedCode);
+
+        _dbContext.Update(student);
 
         await _dbContext.SaveChangesAsync();
 

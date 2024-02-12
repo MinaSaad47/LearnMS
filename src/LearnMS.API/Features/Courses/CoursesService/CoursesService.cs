@@ -390,41 +390,25 @@ public sealed class CoursesService : ICoursesService
             throw new ApiException(ProfileErrors.NoStudentFound);
         }
 
-        var studentCourse = await _dbContext.Set<StudentCourse>().FirstOrDefaultAsync(x => x.CourseId == command.CourseId && x.StudentId == command.StudentId);
-
-        if (studentCourse is not null && studentCourse.ExpirationDate > DateTime.UtcNow)
-        {
-            throw new ApiException(CoursesErrors.AlreadyPurchased);
-        }
 
         var course = await _dbContext.Courses.FirstOrDefaultAsync(x => x.Id == command.CourseId && x.IsPublished && x.Level == student.Level) ?? throw new ApiException(CoursesErrors.NotFound);
+
+        var studentCourse = await _dbContext.Set<StudentCourse>().FirstOrDefaultAsync(x => x.CourseId == command.CourseId && x.StudentId == command.StudentId);
 
 
         if (studentCourse is not null)
         {
-            if (student.Credit < course.RenewalPrice) throw new ApiException(ProfileErrors.InsufficientCredits);
-
-            studentCourse.ExpirationDate = DateTime.UtcNow.AddDays(course.ExpirationDays!.Value);
-            student.Credit -= course.RenewalPrice ?? 0;
-
-            _dbContext.Update(student);
-            _dbContext.Update(studentCourse);
-            await _dbContext.SaveChangesAsync();
-            return;
+            student.RenewCourse(course, studentCourse, out var renewedStudentCourse);
+            _dbContext.Update(renewedStudentCourse);
+        }
+        else
+        {
+            student.BuyCourse(course, out var boughtStudentCourse);
+            await _dbContext.AddAsync(boughtStudentCourse);
         }
 
 
-        if (student.Credit < course.Price) throw new ApiException(ProfileErrors.InsufficientCredits);
-
-        student.Credit -= course.Price ?? 0;
-
         _dbContext.Update(student);
-        _dbContext.Add(new StudentCourse
-        {
-            CourseId = command.CourseId,
-            StudentId = command.StudentId,
-            ExpirationDate = DateTime.UtcNow.AddDays(course.ExpirationDays!.Value)
-        });
 
         await _dbContext.SaveChangesAsync();
     }
@@ -438,45 +422,27 @@ public sealed class CoursesService : ICoursesService
             throw new ApiException(ProfileErrors.NoStudentFound);
         }
 
-        var studentLecture = await _dbContext.Set<StudentLecture>().FirstOrDefaultAsync(x => x.LectureId == command.LectureId && x.StudentId == command.StudentId);
-
-        if (studentLecture is not null && studentLecture.ExpirationDate > DateTime.UtcNow)
-        {
-            throw new ApiException(LecturesErrors.AlreadyPurchased);
-        }
 
         var courseLecture = await _dbContext.Set<CourseItem>()
             .FirstOrDefaultAsync(x => x.CourseId == command.CourseId && x.IsPublished && x.Id == command.LectureId) ?? throw new ApiException(LecturesErrors.NotFound);
 
         var lecture = await _dbContext.Set<Lecture>().FirstOrDefaultAsync(x => x.Id == command.LectureId) ?? throw new ApiException(LecturesErrors.NotFound);
 
+        var studentLecture = await _dbContext.Set<StudentLecture>().FirstOrDefaultAsync(x => x.LectureId == command.LectureId && x.StudentId == command.StudentId);
+
         if (studentLecture is not null)
         {
-            if (student.Credit < lecture.RenewalPrice) throw new ApiException(ProfileErrors.InsufficientCredits);
-
-            studentLecture.ExpirationDate = DateTime.UtcNow.AddDays(lecture.ExpirationDays!.Value);
-            student.Credit -= lecture.RenewalPrice ?? 0;
-
-            _dbContext.Update(student);
-            _dbContext.Update(studentLecture);
-            await _dbContext.SaveChangesAsync();
-            return;
+            student.RenewLecture(lecture, studentLecture, out var renewedStudentLecture);
+            _dbContext.Update(renewedStudentLecture);
+        }
+        else
+        {
+            student.BuyLecture(lecture, out var boughtStudentLecture);
+            await _dbContext.AddAsync(boughtStudentLecture);
         }
 
 
-        if (student.Credit < lecture.Price) throw new ApiException(ProfileErrors.InsufficientCredits);
-
-        studentLecture = new StudentLecture
-        {
-            LectureId = command.LectureId,
-            StudentId = command.StudentId,
-            ExpirationDate = DateTime.UtcNow.AddDays(lecture.ExpirationDays!.Value)
-        };
-
-        student.Credit -= lecture.Price ?? 0;
-
         _dbContext.Update(student);
-        _dbContext.Add(studentLecture);
 
         await _dbContext.SaveChangesAsync();
     }
@@ -554,15 +520,11 @@ public sealed class CoursesService : ICoursesService
 
         if (studentLesson is null) return;
 
-        if (student.Credit < lesson.RenewalPrice)
-        {
-            throw new ApiException(ProfileErrors.InsufficientCredits);
-        }
-
-        student.Credit -= lesson.RenewalPrice;
-        _dbContext.Update(student);
+        student.RenewLesson(lesson, studentLesson);
 
         _dbContext.Remove(studentLesson);
+        _dbContext.Update(student);
+
         await _dbContext.SaveChangesAsync();
 
     }
