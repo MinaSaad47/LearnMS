@@ -14,7 +14,7 @@ const Footer = () => {
             className='relative block fill-white'></path>
         </svg>
       </div>
-      <div className='w-full text-white bg-color2 h-[250px] flex items-center justify-center gap-5'>
+      <div className='w-full text-white bg-color2 h-[350px] flex items-center justify-center gap-5'>
         <a
           href='https://www.facebook.com/people/Newtons-Academy-Mr-Rafik-Isaac/100064151013051'
           className='transition-all duration-300 hover:text-blue-500 hover:cursor-pointer hover:scale-125'>
