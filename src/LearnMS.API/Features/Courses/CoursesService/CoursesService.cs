@@ -428,16 +428,18 @@ public sealed class CoursesService : ICoursesService
 
         var lecture = await _dbContext.Set<Lecture>().FirstOrDefaultAsync(x => x.Id == command.LectureId) ?? throw new ApiException(LecturesErrors.NotFound);
 
+        var studentCourse = await _dbContext.Set<StudentCourse>().FirstOrDefaultAsync(x => x.CourseId == command.CourseId && x.StudentId == command.StudentId);
+
         var studentLecture = await _dbContext.Set<StudentLecture>().FirstOrDefaultAsync(x => x.LectureId == command.LectureId && x.StudentId == command.StudentId);
 
         if (studentLecture is not null)
         {
-            student.RenewLecture(lecture, studentLecture, out var renewedStudentLecture);
+            student.RenewLecture(lecture, studentCourse, studentLecture, out var renewedStudentLecture);
             _dbContext.Update(renewedStudentLecture);
         }
         else
         {
-            student.BuyLecture(lecture, out var boughtStudentLecture);
+            student.BuyLecture(lecture, studentCourse, out var boughtStudentLecture);
             await _dbContext.AddAsync(boughtStudentLecture);
         }
 

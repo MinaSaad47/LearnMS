@@ -67,8 +67,9 @@ public class Student : User
         renewedStudentCourse.ExpirationDate = DateTime.UtcNow.AddDays(course.ExpirationDays ?? 0);
     }
 
-    public void BuyLecture(Lecture lecture, out StudentLecture boughtStudentLecture)
+    public void BuyLecture(Lecture lecture, StudentCourse? studentCourse, out StudentLecture boughtStudentLecture)
     {
+        if (studentCourse?.ExpirationDate > DateTime.UtcNow) throw new ApiException(CoursesErrors.AlreadyPurchased);
         if (_credit < lecture.Price) throw new ApiException(ProfileErrors.InsufficientCredits);
         _credit -= lecture.Price ?? 0;
         boughtStudentLecture = new StudentLecture
@@ -79,8 +80,9 @@ public class Student : User
         };
     }
 
-    public void RenewLecture(Lecture lecture, StudentLecture studentLecture, out StudentLecture renewedStudentLecture)
+    public void RenewLecture(Lecture lecture, StudentCourse? studentCourse, StudentLecture studentLecture, out StudentLecture renewedStudentLecture)
     {
+        if (studentCourse?.ExpirationDate > DateTime.UtcNow) throw new ApiException(CoursesErrors.AlreadyPurchased);
         if (studentLecture.ExpirationDate > DateTime.UtcNow) throw new ApiException(LecturesErrors.AlreadyPurchased);
         if (_credit < lecture.RenewalPrice) throw new ApiException(ProfileErrors.InsufficientCredits);
         _credit -= lecture.RenewalPrice ?? 0;

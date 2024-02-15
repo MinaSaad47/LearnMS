@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/card";
 import { toast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
+import { CourseDetails } from "@/types/courses";
 import { Lesson } from "@/types/lessons";
 import { Quiz } from "@/types/quiz";
 import { useNavigate, useParams } from "react-router-dom";
@@ -36,7 +37,7 @@ const StudentLecturePage = () => {
 
   return (
     <div>
-      <LectureHeader lecture={lecture?.data!} courseId={courseId!} />
+      <LectureHeader lecture={lecture?.data!} course={course?.data!} />
       <div className='flex flex-col items-center justify-center gap-2 py-4'>
         {lecture?.data.items.map((item) => (
           <LectureItem
@@ -59,10 +60,10 @@ export default StudentLecturePage;
 
 function LectureHeader({
   lecture,
-  courseId,
+  course,
 }: {
   lecture: LectureDetails;
-  courseId: string;
+  course: CourseDetails;
 }) {
   const buyLectureMutation = useBuyLectureMutation();
 
@@ -70,7 +71,7 @@ function LectureHeader({
     buyLectureMutation.mutate(
       {
         lectureId: lecture.id,
-        courseId: courseId,
+        courseId: course.id,
       },
       {
         onSuccess: () => {
@@ -93,25 +94,34 @@ function LectureHeader({
             <p>{lecture.description}</p>
           </CardContent>
 
-          {lecture.enrollment !== "Active" ? (
-            <Confirmation
-              button={
-                <Button className='mt-auto mb-2 ml-auto mr-2 transition-all bg-white shadow-md duration-400 text-color1 hover:bg-color1 hover:text-white w-fit hover:scale-115'>
-                  {lecture.enrollment === "Expired"
-                    ? `Renew for ${lecture.renewalPrice} LE`
-                    : `Buy for ${lecture.price} LE`}
-                </Button>
-              }
-              description='Are you sure you want to buy this lecture?'
-              onConfirm={onBuying}
-              title='Confirm Purchase'
-              disabled={buyLectureMutation.isPending}
-            />
-          ) : (
-            <Badge variant='destructive' className='self-end w-fit'>
-              Expires on {new Date(lecture.expiresAt!).toDateString()}
-            </Badge>
-          )}
+          {lecture.enrollment !== "Active" &&
+            course.enrollment !== "Active" && (
+              <Confirmation
+                button={
+                  <Button className='mt-auto mb-2 ml-auto mr-2 transition-all bg-white shadow-md duration-400 text-color1 hover:bg-color1 hover:text-white w-fit hover:scale-115'>
+                    {lecture.enrollment === "Expired"
+                      ? `Renew for ${lecture.renewalPrice} LE`
+                      : `Buy for ${lecture.price} LE`}
+                  </Button>
+                }
+                description='Are you sure you want to buy this lecture?'
+                onConfirm={onBuying}
+                title='Confirm Purchase'
+                disabled={buyLectureMutation.isPending}
+              />
+            )}
+          <div className='flex flex-col items-center gap-2'>
+            {lecture.enrollment === "Active" && (
+              <Badge variant='destructive' className='self-end w-fit'>
+                Lecture expires on {new Date(lecture.expiresAt!).toDateString()}
+              </Badge>
+            )}
+            {course.enrollment === "Active" && (
+              <Badge variant='destructive' className='self-end w-fit'>
+                Course expires on {new Date(course.expiresAt!).toDateString()}
+              </Badge>
+            )}
+          </div>
         </div>
         <div className='h-full overflow-clip w-[300px] rounded aspect-square'>
           <img

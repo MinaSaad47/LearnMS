@@ -77,9 +77,10 @@ export const useCoursesQuery = () => {
 export const useBuyCourseMutation = () => {
   const qc = useQueryClient();
   return useMutation<ApiResponse<{}>, {}, { courseId: string }>({
-    onSuccess: () => {
+    onSuccess: (_, { courseId }) => {
       qc.invalidateQueries({ queryKey: ["profile"] });
       qc.invalidateQueries({ queryKey: ["courses"] });
+      qc.invalidateQueries({ queryKey: ["course", { id: courseId }] });
     },
     mutationFn: ({ courseId }) =>
       api.post(`/api/courses/${courseId}/buy`).then((res) => res.data),

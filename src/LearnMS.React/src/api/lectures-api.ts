@@ -136,6 +136,7 @@ export const useBuyLectureMutation = () => {
       });
       qc.invalidateQueries({ queryKey: ["course", { id: courseId }] });
       qc.invalidateQueries({ queryKey: ["courses"] });
+      qc.invalidateQueries({ queryKey: ["profile"] });
     },
     mutationFn: ({ lectureId, courseId }) =>
       api
