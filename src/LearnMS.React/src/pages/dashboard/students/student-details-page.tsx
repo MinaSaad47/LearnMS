@@ -1,30 +1,33 @@
-import {
-  UpdateStudentRequest,
-  useDeleteStudentMutation,
-  useStudentQuery,
-  useUpdateStudentMutation,
-} from "@/api/students-api";
+import
+  {
+    UpdateStudentRequest,
+    useDeleteStudentMutation,
+    useStudentQuery,
+    useUpdateStudentMutation,
+  } from "@/api/students-api";
 import Confirmation from "@/components/confirmation";
 import Loading from "@/components/loading/loading";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "@/components/ui/form";
+import
+  {
+    Form,
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+  } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import
+  {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+  } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/components/ui/use-toast";
@@ -172,6 +175,21 @@ function StudentProfile({ studentId }: { studentId: string }) {
                   <FormItem>
                     <FormLabel>Parent Phone Number</FormLabel>
                     <FormDescription>Parent's phone number</FormDescription>
+                    <FormControl>
+                      <Input {...field} placeholder='John Doe' />
+                    </FormControl>
+                  </FormItem>
+                </FormItem>
+              )}
+             />
+<FormField
+              control={form.control}
+              name='schoolName'
+              render={({ field }) => (
+                <FormItem>
+                  <FormItem>
+                    <FormLabel>School Name</FormLabel>
+                    <FormDescription>Student's School Name</FormDescription>
                     <FormControl>
                       <Input {...field} placeholder='John Doe' />
                     </FormControl>

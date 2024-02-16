@@ -105,6 +105,7 @@ public sealed class StudentsService(AppDbContext db, IPasswordHasher passwordHas
     {
         var result = from students in db.Set<Student>()
                      join accounts in db.Set<Account>() on students.Id equals accounts.Id
+                     orderby students.FullName
                      where
                         query.Search != null ? (students.FullName.ToLower().Contains(query.Search) || accounts.Email.ToLower().Contains(query.Search)) : true
                      select new SingleStudent
