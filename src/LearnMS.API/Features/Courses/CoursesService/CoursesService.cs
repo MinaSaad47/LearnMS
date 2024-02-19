@@ -494,16 +494,25 @@ public sealed class CoursesService : ICoursesService
                      join lectureItems in _dbContext.Set<LectureItem>() on lectures.Id equals lectureItems.LectureId
                      join lessons in _dbContext.Set<Lesson>() on lectureItems.Id equals lessons.Id
                      where lectures.Id == command.LectureId && courses.Id == command.CourseId && lessons.Id == command.Id
-                     select lectureItems;
+                     select new
+                     {
+                         lesson = lessons,
+                         item = lectureItems
+                     };
 
         var lesson = await result.FirstOrDefaultAsync();
 
-        if (lesson is null)
+        if (lesson is null || lesson.item is null)
         {
             throw new ApiException(LessonsErrors.NotFound);
         }
 
-        _dbContext.Remove(lesson);
+        if (!string.IsNullOrEmpty(lesson.lesson.VideoId))
+        {
+            await _vdoService.DeleteVideoAsync(lesson.lesson.VideoId);
+        }
+
+        _dbContext.Remove(lesson.item);
         await _dbContext.SaveChangesAsync();
     }
 
