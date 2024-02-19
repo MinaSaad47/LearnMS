@@ -2,7 +2,10 @@
 
 LearnMS is a learning management system web application for teachers, assistants and students.
 
-<video src="./assets/learn-ms.mp4" controls loop></video>
+
+https://github.com/MinaSaad47/LearnMS-private/assets/58346027/780d16f3-2c45-428f-bd5a-b459b9075371
+
+
 
 # Features
 
