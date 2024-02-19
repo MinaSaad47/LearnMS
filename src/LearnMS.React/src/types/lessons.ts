@@ -25,5 +25,16 @@ export type LessonDetails = {
   renewalPrice: number;
   title: string;
   description: string;
-  videoSrc: string;
-} & LessonEnrollment;
+} & LessonEnrollment &
+  (
+    | {
+        videoStatus: "Ready";
+        videoOTP: {
+          otp: string;
+          playbackInfo: string;
+        };
+      }
+    | {
+        videoStatus: "NoVideo" | "Processing";
+      }
+  );

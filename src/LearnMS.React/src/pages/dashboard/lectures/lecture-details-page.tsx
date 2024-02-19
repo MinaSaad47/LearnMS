@@ -494,19 +494,6 @@ function AddLessonForm({
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name='VideoSrc'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className='text-blue-500'>Video Src</FormLabel>
-                <FormControl>
-                  <Input type='text' className='text-blue-500' {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
           <Button type='submit'>Add</Button>
         </fieldset>
       </form>

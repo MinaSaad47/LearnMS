@@ -4,6 +4,7 @@ using LearnMS.API.Entities;
 using LearnMS.API.Features.Courses.Contracts;
 using LearnMS.API.Features.Profile;
 using LearnMS.API.Features.Students;
+using LearnMS.API.ThirdParties;
 using Microsoft.EntityFrameworkCore;
 
 namespace LearnMS.API.Features.Courses;
@@ -11,10 +12,12 @@ namespace LearnMS.API.Features.Courses;
 public sealed class CoursesService : ICoursesService
 {
     private readonly AppDbContext _dbContext;
+    private readonly VdoService _vdoService;
 
-    public CoursesService(AppDbContext dbContext)
+    public CoursesService(AppDbContext dbContext, VdoService vdoService)
     {
         _dbContext = dbContext;
+        _vdoService = vdoService;
     }
 
     public async Task ExecuteAsync(CreateLectureCommand command)
@@ -192,14 +195,13 @@ public sealed class CoursesService : ICoursesService
             throw new ApiException(LecturesErrors.NotFound);
         }
 
+
         var lesson = new Lesson
         {
             Title = command.Title,
             RenewalPrice = command.RenewalPrice,
             ExpirationHours = command.ExpirationHours,
             Description = command.Description,
-            VideoSrc = command.VideoSrc
-
         };
 
         lecture.AddLesson(lesson, out var addedLesson);
@@ -254,10 +256,6 @@ public sealed class CoursesService : ICoursesService
             lesson.Description = command.Description;
         }
 
-        if (!string.IsNullOrWhiteSpace(command.VideoSrc))
-        {
-            lesson.VideoSrc = command.VideoSrc;
-        }
 
         if (command.ExpirationHours is not null && command.ExpirationHours > 0)
         {
@@ -562,6 +560,56 @@ public sealed class CoursesService : ICoursesService
         await _dbContext.SaveChangesAsync();
     }
 
+    public async Task ExecuteAsync(UploadLessonVideoCommand command)
+    {
+        var result = from courses in _dbContext.Courses
+                     join courseItems in _dbContext.Set<CourseItem>() on courses.Id equals courseItems.CourseId
+                     join lectures in _dbContext.Set<Lecture>() on courseItems.Id equals lectures.Id
+                     join lectureItems in _dbContext.Set<LectureItem>() on lectures.Id equals lectureItems.LectureId
+                     join lessons in _dbContext.Set<Lesson>() on lectureItems.Id equals lessons.Id
+                     where courses.Id == command.CourseId && lessons.Id == command.LessonId && lectures.Id == command.LectureId && courses.IsPublished && courseItems.IsPublished
+                     select lessons;
+
+        var lesson = await result.FirstOrDefaultAsync() ?? throw new ApiException(LessonsErrors.NotFound);
+
+
+        var videoId = await _vdoService.UploadVideoAsync(command.FS, lesson.VideoId);
+        lesson.VideoId = videoId;
+        lesson.VideoStatus = LessonVideoStatus.Processing;
+
+        _dbContext.Update(lesson);
+
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task<ValidateLessonVideoStatusResult> ExecuteAsync(ValidateLessonVideoStatusCommand command)
+    {
+        var result = from courses in _dbContext.Courses
+                     join courseItems in _dbContext.Set<CourseItem>() on courses.Id equals courseItems.CourseId
+                     join lectures in _dbContext.Set<Lecture>() on courseItems.Id equals lectures.Id
+                     join lectureItems in _dbContext.Set<LectureItem>() on lectures.Id equals lectureItems.LectureId
+                     join lessons in _dbContext.Set<Lesson>() on lectureItems.Id equals lessons.Id
+                     where courses.Id == command.CourseId && lessons.Id == command.LessonId && lectures.Id == command.LectureId && courses.IsPublished && courseItems.IsPublished && lessons.VideoId != null
+                     select lessons;
+
+        var lesson = await result.FirstOrDefaultAsync() ?? throw new ApiException(LessonsErrors.NotFound);
+
+        var video = await _vdoService.GetVideoAsync(lesson.VideoId!);
+
+        if (video.Status == "ready")
+        {
+            lesson.VideoStatus = LessonVideoStatus.Ready;
+            _dbContext.Update(lesson);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        return new()
+        {
+            VideoId = video.Id,
+            Status = video.Status
+        };
+    }
+
     public async Task<GetStudentCoursesResult> QueryAsync(GetStudentCoursesQuery query)
     {
         var student = await _dbContext.Students.FirstOrDefaultAsync(x => x.Id == query.StudentId);
@@ -833,7 +881,7 @@ public sealed class CoursesService : ICoursesService
 
         var lessons = await (from li in _dbContext.Set<LectureItem>()
                              join l in _dbContext.Set<Lesson>() on li.Id equals l.Id
-                             where li.LectureId == query.LectureId
+                             where li.LectureId == query.LectureId && l.VideoStatus == LessonVideoStatus.Ready
                              select new SingleLectureItem
                              {
                                  Id = l.Id,
@@ -885,7 +933,7 @@ public sealed class CoursesService : ICoursesService
                             join lesson in _dbContext.Set<Lesson>() on lectureItem.Id equals lesson.Id
                             join studentLesson in _dbContext.Set<StudentLesson>() on new { LessonId = lesson.Id, query.StudentId } equals new { studentLesson.LessonId, studentLesson.StudentId } into groupedStudentLessons
                             from studentLesson in groupedStudentLessons.DefaultIfEmpty()
-                            where lesson.Id == query.LessonId && courseItem.CourseId == query.CourseId && courseItem.Id == query.LectureId
+                            where lesson.Id == query.LessonId && courseItem.CourseId == query.CourseId && courseItem.Id == query.LectureId && lesson.VideoStatus == LessonVideoStatus.Ready
                             select new
                             {
                                 lesson,
@@ -918,7 +966,7 @@ public sealed class CoursesService : ICoursesService
             ExpirationHours = result.lesson.ExpirationHours,
             Enrollment = enrollment,
             ExpiresAt = result.studentLesson?.ExpirationDate,
-            VideoSrc = result.studentLesson == null || result.studentLesson.ExpirationDate > DateTime.UtcNow ? result.lesson.VideoSrc : null,
+            VideoOTP = enrollment == "Active" ? await _vdoService.GetVideoOTPAsync(result.lesson.VideoId!) : null,
         };
     }
 
@@ -932,15 +980,7 @@ public sealed class CoursesService : ICoursesService
                       course.Id == query.CourseId &&
                       courseItem.Id == query.LectureId &&
                       lectureItem.Id == query.LessonId
-                      select new GetLessonResult
-                      {
-                          ExpirationHours = lesson.ExpirationHours,
-                          RenewalPrice = lesson.RenewalPrice,
-                          Id = lesson.Id,
-                          Title = lesson.Title,
-                          Description = lesson.Description,
-                          VideoSrc = lesson.VideoSrc
-                      };
+                      select lesson;
 
 
         var result = await lessons.FirstOrDefaultAsync();
@@ -950,6 +990,16 @@ public sealed class CoursesService : ICoursesService
             throw new ApiException(LessonsErrors.NotFound);
         }
 
-        return result;
+
+        return new GetLessonResult()
+        {
+            Description = result.Description,
+            ExpirationHours = result.ExpirationHours,
+            Id = result.Id,
+            VideoStatus = result.VideoStatus,
+            RenewalPrice = result.RenewalPrice,
+            Title = result.Title,
+            VideoOTP = !string.IsNullOrEmpty(result.VideoId) ? await _vdoService.GetVideoOTPAsync(result.VideoId) : null
+        };
     }
 }

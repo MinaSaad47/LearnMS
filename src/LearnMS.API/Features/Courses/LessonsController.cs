@@ -51,12 +51,13 @@ public sealed class LessonsController : ControllerBase
 
             response = new GetLessonResponse
             {
+                VideoOTP = result.VideoOTP,
                 ExpirationHours = result.ExpirationHours,
                 Description = result.Description,
                 RenewalPrice = result.RenewalPrice,
                 Id = result.Id,
                 Title = result.Title,
-                VideoSrc = result.VideoSrc
+                VideoStatus = result.VideoStatus,
             };
         }
         else
@@ -73,7 +74,7 @@ public sealed class LessonsController : ControllerBase
                 Description = result.Description,
                 Id = result.Id,
                 Title = result.Title,
-                VideoSrc = result.VideoSrc
+                VideoOTP = result.VideoOTP
             };
         }
 
@@ -90,7 +91,6 @@ public sealed class LessonsController : ControllerBase
     {
         await _coursesService.ExecuteAsync(new CreateLessonCommand
         {
-            VideoSrc = request.VideoSrc,
             RenewalPrice = request.RenewalPrice,
             Title = request.Title,
             CourseId = courseId,
@@ -117,7 +117,6 @@ public sealed class LessonsController : ControllerBase
             Title = request.Title,
             Description = request.Description,
             ExpirationHours = request.ExpirationHours,
-            VideoSrc = request.VideoSrc,
             RenewalPrice = request.RenewalPrice,
             CourseId = courseId,
             LectureId = lectureId
@@ -168,5 +167,25 @@ public sealed class LessonsController : ControllerBase
             Message = "Renewed expiration successfully"
         };
 
+    }
+
+    [HttpPost("{lessonId:guid}/video/validate")]
+    public async Task<ApiWrapper.Success<ValidateLessonVideoStatusResponse>> ValidateVideo(Guid lessonId, Guid courseId, Guid lectureId)
+    {
+        var result = await _coursesService.ExecuteAsync(new ValidateLessonVideoStatusCommand
+        {
+            CourseId = courseId,
+            LectureId = lectureId,
+            LessonId = lessonId
+        });
+
+        return new()
+        {
+            Data = new()
+            {
+                Status = result.Status,
+                VideoId = result.VideoId
+            }
+        };
     }
 }

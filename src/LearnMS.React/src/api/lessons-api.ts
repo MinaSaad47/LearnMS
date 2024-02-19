@@ -26,7 +26,6 @@ export const useLessonsQuery = ({
 
 export const UpdateLessonRequest = z.object({
   title: z.string().min(1, { message: "Title is required" }),
-  videoSrc: z.string().min(1, { message: "Video is required" }),
   expirationHours: z.coerce
     .number()
     .min(1, { message: "Expiration hours must be greater than 0" })
@@ -69,7 +68,6 @@ export const useUpdateLessonMutation = () => {
 
 export const AddLessonRequest = z.object({
   title: z.string().min(1, { message: "Title is required" }),
-  VideoSrc: z.string().min(1, { message: "Video is required" }),
   expirationHours: z.coerce
     .number()
     .min(1, { message: "Expiration hours must be greater than 0" })
@@ -103,7 +101,6 @@ export const useAddLessonMutation = () => {
     mutationFn: ({ courseId, lectureId, data }) => {
       const formData = new FormData();
       formData.append("title", data.title);
-      formData.append("VideoSrc", data.VideoSrc);
       formData.append("description", data.description);
       formData.append("expirationHours", data.expirationHours.toString());
       formData.append("renewalPrice", data.renewalPrice.toString());
@@ -190,5 +187,37 @@ export const useRenewLessonMutation = () => {
           `/api/courses/${courseId}/lectures/${lectureId}/lessons/${lessonId}/renew`
         )
         .then((res) => res.data),
+  });
+};
+
+type ValidationResponse = {
+  videoId: string;
+  status: string;
+};
+
+export const useValidateLessonVideoMutation = () => {
+  const qc = useQueryClient();
+  return useMutation<
+    ApiResponse<ValidationResponse>,
+    {},
+    { courseId: string; lectureId: string; lessonId: string }
+  >({
+    mutationFn: ({ courseId, lectureId, lessonId }) => {
+      return api
+        .post(
+          `/api/courses/${courseId}/lectures/${lectureId}/lessons/${lessonId}/video/validate`
+        )
+        .then((res) => res.data);
+    },
+    onSuccess(data, { courseId, lectureId, lessonId }) {
+      if (data.data?.status === "ready") {
+        qc.invalidateQueries({ queryKey: ["course", { id: courseId }] });
+        qc.invalidateQueries({
+          queryKey: ["lecture", { id: lectureId, courseId }],
+        });
+        qc.invalidateQueries({ queryKey: ["courses"] });
+        qc.invalidateQueries({ queryKey: ["lesson", { id: lessonId }] });
+      }
+    },
   });
 };

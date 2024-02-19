@@ -1,3 +1,6 @@
+using LearnMS.API.Entities;
+using LearnMS.API.ThirdParties;
+
 namespace LearnMS.API.Features.Courses.Contracts;
 
 
@@ -15,7 +18,8 @@ public record GetLessonResult
     public required string Description { get; init; }
     public required decimal RenewalPrice { get; init; }
     public required int ExpirationHours { get; init; }
-    public required string VideoSrc { get; init; }
+    public required LessonVideoStatus VideoStatus { get; init; }
+    public VideoOTP? VideoOTP { get; init; }
 }
 
 public record GetLessonResponse
@@ -25,7 +29,8 @@ public record GetLessonResponse
     public required int ExpirationHours { get; init; }
     public required decimal RenewalPrice { get; init; }
     public required string Description { get; init; }
-    public required string VideoSrc { get; init; }
+    public required LessonVideoStatus VideoStatus { get; init; }
+    public required VideoOTP? VideoOTP { get; init; }
 }
 
 
@@ -49,7 +54,7 @@ public record GetStudentLessonResult
     public required string Description { get; init; }
     public DateTime? ExpiresAt { get; init; }
     public required string Enrollment { get; init; }
-    public string? VideoSrc { get; init; }
+    public required VideoOTP? VideoOTP { get; init; }
 }
 public record GetStudentLessonResponse
 {
@@ -61,5 +66,5 @@ public record GetStudentLessonResponse
     public required string Description { get; init; }
     public required string Enrollment { get; init; }
     public DateTime? ExpiresAt { get; init; }
-    public string? VideoSrc { get; init; }
+    public required VideoOTP? VideoOTP { get; init; }
 }

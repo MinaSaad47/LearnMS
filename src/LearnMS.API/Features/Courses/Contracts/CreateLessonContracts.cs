@@ -12,8 +12,6 @@ public sealed record CreateLessonRequest
     public required decimal RenewalPrice { get; set; }
     [Required, Range(0, 24)]
     public required int ExpirationHours { get; set; }
-    [Required, Url]
-    public required string VideoSrc { get; set; }
 }
 
 
@@ -25,7 +23,6 @@ public sealed record CreateLessonCommand
     public required string Description { get; set; }
     public required decimal RenewalPrice { get; set; }
     public required int ExpirationHours { get; set; }
-    public required string VideoSrc { get; set; }
 }
 
 

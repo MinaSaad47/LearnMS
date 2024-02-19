@@ -6,9 +6,12 @@ using LearnMS.API.Data;
 using LearnMS.API.Features;
 using LearnMS.API.Features.Administration;
 using LearnMS.API.Features.Auth;
+using LearnMS.API.Features.Courses;
+using LearnMS.API.Features.Courses.Contracts;
 using LearnMS.API.Middlewares;
 using LearnMS.API.Security;
 using LearnMS.API.Security.JwtBearer;
+using LearnMS.API.ThirdParties;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
@@ -18,6 +21,7 @@ using Serilog;
 using Serilog.Configuration;
 using tusdotnet;
 using tusdotnet.Interfaces;
+using tusdotnet.Models;
 using tusdotnet.Stores;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,6 +46,8 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.Configure<EmailConfig>(cfg.GetSection(EmailConfig.Section));
 
     builder.Services.AddScoped<IEmailService, EmailService>();
+
+    builder.Services.AddVdoService(cfg);
 
     builder.Services.AddFeaturesServices();
     builder.Services.AddSecurityServices();
@@ -141,6 +147,56 @@ app.MapTus("/api/files", async context =>
     };
 }).AllowAnonymous();
 
+app.MapTus("/api/courses/{courseId}/lectures/{lectureId}/lessons/{lessonId}/video", async context =>
+{
+    await Task.CompletedTask;
+
+    string courseId = context.Request.RouteValues["courseId"]?.ToString() ?? throw new ArgumentNullException();
+    string lectureId = context.Request.RouteValues["lectureId"]?.ToString() ?? throw new ArgumentNullException();
+    string lessonId = context.Request.RouteValues["lessonId"]?.ToString() ?? throw new ArgumentNullException();
+
+    var scope = context.RequestServices.CreateScope();
+    var coursesService = scope.ServiceProvider.GetRequiredService<ICoursesService>();
+    var store = new TusDiskStore("/tmp", deletePartialFilesOnConcat: true);
+
+    return new DefaultTusConfiguration
+    {
+        Store = store,
+        Events = new()
+        {
+            OnFileCompleteAsync = async ctx =>
+            {
+                ITusFile file = await ctx.GetFileAsync();
+                var fs = await file.GetContentAsync(ctx.CancellationToken);
+                try
+                {
+                    await coursesService.ExecuteAsync(new UploadLessonVideoCommand
+                    {
+                        CourseId = Guid.Parse(courseId),
+                        LectureId = Guid.Parse(lectureId),
+                        FS = fs,
+                        LessonId = Guid.Parse(lessonId),
+                    });
+                }
+                catch (Exception)
+                {
+                    await fs.DisposeAsync();
+                    var terminationStore = (ITusTerminationStore)ctx.Store;
+                    await terminationStore.DeleteFileAsync(file.Id, ctx.CancellationToken);
+                    await store.RemoveExpiredFilesAsync(ctx.CancellationToken);
+                    throw;
+                }
+                finally
+                {
+                    await fs.DisposeAsync();
+                    var terminationStore = (ITusTerminationStore)ctx.Store;
+                    await terminationStore.DeleteFileAsync(file.Id, ctx.CancellationToken);
+                    await store.RemoveExpiredFilesAsync(ctx.CancellationToken);
+                }
+            }
+        }
+    };
+});
 app.UseAuthentication();
 
 

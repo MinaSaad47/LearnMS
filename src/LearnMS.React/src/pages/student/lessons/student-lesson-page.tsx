@@ -81,6 +81,9 @@ const StudentLessonPage = () => {
     );
   }
 
+  lesson!.data.videoStatus = "Ready";
+  if (lesson?.data.videoStatus !== "Ready") return null;
+
   return (
     <div className='flex flex-col items-center w-full h-full gap-10 p-4'>
       <div className='flex flex-col items-center justify-between w-[80%] gap-4'>
@@ -91,7 +94,7 @@ const StudentLessonPage = () => {
       </div>
       <div className='w-full md:w-[80%] rounded-xl aspect-video overflow-clip'>
         <iframe
-          src={lesson?.data.videoSrc!}
+          src={`https://player.vdocipher.com/v2/?otp=${lesson?.data.videoOTP.otp}&playbackInfo=${lesson?.data.videoOTP.playbackInfo}`}
           allowFullScreen
           className='object-cover w-full h-full'
           allow='encrypted-media'></iframe>

@@ -110,6 +110,9 @@ dependencies:
   '@uppy/tus':
     specifier: ^3.5.0
     version: 3.5.0(@uppy/core@3.8.0)
+  '@uppy/xhr-upload':
+    specifier: ^3.6.0
+    version: 3.6.0(@uppy/core@3.8.0)
   axios:
     specifier: ^1.6.7
     version: 1.6.7
@@ -2704,6 +2707,17 @@ packages:
     dependencies:
       lodash: 4.17.21
       preact: 10.19.3
+    dev: false
+
+  /@uppy/xhr-upload@3.6.0(@uppy/core@3.8.0):
+    resolution: {integrity: sha512-HgWr+CvJzJXAp639AiZatdEWmRdhhN5LrjTZurAkvm9nPQarpi1bo0DChO+1bpkXWOR/1VarBbZOr8lNecEn7Q==}
+    peerDependencies:
+      '@uppy/core': ^3.8.0
+    dependencies:
+      '@uppy/companion-client': 3.7.0
+      '@uppy/core': 3.8.0
+      '@uppy/utils': 5.7.0
+      nanoid: 4.0.2
     dev: false
 
   /@vitejs/plugin-react@4.2.1(vite@5.0.12):

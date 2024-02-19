@@ -11,7 +11,6 @@ public sealed record UpdateLessonCommand
     public decimal? RenewalPrice { get; init; }
     public string? Description { get; init; }
     public int? ExpirationHours { get; init; }
-    public string? VideoSrc { get; init; }
 }
 
 public sealed record UpdateLessonRequest
@@ -24,6 +23,4 @@ public sealed record UpdateLessonRequest
     public decimal? RenewalPrice { get; init; }
     [Range(0, 24)]
     public int? ExpirationHours { get; init; }
-    [Url]
-    public string? VideoSrc { get; init; }
 }

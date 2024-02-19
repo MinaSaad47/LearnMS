@@ -7,6 +7,7 @@ using LearnMS.API.Features.CreditCodes;
 using LearnMS.API.Features.Profile;
 using LearnMS.API.Features.Students;
 using LearnMS.API.Security.PasswordHasher;
+using LearnMS.API.ThirdParties;
 
 namespace LearnMS.API.Features;
 
@@ -14,6 +15,7 @@ public static class AddFeaturesDependencies
 {
     public static IServiceCollection AddFeaturesServices(this IServiceCollection services)
     {
+
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<IAuthService, AuthService>();
 

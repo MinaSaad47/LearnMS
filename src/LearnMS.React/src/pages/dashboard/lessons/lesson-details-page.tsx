@@ -3,9 +3,11 @@ import {
   useDeleteLessonMutation,
   useLessonsQuery,
   useUpdateLessonMutation,
+  useValidateLessonVideoMutation,
 } from "@/api/lessons-api";
 import Confirmation from "@/components/confirmation";
 import Loading from "@/components/loading/loading";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -20,7 +22,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
 import { LessonDetails } from "@/types/lessons";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import Uppy from "@uppy/core";
+import Dashboard from "@uppy/dashboard";
+import DropTarget from "@uppy/drop-target";
+import Tus from "@uppy/tus";
 import { ListCollapse, Settings2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -93,7 +101,12 @@ const LessonDetailsPage = () => {
           courseId={courseId!}
           lectureId={lectureId!}
         />
-        <LessonVideo videoSrc={lesson?.data.videoSrc!} />
+        <LessonVideo
+          lesson={lesson?.data!}
+          lessonId={lessonId!}
+          lectureId={lectureId!}
+          courseId={courseId!}
+        />
       </div>
     </div>
   );
@@ -105,7 +118,6 @@ function LessonDetailsContent({
   title,
   expirationHours,
   renewalPrice,
-  videoSrc,
   courseId,
   lectureId,
 }: LessonDetails & { lectureId: string; courseId: string }) {
@@ -116,11 +128,10 @@ function LessonDetailsContent({
     defaultValues: {
       description,
       title,
-      videoSrc,
       expirationHours,
       renewalPrice,
     },
-    values: { description, title, videoSrc, expirationHours, renewalPrice },
+    values: { description, title, expirationHours, renewalPrice },
   });
 
   const onSubmit = (data: UpdateLessonRequest) => {
@@ -216,40 +227,128 @@ function LessonDetailsContent({
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name='videoSrc'
-            render={({ field }) => (
-              <FormItem className='p-3 bg-blue-200 border-2 border-blue-400 rounded'>
-                <FormLabel className='text-blue-500'>Video Src</FormLabel>
-                <FormControl>
-                  <Textarea className='text-blue-500' {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
         </form>
       </Form>
     </div>
   );
 }
 
-function LessonVideo({ videoSrc }: { videoSrc: string }) {
+function LessonVideo({
+  lessonId,
+  courseId,
+  lectureId,
+  lesson,
+}: {
+  lessonId: string;
+  lectureId: string;
+  courseId: string;
+  lesson: LessonDetails;
+}) {
+  const validateLessonVideoMutation = useValidateLessonVideoMutation();
+  const qc = useQueryClient();
+
+  const [uppy] = useState(
+    new Uppy({
+      restrictions: {
+        allowedFileTypes: ["video/*"],
+        minNumberOfFiles: 1,
+      },
+    }).use(Tus, {
+      endpoint: `/api/courses/${courseId}/lectures/${lectureId}/lessons/${lessonId}/video`,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      onShouldRetry(_) {
+        return false;
+      },
+      onAfterResponse(_, res) {
+        if (res.getStatus() === 204) {
+          toast({
+            title: "Video uploaded successfully",
+          });
+          qc.invalidateQueries({
+            queryKey: ["lesson", { id: lessonId }],
+          });
+        }
+      },
+    })
+  );
+
+  useEffect(() => {
+    uppy
+      .use(DropTarget, {
+        target: "#lesson-video-drop-zone",
+        onDrop: () => {
+          const plugin: any = uppy.getPlugin("Dashboard");
+          plugin.openModal();
+        },
+      })
+      .use(Dashboard, {
+        inline: false,
+        target: "#lesson-video-drop-zone",
+        height: 200,
+      });
+  }, []);
+
+  useEffect(() => {
+    //console.log("processing");
+    if (lesson.videoStatus === "Processing") {
+      const interval = setInterval(async () => {
+        if (Object.keys(uppy.getState().currentUploads).length === 0) {
+          console.log(`checking the status of lesson '${lesson.id}' video`);
+          await validateLessonVideoMutation.mutateAsync({
+            courseId,
+            lectureId,
+            lessonId,
+          });
+        }
+      }, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [lesson.videoStatus, uppy.getState().currentUploads]);
+
   return (
-    <div className='flex flex-col gap-4 p-4'>
+    <div className='flex flex-col gap-4 p-4' id='lesson-video-drop-zone'>
       <div className='flex items-center justify-between text-xl'>
         <div className='flex items-center gap-2'>
-          <ListCollapse className='text-blue-400 bg-blue-200 rounded-[50%] w-10 h-10 p-1' />
+          <ListCollapse className='text-primary bg-blue-200 rounded-[50%] w-10 h-10 p-1' />
           Lesson Content
         </div>
       </div>
-      <iframe
-        src={videoSrc}
-        allowFullScreen
-        allow='encrypted-media'
-        className='w-full aspect-video'
-      />
+
+      {lesson.videoStatus === "NoVideo" && (
+        <div className='flex items-center justify-center w-full border-2 bg-primary/20 border-primary/40 rounded-xl text-primary/50 aspect-video'>
+          drop video
+        </div>
+      )}
+
+      {lesson.videoStatus === "Processing" && (
+        <div className='flex flex-col items-center justify-center w-full gap-2 border-2 bg-primary/20 border-primary/40 rounded-xl text-primary/50 aspect-video'>
+          {validateLessonVideoMutation.isPending && "Checking Status"}
+          {validateLessonVideoMutation.data && (
+            <div className='flex flex-col gap-2'>
+              <Badge>
+                Id: {validateLessonVideoMutation.data?.data.videoId}
+              </Badge>
+              <Badge>
+                Status: {validateLessonVideoMutation.data?.data.status}
+              </Badge>
+            </div>
+          )}
+        </div>
+      )}
+
+      {lesson.videoStatus === "Ready" && (
+        <div className='w-full rounded-xl aspect-video overflow-clip'>
+          <iframe
+            src={`https://player.vdocipher.com/v2/?otp=${
+              lesson.videoOTP!.otp
+            }&playbackInfo=${lesson.videoOTP!.playbackInfo}`}
+            allowFullScreen
+            className='object-cover w-full h-full'
+            allow='encrypted-media'></iframe>
+        </div>
+      )}
     </div>
   );
 }

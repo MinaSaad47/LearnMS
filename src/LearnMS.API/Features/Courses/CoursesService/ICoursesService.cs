@@ -18,10 +18,12 @@ public interface ICoursesService
     public Task ExecuteAsync(UnPublishLectureCommand command);
     public Task ExecuteAsync(CreateLessonCommand command);
     public Task ExecuteAsync(UpdateLessonCommand command);
+    public Task ExecuteAsync(UploadLessonVideoCommand command);
     public Task ExecuteAsync(BuyCourseCommand command);
     public Task ExecuteAsync(BuyLectureCommand command);
     public Task ExecuteAsync(RenewLessonExpirationCommand command);
     public Task ExecuteAsync(StartLessonCommand command);
+    public Task<ValidateLessonVideoStatusResult> ExecuteAsync(ValidateLessonVideoStatusCommand command);
 
 
     // queries
