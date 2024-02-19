@@ -84,7 +84,7 @@ public sealed class StudentsService(AppDbContext db, IPasswordHasher passwordHas
         {
             student.ParentPhoneNumber = command.ParentPhoneNumber;
         }
-         if (!string.IsNullOrEmpty(command.StudentCode))
+        if (!string.IsNullOrEmpty(command.StudentCode))
         {
             student.StudentCode = command.StudentCode;
         }
@@ -111,7 +111,7 @@ public sealed class StudentsService(AppDbContext db, IPasswordHasher passwordHas
                      join accounts in db.Set<Account>() on students.Id equals accounts.Id
                      orderby students.FullName
                      where
-                        query.Search != null ? (students.FullName.ToLower().Contains(query.Search) || accounts.Email.ToLower().Contains(query.Search)) : true
+                        query.Search != null ? (students.FullName.ToLower().Contains(query.Search) || accounts.Email.ToLower().Contains(query.Search) || students.StudentCode.Contains(query.Search)) : true
                      select new SingleStudent
                      {
                          Id = students.Id,
