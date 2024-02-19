@@ -14,7 +14,7 @@ const DashboardSideBar = () => {
   };
 
   return (
-    <div className='border-r border-rounded min-h-full flex flex-col gap-4 p-2 max-w-[16rem]'>
+    <div className='border-r border-rounded self-stretch  flex flex-col gap-4 p-2 max-w-[16rem]'>
       <div className='space-y-2 '>
         <h2 className='text-2xl font-bold'>Materials</h2>
         <div className='space-y-1'>

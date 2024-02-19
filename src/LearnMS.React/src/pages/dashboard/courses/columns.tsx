@@ -1,4 +1,3 @@
-import { DataTable } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,7 +12,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const columns: ColumnDef<Course>[] = [
+export const coursesColumns: ColumnDef<Course>[] = [
   {
     accessorKey: "imageUrl",
     header: "Cover",
@@ -76,13 +75,3 @@ const columns: ColumnDef<Course>[] = [
     },
   },
 ];
-
-interface CoursesTableProps {
-  courses: Course[];
-}
-
-const CoursesTable: React.FC<CoursesTableProps> = ({ courses }) => {
-  return <DataTable data={courses} columns={columns} filterBy='name' />;
-};
-
-export default CoursesTable;

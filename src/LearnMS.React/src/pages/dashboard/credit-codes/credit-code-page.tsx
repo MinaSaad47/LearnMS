@@ -4,6 +4,7 @@ import {
   useGetCreditCodesQuery,
   useSellCreditCodesMutation,
 } from "@/api/credits-api";
+import { DataTable } from "@/components/data-table";
 import Loading from "@/components/loading/loading";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,7 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { creditCodesColumns } from "@/pages/dashboard/credit-codes/columns";
-import { CreditCodesDataTable } from "@/pages/dashboard/credit-codes/data-table";
+import { CreditCode } from "@/types/credit-code";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   PaginationState,
@@ -106,7 +107,7 @@ const CreditCodesPage = () => {
     Object.keys(rowSelection).length > 0 ? Object.keys(rowSelection) : null;
 
   return (
-    <div className='w-full h-full'>
+    <div className='w-full h-full p-4'>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -178,7 +179,8 @@ const CreditCodesPage = () => {
       {query.isLoading ? (
         <Loading />
       ) : (
-        <CreditCodesDataTable
+        <DataTable
+          getRowId={(row) => (row as CreditCode).code}
           sorting={sorting}
           setSorting={setStorting}
           pagination={{

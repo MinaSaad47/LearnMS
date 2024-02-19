@@ -1,9 +1,10 @@
 import { useCoursesQuery } from "@/api/courses-api";
+import { DataTable } from "@/components/data-table";
 import Loading from "@/components/loading/loading";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { Link } from "react-router-dom";
-import CoursesTable from "./courses-table";
+import { coursesColumns } from "./columns";
 
 const CoursesPage = () => {
   const { data: courses, isLoading } = useCoursesQuery();
@@ -25,7 +26,7 @@ const CoursesPage = () => {
         </Button>
       </Link>
       <div className='m-4'>
-        <CoursesTable courses={courses?.data!.items!} />
+        <DataTable columns={coursesColumns} data={courses?.data!.items!} />
       </div>
     </div>
   );

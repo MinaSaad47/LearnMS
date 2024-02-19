@@ -1,12 +1,13 @@
 import {
   ColumnDef,
   ColumnFiltersState,
+  OnChangeFn,
+  PaginationState,
+  RowSelectionState,
   SortingState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 
@@ -18,37 +19,61 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useState } from "react";
 import {
   DataTablePagination,
   DataTableViewOptions,
 } from "./data-table-components";
-import { Input } from "./ui/input";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  filterBy?: string;
+  sorting?: SortingState;
+  setSorting?: OnChangeFn<SortingState>;
+  columnFilters?: ColumnFiltersState;
+  setColumnFilters?: OnChangeFn<ColumnFiltersState>;
+  getRowId?: (row: TData) => string;
+  pagination?: {
+    pageIndex: number;
+    pageSize: number;
+    pageCount: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+  };
+  rowSelection?: RowSelectionState;
+  setRowSelection?: OnChangeFn<RowSelectionState>;
+  setPagination?: OnChangeFn<PaginationState>;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
-  filterBy,
+  setColumnFilters,
+  columnFilters,
+  pagination,
+  setRowSelection,
+  setPagination,
+  rowSelection,
+  setSorting,
+  getRowId,
+  sorting,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-
   const table = useReactTable({
     data,
+    getRowId,
+
     columns,
+    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
+    manualPagination: true,
+    manualSorting: true,
+    onRowSelectionChange: setRowSelection,
+    manualFiltering: true,
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     state: {
+      pagination,
+      rowSelection: rowSelection ?? {},
       sorting,
       columnFilters,
     },
@@ -57,16 +82,6 @@ export function DataTable<TData, TValue>({
   return (
     <div>
       <div className='flex items-center py-4'>
-        {filterBy && (
-          <Input
-            placeholder={`Filter by ${filterBy}`}
-            value={table.getColumn(filterBy)?.getFilterValue() as string}
-            onChange={(e) =>
-              table.getColumn(filterBy)?.setFilterValue(e.target.value)
-            }
-            className='max-w-sm'
-          />
-        )}
         <DataTableViewOptions table={table} />
       </div>
       <div className='mb-2 border rounded-md'>
@@ -117,7 +132,7 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination table={table} />
+      {pagination && <DataTablePagination table={table} />}
     </div>
   );
 }

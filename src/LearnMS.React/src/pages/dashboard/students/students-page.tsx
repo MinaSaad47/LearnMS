@@ -1,9 +1,9 @@
 import { useStudentsQuery } from "@/api/students-api";
+import { DataTable } from "@/components/data-table";
 import Loading from "@/components/loading/loading";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { studentsColumns } from "@/pages/dashboard/students/columns";
-import { StudentsDataTable } from "@/pages/dashboard/students/data-table";
 import { useModalStore } from "@/store/use-modal-store";
 import { PaginationState } from "@tanstack/react-table";
 import { Plus, Search } from "lucide-react";
@@ -53,7 +53,7 @@ const StudentsPage = () => {
         {isLoading ? (
           <Loading />
         ) : (
-          <StudentsDataTable
+          <DataTable
             pagination={{
               hasNextPage: students?.data!.hasNextPage!,
               hasPreviousPage: students?.data!.hasPreviousPage!,
