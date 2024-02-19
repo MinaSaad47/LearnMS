@@ -34,6 +34,7 @@ export const UpdateLessonRequest = z.object({
     .number()
     .min(0, { message: "Renewal Price is greater than 0" }),
   description: z.string(),
+  videoId: z.string().min(0),
 });
 
 export type UpdateLessonRequest = z.infer<typeof UpdateLessonRequest>;

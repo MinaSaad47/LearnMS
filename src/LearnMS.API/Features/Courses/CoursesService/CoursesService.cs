@@ -268,6 +268,12 @@ public sealed class CoursesService : ICoursesService
             lesson.RenewalPrice = command.RenewalPrice.Value;
         }
 
+        if (!string.IsNullOrWhiteSpace(command.VideoId))
+        {
+            lesson.VideoId = command.VideoId;
+            lesson.VideoStatus = LessonVideoStatus.Processing;
+        }
+
 
         _dbContext.Lessons.Update(lesson);
 
@@ -995,6 +1001,7 @@ public sealed class CoursesService : ICoursesService
         {
             Description = result.Description,
             ExpirationHours = result.ExpirationHours,
+            VideoId = result.VideoId,
             Id = result.Id,
             VideoStatus = result.VideoStatus,
             RenewalPrice = result.RenewalPrice,

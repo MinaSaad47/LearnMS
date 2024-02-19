@@ -51,6 +51,7 @@ public sealed class LessonsController : ControllerBase
 
             response = new GetLessonResponse
             {
+                VideoId = result.VideoId,
                 VideoOTP = result.VideoOTP,
                 ExpirationHours = result.ExpirationHours,
                 Description = result.Description,
@@ -115,6 +116,7 @@ public sealed class LessonsController : ControllerBase
         {
             Id = lessonId,
             Title = request.Title,
+            VideoId = request.VideoId,
             Description = request.Description,
             ExpirationHours = request.ExpirationHours,
             RenewalPrice = request.RenewalPrice,

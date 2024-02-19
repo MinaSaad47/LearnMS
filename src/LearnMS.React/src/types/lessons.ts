@@ -22,6 +22,7 @@ type LessonEnrollment =
 export type LessonDetails = {
   id: string;
   expirationHours: number;
+  videoId: string;
   renewalPrice: number;
   title: string;
   description: string;

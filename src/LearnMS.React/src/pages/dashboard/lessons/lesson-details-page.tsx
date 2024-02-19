@@ -115,6 +115,7 @@ const LessonDetailsPage = () => {
 function LessonDetailsContent({
   id,
   description,
+  videoId,
   title,
   expirationHours,
   renewalPrice,
@@ -129,9 +130,10 @@ function LessonDetailsContent({
       description,
       title,
       expirationHours,
+      videoId,
       renewalPrice,
     },
-    values: { description, title, expirationHours, renewalPrice },
+    values: { description, title, expirationHours, renewalPrice, videoId },
   });
 
   const onSubmit = (data: UpdateLessonRequest) => {
@@ -222,6 +224,19 @@ function LessonDetailsContent({
                 </FormLabel>
                 <FormControl>
                   <Input type='number' className='text-blue-500' {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='videoId'
+            render={({ field }) => (
+              <FormItem className='p-3 bg-blue-200 border-2 border-blue-400 rounded'>
+                <FormLabel className='text-blue-500'>Video Id</FormLabel>
+                <FormControl>
+                  <Input type='string' className='text-blue-500' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

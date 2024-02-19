@@ -20,6 +20,7 @@ public record GetLessonResult
     public required int ExpirationHours { get; init; }
     public required LessonVideoStatus VideoStatus { get; init; }
     public VideoOTP? VideoOTP { get; init; }
+    public required string? VideoId { get; init; }
 }
 
 public record GetLessonResponse
@@ -31,6 +32,7 @@ public record GetLessonResponse
     public required string Description { get; init; }
     public required LessonVideoStatus VideoStatus { get; init; }
     public required VideoOTP? VideoOTP { get; init; }
+    public required string? VideoId { get; init; }
 }
 
 
