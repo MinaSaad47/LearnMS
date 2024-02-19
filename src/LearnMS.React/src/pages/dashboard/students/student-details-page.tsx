@@ -67,6 +67,7 @@ function StudentProfile({ studentId }: { studentId: string }) {
       fullName: student?.data.fullName ?? "",
       phoneNumber: student?.data.phoneNumber ?? "",
       parentPhoneNumber: student?.data.parentPhoneNumber ?? "",
+      studentCode: student?.data.studentCode ?? "",
       schoolName: student?.data.schoolName ?? "",
       level: student?.data.level ?? "Level0",
     },
@@ -74,6 +75,7 @@ function StudentProfile({ studentId }: { studentId: string }) {
       fullName: student?.data.fullName ?? "",
       phoneNumber: student?.data.phoneNumber ?? "",
       parentPhoneNumber: student?.data.parentPhoneNumber ?? "",
+      studentCode: student?.data.studentCode ?? "",
       schoolName: student?.data.schoolName ?? "",
       level: student?.data.level ?? "Level0",
     },
@@ -175,6 +177,21 @@ function StudentProfile({ studentId }: { studentId: string }) {
                   <FormItem>
                     <FormLabel>Parent Phone Number</FormLabel>
                     <FormDescription>Parent's phone number</FormDescription>
+                    <FormControl>
+                      <Input {...field} placeholder='John Doe' />
+                    </FormControl>
+                  </FormItem>
+                </FormItem>
+              )}
+             />
+             <FormField
+              control={form.control}
+              name='studentCode'
+              render={({ field }) => (
+                <FormItem>
+                  <FormItem>
+                    <FormLabel>Student Code</FormLabel>
+                    <FormDescription>Student Code</FormDescription>
                     <FormControl>
                       <Input {...field} placeholder='John Doe' />
                     </FormControl>

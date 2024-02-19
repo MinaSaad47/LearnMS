@@ -59,7 +59,7 @@ public sealed class AuthService : IAuthService
             PasswordHash = passwordHash,
             VerificationToken = token,
             ProviderType = ProviderType.Local,
-        }, command.FullName, command.PhoneNumber, command.ParentPhoneNumber, command.School, command.Level);
+        }, command.FullName, command.PhoneNumber, command.ParentPhoneNumber,command.StudentCode, command.School, command.Level);
 
 
         await _dbContext.Students.AddAsync(student);

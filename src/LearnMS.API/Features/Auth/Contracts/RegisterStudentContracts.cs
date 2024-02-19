@@ -17,6 +17,8 @@ public sealed record RegisterStudentRequest(
     [Required]
     string ParentPhoneNumber,
     [Required]
+    string StudentCode,
+    [Required]
     StudentLevel Level
 );
 
@@ -33,6 +35,8 @@ public sealed record RegisterStudentCommand
     public required string FullName;
     public required string PhoneNumber;
     public required string ParentPhoneNumber;
+    public required string StudentCode;
+
     public required StudentLevel Level;
 };
 
@@ -52,6 +56,8 @@ public sealed record RegisterStudentExternalCommand
     public required string PhoneNumber;
     [Required]
     public required string ParentPhoneNumber;
+    [Required]
+    public required string StudentCode;
     [Required]
     public required StudentLevel Level;
 

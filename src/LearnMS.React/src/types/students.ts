@@ -5,6 +5,7 @@ export type Student = {
   fullName: string;
   phoneNumber: string;
   parentPhoneNumber: string;
+  studentCode: string;
   isVerified: boolean;
   schoolName: string;
   credit: number;

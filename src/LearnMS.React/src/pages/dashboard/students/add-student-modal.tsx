@@ -49,6 +49,7 @@ const AddStudentModal: React.FC<AddStudentModalProps> = ({ onClose }) => {
       level: "Level0",
       school: "",
       parentPhoneNumber: "",
+      studentCode: "",
       phoneNumber: "",
     },
     defaultValues: {
@@ -59,6 +60,7 @@ const AddStudentModal: React.FC<AddStudentModalProps> = ({ onClose }) => {
       level: "Level0",
       school: "",
       parentPhoneNumber: "",
+      studentCode: "",
       phoneNumber: "",
     },
   });
@@ -128,6 +130,18 @@ const AddStudentModal: React.FC<AddStudentModalProps> = ({ onClose }) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel> Parent Phone Number</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                name='studentCode'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel> Student Code </FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>

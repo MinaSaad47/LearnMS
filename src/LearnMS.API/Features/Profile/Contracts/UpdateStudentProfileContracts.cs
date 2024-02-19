@@ -13,6 +13,10 @@ public sealed record UpdateStudentProfileRequest
     public string? PhoneNumber { get; init; }
     [Length(11, 11)]
     public string? ParentPhoneNumber { get; init; }
+
+    [Length(1,8)]
+    public string? StudentCode { get; init; }
+
     [MinLength(0)]
     public string? SchoolName { get; init; }
     public StudentLevel? Level { get; init; }
@@ -26,6 +30,8 @@ public sealed record UpdateStudentProfileCommand
 
     public string? PhoneNumber { get; init; }
     public string? ParentPhoneNumber { get; init; }
+    public string? StudentCode { get; init; }
+
     public string? SchoolName { get; init; }
     public StudentLevel? Level { get; init; }
 }

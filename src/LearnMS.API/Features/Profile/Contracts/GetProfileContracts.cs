@@ -15,6 +15,8 @@ public sealed record GetProfileResult
     public string? FullName { get; init; }
     public string? PhoneNumber { get; init; }
     public string? ParentPhoneNumber { get; init; }
+    public string? StudentCode { get; init; }
+
     public string? School { get; init; }
     public StudentLevel? Level { get; init; }
 
@@ -27,6 +29,8 @@ public sealed record GetProfileResponse
     public string? FullName { get; init; }
     public string? PhoneNumber { get; init; }
     public string? ParentPhoneNumber { get; init; }
+    public string? StudentCode { get; init; }
+
     public string? School { get; init; }
     public StudentLevel? Level { get; init; }
     public string? ProfilePicture { get; init; }

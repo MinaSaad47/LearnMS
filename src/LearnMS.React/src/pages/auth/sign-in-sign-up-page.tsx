@@ -39,6 +39,7 @@ const SignInSignUpPage = () => {
       phoneNumber: "",
       fullName: "",
       parentPhoneNumber: "",
+      studentCode: "",
       school: "",
       level: "Level0",
     },
@@ -135,6 +136,16 @@ const SignInSignUpPage = () => {
             {registerErrors?.parentPhoneNumber && (
               <p className='text-red-500 form-error'>
                 {registerErrors?.parentPhoneNumber.message}
+              </p>
+            )}
+            <input
+              type='text'
+              placeholder="Your ID Please Focus"
+              {...registerFrom.register("studentCode")}
+            />
+            {registerErrors?.studentCode && (
+              <p className='text-red-500 form-error'>
+                {registerErrors?.studentCode.message}
               </p>
             )}
             <input

@@ -11,6 +11,8 @@ public sealed record CreateStudentCommand
     public required string FullName { get; init; }
     public required string PhoneNumber { get; init; }
     public required string ParentPhoneNumber { get; init; }
+    public required string StudentCode { get; init; }
+
     public required StudentLevel Level { get; init; }
 }
 
@@ -28,6 +30,8 @@ public sealed record CreateStudentRequest
     public required string PhoneNumber { get; init; }
     [Required, Length(11, 11)]
     public required string ParentPhoneNumber { get; init; }
+    [Required,Length(1, 8)]
+    public required string StudentCode { get; init; }
     [Required]
     public required StudentLevel Level { get; init; }
 }

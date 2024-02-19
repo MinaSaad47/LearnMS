@@ -6,7 +6,7 @@
   align-items: center;
   min-height: 100vh;
   font-family: "Jost", sans-serif;
-  background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
+  background: linear-gradient(to bottom, #000000, #033e6e, #050513);
   .main {
     @media (max-height: 915px) {
       margin-top: 20%;
@@ -71,7 +71,7 @@
     justify-content: center;
     display: block;
     color: #fff;
-    background: #573b8a;
+    background: #246fac;
     font-size: 1em;
     font-weight: bold;
     margin-top: 20px;
@@ -81,7 +81,7 @@
     transition: 0.2s ease-in;
     cursor: pointer;
     &:hover {
-      background: #6d44b8;
+      background: #000000;
     }
   }
   .login {
@@ -91,7 +91,7 @@
     transform: translateY(-75px);
     transition: 0.8s ease-in-out;
     label {
-      color: #573b8a;
+      color: #05020a;
       transform: scale(0.6);
     }
   }

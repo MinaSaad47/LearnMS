@@ -28,7 +28,7 @@ public sealed class StudentsService(AppDbContext db, IPasswordHasher passwordHas
             VerifiedAt = DateTime.UtcNow,
             PasswordHash = passwordHash,
             ProviderType = ProviderType.Local,
-        }, command.FullName, command.PhoneNumber, command.ParentPhoneNumber, command.School, command.Level);
+        }, command.FullName, command.PhoneNumber, command.ParentPhoneNumber, command.StudentCode, command.School, command.Level);
 
 
         await db.Students.AddAsync(student);
@@ -84,6 +84,10 @@ public sealed class StudentsService(AppDbContext db, IPasswordHasher passwordHas
         {
             student.ParentPhoneNumber = command.ParentPhoneNumber;
         }
+         if (!string.IsNullOrEmpty(command.StudentCode))
+        {
+            student.StudentCode = command.StudentCode;
+        }
 
         if (!string.IsNullOrEmpty(command.SchoolName))
         {
@@ -117,6 +121,7 @@ public sealed class StudentsService(AppDbContext db, IPasswordHasher passwordHas
                          Level = students.Level,
                          IsVerified = accounts.VerifiedAt != null,
                          ParentPhoneNumber = students.ParentPhoneNumber,
+                         StudentCode = students.StudentCode,
                          PhoneNumber = students.PhoneNumber,
                          ProfilePicture = accounts.ProfilePicture,
                          SchoolName = students.SchoolName
@@ -136,6 +141,7 @@ public sealed class StudentsService(AppDbContext db, IPasswordHasher passwordHas
                          FullName = students.FullName,
                          Level = students.Level,
                          ParentPhoneNumber = students.ParentPhoneNumber,
+                         StudentCode = students.StudentCode,
                          PhoneNumber = students.PhoneNumber,
                          SchoolName = students.SchoolName,
                          Credit = students.Credit

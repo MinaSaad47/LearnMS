@@ -19,6 +19,7 @@ export type Profile = {
       level: "Level0" | "Level1" | "Level2" | "Level3";
       phoneNumber: string;
       parentPhoneNumber: string;
+      studentCode: string;
       school: string;
       profilePicture: string;
       credits: number;
@@ -73,6 +74,10 @@ export const UpdateProfileRequest = z.object({
       message: "Invalid egyptian phone number",
     })
     .nullish(),
+    studentCode: z
+    .string()
+    .min(1, { message: "Code must be at least 6 characters" })
+    .nullish(), 
   password: z
     .string()
     .min(8, { message: "Password must be at least 8 characters" })

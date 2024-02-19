@@ -53,6 +53,7 @@ public sealed class StudentsController(IStudentsService studentsService, ICurren
             FullName = request.FullName,
             Level = request.Level,
             ParentPhoneNumber = request.ParentPhoneNumber,
+            StudentCode = request.StudentCode,
             PhoneNumber = request.PhoneNumber,
             School = request.School
         });
@@ -99,6 +100,7 @@ public sealed class StudentsController(IStudentsService studentsService, ICurren
                 FullName = result.FullName,
                 Level = result.Level,
                 ParentPhoneNumber = result.ParentPhoneNumber,
+                StudentCode = result.StudentCode,
                 PhoneNumber = result.PhoneNumber,
                 ProfilePicture = result.ProfilePicture,
                 SchoolName = result.SchoolName,
@@ -118,6 +120,7 @@ public sealed class StudentsController(IStudentsService studentsService, ICurren
             FullName = request.FullName,
             Level = request.Level,
             ParentPhoneNumber = request.ParentPhoneNumber,
+            StudentCode = request.StudentCode,
             PhoneNumber = request.PhoneNumber,
             SchoolName = request.SchoolName
         });

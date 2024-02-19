@@ -46,6 +46,11 @@ public sealed class ProfileService : IProfileService
             student.PhoneNumber = command.ParentPhoneNumber;
         }
 
+        if (!string.IsNullOrWhiteSpace(command.StudentCode))
+        {
+            student.PhoneNumber = command.StudentCode;
+        }
+
         if (!string.IsNullOrWhiteSpace(command.ProfilePicture))
         {
             profile.ProfilePicture = command.ProfilePicture;
@@ -76,6 +81,7 @@ public sealed class ProfileService : IProfileService
                          FullName = gs != null ? gs.FullName : null,
                          Level = gs != null ? gs.Level : null,
                          ParentPhoneNumber = gs != null ? gs.ParentPhoneNumber : null,
+                         StudentCode = gs != null ? gs.StudentCode : null,
                          PhoneNumber = gs != null ? gs.PhoneNumber : null,
                          School = gs != null ? gs.SchoolName : null,
                      };

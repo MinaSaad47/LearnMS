@@ -18,7 +18,7 @@ const StudentHomePage = () => {
 const HomeSection = () => {
   const { profile } = useProfileQuery();
   return (
-    <section className='font-patua min-h-[1400px] md:min-h-[800px] flex flex-col items-center text-center p-10'>
+    <section className='font-patua min-h-[1200px] md:min-h-[800px] flex flex-col items-center text-center p-10'>
       <div className="z-10 absolute top-[250px] md:top-[140px]  md:right-[70px] md:w-[500px] w-[400px] h-[400px] md:h-[500px] bg-cover bg-center bg-repeat overflow-hidden bg-[url('/home.png')]">
         <svg
           className='absolute left-0 z-10 -bottom-[100px] md:bottom-0 h-72'

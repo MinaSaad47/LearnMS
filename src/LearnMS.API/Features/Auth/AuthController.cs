@@ -29,6 +29,7 @@ public sealed class AuthController : ControllerBase
             FullName = request.FullName,
             Level = request.Level,
             ParentPhoneNumber = request.ParentPhoneNumber,
+            StudentCode = request.StudentCode,
             Password = request.Password,
             PhoneNumber = request.PhoneNumber,
             School = request.School

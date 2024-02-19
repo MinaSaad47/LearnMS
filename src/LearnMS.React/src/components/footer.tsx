@@ -1,3 +1,4 @@
+import { Bold } from "lucide-react";
 import { FaFacebook, FaWhatsapp, FaYoutube } from "react-icons/fa";
 
 const Footer = () => {
@@ -30,6 +31,14 @@ const Footer = () => {
           className='transition-all duration-300 hover:text-green-500 hover:cursor-pointer hover:scale-125'>
           <FaWhatsapp className='w-10 h-10' />
         </a>
+
+
+          
+          
+        
+        
+        
+
       </div>
     </footer>
   );

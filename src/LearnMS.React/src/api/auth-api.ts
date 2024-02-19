@@ -27,6 +27,8 @@ export const RegisterRequest = z
     parentPhoneNumber: z.string().refine(validateEgyptianPhoneNumber, {
       message: "Invalid egyptian phone number",
     }),
+    studentCode: z.string().min(1, { message: "Code must be at least 6 characters"
+    }),
     school: z.string().min(1, { message: "School is required" }),
     email: z.string().email().min(1, { message: "Email is required" }),
     password: z

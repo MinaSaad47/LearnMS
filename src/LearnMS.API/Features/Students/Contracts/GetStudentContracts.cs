@@ -15,6 +15,8 @@ public sealed class GetStudentResult
     public required string FullName { get; init; }
     public required string PhoneNumber { get; init; }
     public required string ParentPhoneNumber { get; init; }
+    public required string StudentCode { get; init; }
+
     public required bool IsVerified { get; init; }
     public required string SchoolName { get; init; }
     public required decimal Credit { get; init; }
@@ -29,6 +31,8 @@ public sealed class GetStudentResponse
     public required string FullName { get; init; }
     public required string PhoneNumber { get; init; }
     public required string ParentPhoneNumber { get; init; }
+    public required string StudentCode { get; init; }
+
     public required bool IsVerified { get; init; }
     public required string SchoolName { get; init; }
     public required decimal Credit { get; init; }

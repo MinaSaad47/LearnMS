@@ -203,10 +203,12 @@ function ContactContent() {
     values: {
       phoneNumber: profile?.phoneNumber ?? "",
       parentPhoneNumber: profile?.parentPhoneNumber ?? "",
+      studentCode: profile?.studentCode ?? "",
     },
     defaultValues: {
       phoneNumber: profile?.phoneNumber ?? "",
       parentPhoneNumber: profile?.parentPhoneNumber ?? "",
+      studentCode: profile?.studentCode ?? "",
     },
   });
 
@@ -256,6 +258,21 @@ function ContactContent() {
                 </FormControl>
                 <FormDescription className='text-sm text-white text-muted'>
                   We will use this phone number to contact you
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            name='studentCode'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className='font-bold'>Student Code</FormLabel>
+                <FormControl>
+                  <Input className='text-color2' type='text' {...field} />
+                </FormControl>
+                <FormDescription className='text-sm text-white text-muted'>
+                  We will use this Code 
                 </FormDescription>
                 <FormMessage />
               </FormItem>

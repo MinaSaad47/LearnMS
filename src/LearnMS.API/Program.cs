@@ -9,7 +9,6 @@ using LearnMS.API.Features.Auth;
 using LearnMS.API.Middlewares;
 using LearnMS.API.Security;
 using LearnMS.API.Security.JwtBearer;
-using LearnMS.API.ThirdParties;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
@@ -37,8 +36,6 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
     builder.Services.AddDbContext<AppDbContext>(opt => opt.UseNpgsql(cfg.GetConnectionString("DefaultConnection")));
-
-    builder.Services.AddVdoService(cfg);
 
     builder.Services.Configure<JwtBearerConfig>(cfg.GetSection(JwtBearerConfig.Section));
     builder.Services.Configure<AdministrationConfig>(cfg.GetSection(AdministrationConfig.Section));

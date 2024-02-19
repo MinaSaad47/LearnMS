@@ -40,6 +40,10 @@ export const CreateStudentRequest = z
     parentPhoneNumber: z.string().refine(validateEgyptianPhoneNumber, {
       message: "Invalid egyptian phone number",
     }),
+    studentCode: z
+      .string()
+      .min(1, { message: "Code must be at least 6 characters" }),
+
     level: z.enum(["Level0", "Level1", "Level2", "Level3"]),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -111,6 +115,10 @@ export const UpdateStudentRequest = z.object({
   parentPhoneNumber: z.string().refine(validateEgyptianPhoneNumber, {
     message: "Invalid egyptian phone number",
   }),
+  studentCode: z
+      .string()
+      .min(1, { message: "Code must be at least 6 characters" }),
+      
   level: z.enum(["Level0", "Level1", "Level2", "Level3"]),
 });
 

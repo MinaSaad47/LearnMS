@@ -12,8 +12,8 @@ public sealed record GenerateCreditCodesCommand
 
 public sealed record GenerateCreditCodesRequest
 {
-    [Required, Range(1, 100)]
+    [Required, Range(1, 500)]
     public required int Count;
-    [Required, Range(10, 1000)]
+    [Required, Range(5, 1000)]
     public required decimal Value;
 }
