@@ -1,4 +1,4 @@
-# LearnMS
+# LearnMS (not final source code)
 
 LearnMS is a learning management system web application for teachers, assistants and students.
 
